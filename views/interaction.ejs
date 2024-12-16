@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Research Study</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/css/interaction.css">
+    <!-- Importmap for loading Three.js and other dependencies -->
+    <script type="importmap">
+        {
+            "imports": {
+              "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js/+esm",
+              "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/",
+              "talkinghead": "/avatar-modules/talkinghead.mjs"
+            }
+        }
+    </script>
+
+    <!-- Module scripts for avatar and main functionality -->
+    <script type="module" src="/js/virtualcharacter.js"></script>
+</head>
+
+<body>
+    <div class="interaction">
+        <div id="virtualcharacter"></div>
+        <div class="chat-area">
+            <div id="chat-log"></div>
+            <div class="input-area">
+                <div id="user-text-input"></div>
+                <button id="user-send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

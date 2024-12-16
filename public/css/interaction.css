@@ -1,0 +1,49 @@
+.interaction {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    max-width: 100%;
+    max-height: 100vh;
+}
+
+#virtualcharacter {
+    width: 65%;
+    height: 100vh;
+}
+
+.chat-area {
+    width: 35%;
+    max-height: 100vh;
+    padding: 35px;
+}
+
+#chat-log {
+    width: 100%;
+    height: 85%;
+    background-color: white;
+}
+
+.input-area {
+    height: 15%;
+    width: 100%;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#user-text-input {
+    height: 75%;
+    width: 75%;
+    background-color: white;
+}
+
+#user-send-btn {
+    width: 20%;
+    height: 75%;
+}
+
+body {
+    margin: 0;
+    background-color: pink;
+}
