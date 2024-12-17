@@ -1,7 +1,18 @@
+:root {
+    --blue: #002657;
+    --orange: #fa4616;
+    --gradient: linear-gradient(90deg, rgba(0,38,87,.5) 0%, rgb(250,70,22,.5) 100%);
+    --gradient-bg: linear-gradient(45deg, rgba(0,38,87, 0.15) 0%, rgba(250,70,22, 0.15) 100%);
+    --gradient-light: linear-gradient(90deg, rgba(242, 169, 0,1) 0%, rgb(250,70,22,1) 100%);
+    --grey: #c7c9c8;
+    --dark: #343741;
+  }
+
 .interaction {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    align-items: center;
     max-width: 100%;
     max-height: 100vh;
 }
@@ -11,39 +22,89 @@
     height: 100vh;
 }
 
-.chat-area {
-    width: 35%;
-    max-height: 100vh;
-    padding: 35px;
-}
-
-#chat-log {
-    width: 100%;
-    height: 85%;
-    background-color: white;
-}
-
-.input-area {
-    height: 15%;
-    width: 100%;
-    margin-top: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-#user-text-input {
-    height: 75%;
-    width: 75%;
-    background-color: white;
-}
-
-#user-send-btn {
-    width: 20%;
-    height: 75%;
-}
-
 body {
     margin: 0;
     background-color: pink;
+    background-image: url('/background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.chat-container {
+    width: 35%;
+    height: 75vh;
+    background-color: rgba(255, 255, 255, 0.55);
+    padding: 15px;
+    border: 0px;
+    border-radius: 25px;
+    margin-right: 45px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.chat-box {
+    height: 100%;
+    overflow-y: scroll;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--grey) ;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-area {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    position: fixed;
+    bottom: 35px;
+}
+
+#send-btn {
+    padding: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  #send-svg {
+    margin-left: 5px !important;
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .user-input {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    border: 2px solid var(--grey);
+    border-radius: 25px;
+    width: 77%;
+    padding: 15px;
+    height: 40px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    resize: none;
+    margin-right: 15px;
+}
+
+button {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    border: 0px;
+    border-radius: 25px;
+    background-color: var(--blue);
+    color: white;
+    transition: .2s ease-in-out;
+}
+
+button:hover {
+    background-image: var(--gradient);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transform: scale(1.1);
 }

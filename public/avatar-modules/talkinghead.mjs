@@ -583,8 +583,22 @@ class TalkingHead {
       '🙏': { dt: [1500,300,1000], vs:{ eyeBlinkLeft: [0,1], eyeBlinkRight: [0,1], headRotateX: [0], headRotateZ: [0.1], gesture: [["namaste",2],null] } },
 
       'yes': { dt: [[200,500],[200,500],[200,500],[200,500]], vs:{ headRotateX: [[0.1,0.2],0.1,[0.1,0.2],0], headRotateZ: [[-0.2,0.2]] } },
-      'no': { dt: [[200,500],[200,500],[200,500],[200,500],[200,500]], vs:{ headRotateY: [[-0.1,-0.05],[0.05,0.1],[-0.1,-0.05],[0.05,0.1],0], headRotateZ: [[-0.2,0.2]] } }
-
+      'no': { dt: [[200,500],[200,500],[200,500],[200,500],[200,500]], vs:{ headRotateY: [[-0.1,-0.05],[0.05,0.1],[-0.1,-0.05],[0.05,0.1],0], headRotateZ: [[-0.2,0.2]] } },
+      'happy': { link: '👍' },
+      'positive': { link: '👌' },
+      'thinking': { link: '🤔' },
+      'shocked': { link: '😱' },
+      'tired': { link: '😴' },
+      'nervous': { link: '😬' },
+      'confused': { link: '🙄' },
+      'puzzled': { link: '🤷' },
+      'grateful': { link: '🙏' },
+      'wave': { link: '👋' },
+      'thumbs up': { link: '👍' },
+      'thumbs down': { link: '👎' },
+      'hello': { link: '✋' },
+      'goodbye': { link: '👋' },
+      'sleepy': { link: '😴' },
     };
 
     // Baseline/fixed morph targets
@@ -645,8 +659,6 @@ class TalkingHead {
       } else {
         throw new Error("There was no support for either OGG or MP3 audio.");
       }
-    } else {
-      throw new Error("You must provide some Google-compliant Text-To-Speech Endpoint.");
     }
 
 
@@ -1284,7 +1296,7 @@ class TalkingHead {
         this.setPoseFromTemplate(template,ms);
       }, duration);
     } else {
-      this.poseCurrentTemplate = template || this.poseCurrentTemplate;
+      this.poseCurrentTemplate = template || this.poseCurrentTemplate;
     }
 
     // Set target
@@ -1998,7 +2010,7 @@ class TalkingHead {
   * @return {string} Pre-processsed text.
   */
   lipsyncPreProcessText(s,lang) {
-    const o = this.lipsync[lang] || Object.values(this.lipsync)[0];
+    const o = this.lipsync[lang] || Object.values(this.lipsync)[0];
     return o.preProcessText(s);
   }
 
@@ -2009,7 +2021,7 @@ class TalkingHead {
   * @return {Lipsync} Lipsync object.
   */
   lipsyncWordsToVisemes(w,lang) {
-    const o = this.lipsync[lang] || Object.values(this.lipsync)[0];
+    const o = this.lipsync[lang] || Object.values(this.lipsync)[0];
     return o.wordsToVisemes(w);
   }
 
@@ -2703,7 +2715,7 @@ class TalkingHead {
       // Add new anim
       const templateLookAt = {
         name: 'lookat',
-        dt: [750,t],
+        dt: [400,t],
         vs: {
           headRotateX: [ rotx + drotx ],
           headRotateY: [ roty + droty ],
@@ -2784,7 +2796,7 @@ class TalkingHead {
   speakWithHands(delay=0,prob=0.5) {
 
     // Only if we are standing and not bending and probabilities match up
-    if ( this.mixer || this.gesture || !this.poseTarget.template.standing || this.poseTarget.template.bend || Math.random()>prob ) return;
+    if ( this.mixer || this.gesture || !this.poseTarget.template.standing || this.poseTarget.template.bend || Math.random()>prob ) return;
 
     // Random targets for left hand
     this.ikSolve( {
@@ -3026,7 +3038,7 @@ class TalkingHead {
 
   /**
   * Play RPM/Mixamo pose.
-  * @param {string|Object} url Pose name | URL to FBX
+  * @param {string|Object} url Pose name | URL to FBX
   * @param {progressfn} [onprogress=null] Callback for progress
   * @param {number} [dur=5] Duration of the pose in seconds
   * @param {number} [ndx=0] Index of the clip
@@ -3340,6 +3352,7 @@ class TalkingHead {
     this.resetLips();
     // Wait for 3 seconds
     await new Promise(resolve => setTimeout(resolve, 1050));
+    this.lookAtCamera(10000);
     // Speak the new audio
     this.speakAudio(newAudio, options, onSubtitles);
   }
