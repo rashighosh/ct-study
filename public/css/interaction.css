@@ -165,8 +165,9 @@ button {
     transition: .2s ease-in-out;
 }
 
-button .start-page {
-  padding: 15px;
+button.start-page {
+  padding: 15px !important;
+  border-radius: 25px !important;
 }
 
 .message-item {
