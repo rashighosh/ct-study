@@ -22,8 +22,6 @@ function showLoading() {
 };
 }
 
-
-
 function appendMessage(message, speaker) {
     const chatBox = document.getElementById("chat-container")
     const labelText = document.createElement('div');
@@ -36,12 +34,14 @@ function appendMessage(message, speaker) {
     speaker === 'user' ? messageText.className = "user-chatbot-message" : messageText.className = "alex-chatbot-message"
 
     if (speaker === 'user') {
-        message = document.getElementById('user-input').value;
+        if (message === 'text') {
+            message = document.getElementById('user-input').value;
+        }
         messageText.innerHTML = `${message}`;
         messageItem.className = "message-item"
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
-        chatBox.appendChild(messageItem)
+        chatBox.appendChild(messageItem);
     } else {
         messageItem.className = "message-item"
         messageItem.appendChild(labelText);
@@ -49,11 +49,6 @@ function appendMessage(message, speaker) {
         chatBox.appendChild(messageItem)
         displaySubtitles(message, messageText)
     }
-    
-    
-
-    
-
     if (speaker === 'user') {
         document.getElementById('user-input').value = '';
         appendLoadingDots();
@@ -121,12 +116,39 @@ async function handlePreRecordedResponse(data) {
         characterAudio(audioData, null);
     }
 
-    // DISPLAYING STUFF TO FRONT END
-    // Update dialogue
-    appendMessage(data.dialogue, 'Alex');
-    // renderInput(data.input, data.wholeDialogue);
-    // // Render options if available
-    // renderOptions(data.options, data.wholeDialogue);
+    // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
+    setTimeout(() => {
+        const ellipse = document.getElementById('lds-ellipsis');
+        if (ellipse) {
+            ellipse.remove();
+        }
+        // Update dialogue
+        appendMessage(data.dialogue, 'Alex');
+        if (data.options) {
+            displayOptions(data.options)
+        }
+    }, 1500); // 1500 milliseconds = 1.5 seconds
+}
+
+function displayOptions(options) {
+    options.forEach(option => {
+        const optionsArea = document.getElementById("options-area")
+        optionsArea.style.display = "none"
+        const button = document.createElement('button');
+        const userText = option.optionText
+        button.textContent = userText;
+        button.classList.add("option-btn")
+        button.addEventListener('click', () => {
+            optionsArea.innerHTML = ''
+            console.log("OPTION IS:", userText)
+            appendMessage(userText, 'user')
+            let messageBody = { userMessage: option.optionText }
+            console.log(messageBody)
+            handleUserInput(option.nextNode, messageBody)
+            // You can add more actions here based on nextNode
+        });
+        optionsArea.appendChild(button);
+    });
 }
 
 // Important to Keep
@@ -187,9 +209,11 @@ function displaySubtitles(dialogue, divItem, url = null) {
             }
             dialogueSection.innerHTML += textToAdd[i]; // Append character
             i++;
-            setTimeout(typeWriter, 20); // Adjust speed (20ms per character)
+            setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
+            const optionsArea = document.getElementById("options-area")
+            optionsArea.style.display = "flex"
         }
     }
 
@@ -199,15 +223,5 @@ function displaySubtitles(dialogue, divItem, url = null) {
 function cancelTypewriterEffect(dialogueSection, wholeDialogue, url = null) {
     typewriterRunning = false;
     dialogueSection.innerHTML = wholeDialogue; // Instantly display the complete dialogue
-    
-    if (url) {
-        // Create the hyperlink
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank'; // Opens link in a new tab
-        link.textContent = ' Read more'; // Add a space and link text
-        dialogueSection.appendChild(link); // Append the hyperlink to the dialogue section
-    }
-
     console.log("Typewriter effect canceled and completed instantly.");
 }
