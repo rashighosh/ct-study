@@ -1,0 +1,479 @@
+[
+    {
+        "nodeId": 1,
+        "dialogue": "I'm Alex, a virtual assistant who's here to help you talk through your mental health journey. Throughout our conversation, my goal is to prompt you with different questions to help you reflect. So, to get the ball rolling how would you like me to address you today?",
+        "input": {
+            "allowed": true,
+            "nextNode": 2
+        },
+        "options": [
+            {
+                "optionText": "I'd like to remain anonymous.",
+                "nextNode": 2
+            }
+        ]
+    },
+    {
+        "nodeId": 2,
+        "dialogue": "Take a moment to think about one area of your life that’s being negatively affected by your mental health. What comes to mind? It could be something simple, like trouble sleeping, or something more complex—it’s entirely personal to you.",
+        "input": {
+            "allowed": true,
+            "nextNode": 3
+        },
+        "response": {
+            "alterDialogue": false,
+            "prompt": "Greet the user based on if they've provided their name or not.",
+            "randomizedLength": false,
+            "fixedLength": 20
+        },
+        "progressInterview": true
+    },
+    {
+        "nodeId": 3,
+        "dialogue": "Could you tell me more about how it’s impacted you? What’s been the most difficult part for you?",
+        "input": {
+            "allowed": true,
+            "nextNode": 4
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) express empathy for the concerns they've listed and (2) use one of the forms of reflection (1) Amplified reflection: Exaggerate or reframe what the client says to highlight a point or (2) Double-sided reflection: Acknowledge both sides of the client’s ambivalence.",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 4,
+        "dialogue": "One activity that might help is to do a bit of self-assessment. For instance, on a scale of 1 to 10, with 1 being not managing at all and 10 being completely managing, how would you rate your current management of your own mental health?",
+        "options": [
+            {
+                "optionText": "1",
+                "nextNode": 5
+            },
+            {
+                "optionText": "2",
+                "nextNode": 5
+            },
+            {
+                "optionText": "3",
+                "nextNode": 5
+            },
+            {
+                "optionText": "4",
+                "nextNode": 5
+            },
+            {
+                "optionText": "5",
+                "nextNode": 5
+            },
+            {
+                "optionText": "6",
+                "nextNode": 5
+            },
+            {
+                "optionText": "7",
+                "nextNode": 5
+            },
+            {
+                "optionText": "8",
+                "nextNode": 5
+            },
+            {
+                "optionText": "9",
+                "nextNode": 6
+            },
+            {
+                "optionText": "10",
+                "nextNode": 6
+            }
+        ],
+        "response": {
+            "alterDialogue": false,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) express empathy for the concerns they've listed and (2) use the questions to help begin developing discrepancy in their life.",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 5,
+        "dialogue": "What do you feel is personally standing in your way of that score being even higher -- like a 9 or 10?",
+        "input": {
+            "allowed": true,
+            "nextNode": 7
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) express empathy for the concerns they've listed and (2) use the questions to help begin developing discrepancy in their life.",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 6,
+        "dialogue": "Out of everything going on, what aspects of your situation are you most focused on maintaining or keeping stable?",
+        "input": {
+            "allowed": true,
+            "nextNode": 7
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) express positivity in the user's reported score, and (2) support self-efficacy and autonomy.",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 7,
+        "dialogue": "When you think about where you are and where you might want to be, what is the biggest positive you think you would see in making a change?",
+        "input": {
+            "allowed": true,
+            "nextNode": 8
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) roll with resistance if necessary, supporting self-autonomy, and (2) give the user an opportunity to reflect.",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 8,
+        "dialogue": "Remember, I'm just a virtual assistant only here to help you talk through your mental health. I can’t influence your decision to improve or not—but the good news is, you alone deserve the power to make that choice. Let's shift gears to talk about how you personally manage your health. Using the same scale as earlier, how confident do you feel in your ability to take steps to manage or improve your mental health?",
+        "options": [
+            {
+                "optionText": "1",
+                "nextNode": 9
+            },
+            {
+                "optionText": "2",
+                "nextNode": 9
+            },
+            {
+                "optionText": "3",
+                "nextNode": 9
+            },
+            {
+                "optionText": "4",
+                "nextNode": 9
+            },
+            {
+                "optionText": "5",
+                "nextNode": 9
+            },
+            {
+                "optionText": "6",
+                "nextNode": 9
+            },
+            {
+                "optionText": "7",
+                "nextNode": 9
+            },
+            {
+                "optionText": "8",
+                "nextNode": 9
+            },
+            {
+                "optionText": "9",
+                "nextNode": 9
+            },
+            {
+                "optionText": "10",
+                "nextNode": 9
+            }
+        ],
+        "response": {
+            "alterDialogue": false,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) thank the user for being open, and (2) address any concerns that they might bring up empathically.",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 9,
+        "dialogue": "Take a moment to reflect on what steps you've already taken to address your mental health—specific strategies or techniques you’ve tried. What's worked for you so far?",
+        "input": {
+            "allowed": true,
+            "nextNode": 10
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) address any concerns brought up by the user empathetically, or (2) acknowledge the user's readiness to continue",
+            "randomizedLength": true
+        },
+        "progressInterview": true
+    },
+    {
+        "nodeId": 10,
+        "dialogue": "What inspires you to take action when it comes to your mental health? Maybe, there's specific people or things in your life that drive you to make those steps?",
+        "input": {
+            "allowed": true,
+            "nextNode": 11
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) briefly address any concerns brought up by the user empathetically, and (2) support the positives in what they've mentioned through self-efficacy or reflection",
+            "additionalInfo": "It's normal to experience difficult emotions, especially when life gets challenging. But it's important to learn to cope with those feelings in healthy ways.\n\nCheck in with yourself to see how you are feeling.\n- Identifying your feelings is the first step to managing your emotions.\n- Try to let yourself feel and accept your feelings without judgment, even if they are upsetting.\n\nBe kind to yourself. It can help you keep a positive mindset.\n- Embrace self-care. Take time to relax, curl up with a book, or get outside.\n- Think about and appreciate the positive parts of life.\n\nTry replacing negative or critical thoughts with positive ones. This is known as cognitive restructuring. It's like giving your mind a healthy makeover!\n\nChannel your energy in healthy ways. Exercise, laugh, dance, take a walk, play a sport, do art, clean your home!\n\nAsk for support from loved ones, who can help you cope with difficult emotions.\n\nMake an appointment with a counselor if you've been overwhelmed with stress, anxiety, or sadness that gets in the way of everyday life.\n\nFor more information, see Emotion Regulation:\n- Keep a journal to help process how you feel.\n  - Writing about your feelings lets you express, understand, and cope with them better.\n  - It can give you new insights on a situation and help you work through a problem more constructively.\n- Try to identify and challenge your negative thoughts to keep stressful situations in perspective and focus on the positive. You can build this skill through practice.\n- Practice relaxation techniques like deep breathing exercises, yoga, or meditation.\n- Do hobbies or activities you enjoy. They can help you take your mind off stress.\n- Take care of your body like staying physically active and making sure you are eating healthy, regular meals.\n\nFor more help coping with stress, see I'm so stressed out! or Coping with a disaster or traumatic event.\n\nChallenges in life can be stressful, but they also offer opportunities for personal growth. You can help manage and overcome challenges by:\n- Focusing on potential solutions rather than dwelling on problems.\n- Approaching problems from different perspectives.\n- Take a step back and consider different views and potential solutions to broaden your understanding and find creative ways to solve the problem.\n- Learning from mistakes.\n  - Analyze what went wrong, identify areas for improvement, and use those lessons to guide you, moving forward.\n\nFor more information, see Nurture your resilience and Building your resilience.\n\nIt’s important to be able to communicate your feelings and needs to others effectively to maintain good relationships. Communicating your feelings can also offer comfort and support to others.\n\n- Share your emotions honestly and respectfully.\n  - Use \"I\" statements to express how you feel without blaming others.\n  - For example, \"I feel hurt when….”\n- Try to keep your tone calm and respectful.\n- Listen actively.\n  - Give your full attention to the person speaking and avoid interrupting.\n  - Show care and empathy even if you don't fully understand or agree with how someone else feels.\n\nFor more on having constructive conversations, see Communicating is more than finding the right words.\n\nHealthy relationships can help us cope when life gets challenging. They offer a sense of belonging, connection, and support, which helps improve emotional well-being.\n\n- Reach out and seek support from others to help you cope with challenges, relieve stress, and build meaningful connections.\n- Dedicate time to spend with others and do things you enjoy.\n- Join social groups or clubs where you can meet like-minded people and create new connections.\n- Participate in local events, gatherings, or volunteer opportunities to expand your social network.\n\nClick for more on Improving Social Connectedness.\n\nMindfulness is the practice of being aware, living in the present, and acknowledging what's going on inside and around you. It can have a positive impact on health and well-being. To foster mindfulness:\n\n- Set aside dedicated time. Find a quiet and comfortable space where you can focus.\n- Be in the moment. Try to be fully present, without judgment or attachment to thoughts or emotions.\n- Focus on your breath, body sensations, and the environment around you.\n  - Observe your thoughts and feelings without labeling them as good or bad.\n  - Pay attention to physical feelings and respond to them as needed–resting if tired, moving if restless, and taking breaks.\n- Stay present and turn away distracting thoughts.\n  - Try not to get caught up in judgments, past regrets, or future worries. Instead, acknowledge them and let them pass by, like clouds in the sky.\n  - If your mind wanders, gently bring it back to the present moment.\n  - Treat yourself with kindness and understanding.\n\nFor more on practicing mindfulness, see Mindfulness for your health and From Mind-Wandering to Mindfulness: The Role of Attention and Awareness.\n\nGratitude may be the best-kept secret to help reduce stress and feel better. Focusing on what you’re thankful for every day can improve your health and emotional well-being.\n\n- Start a gratitude journal. Once a week, give yourself 10 to 15 minutes and write down people, places, things, memories, or events you’re grateful for.\n- Text a friend or call someone to tell them you are grateful for them and why. Think of someone who did or said something that changed your life for the better.\n- Do a favor for someone you are grateful for. Leave a meal, a plant, or a card on a friend’s doorstep.\n- Volunteer, if you can. Consider volunteering for an organization or activity where you can help others or give back to your community.\n\nFor more ideas, see 13 Most Popular Gratitude Exercises & Activities.\n\nPhysical health is closely connected to emotional well-being, so it is important to take care of your body. Things you can do include:\n\n- Eat healthy.\n  - Have fruits and vegetables, lean protein, whole grains, and low- or no-fat dairy.\n  - Limit foods with unhealthy fats, salt, and added sugars.\n- Get enough sleep.  Adults need 7 or more hours per night.\n  - Try to go to bed and wake up at the same time each day to help you sleep better.\n- Be active. Physical activity helps our body and mind.\n  - Every little bit helps. Start small and try to build up to 2½ hours a week.\n  - You can break it into smaller amounts of time, like 20 to 30 minutes a day.\n- Limit alcohol use and avoid smoking, vaping, and using other tobacco products. By reducing or eliminating these habits, you can improve your mental and physical health and well-being.\n  - You can choose not to drink or drink in moderation (one drink or less in a day for women, or two drinks or less in a day for men) if you drink.\n  - There are proven ways to help people quit smoking.\n\nFor more on emotional wellness, see Your Healthiest Self: Emotional Wellness Toolkit.",
+            "randomizedLength": true,
+            "fixedLength": 70
+
+        }
+    },
+    {
+        "nodeId": 11,
+        "dialogue": "Think back to your self-reported score from 1-10. Perhaps you've noticed some things that haven't worked as well in pushing your score at a 9 or a 10. Can you share what hasn't been effective and why you feel that way?",
+        "input": {
+            "allowed": true,
+            "nextNode": 12
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) briefly address any concerns brought up by the user empathetically, and (2) support the positives in what they've mentioned through self-efficacy or reflection",
+            "randomizedLength": true
+        }
+    },
+    {
+        "nodeId": 12,
+        "dialogue": "Considering the reasons you've mentioned, what’s a practical adjustment you think you could make to enhance any of the techniques to make them more effective for you?",
+        "input": {
+            "allowed": true,
+            "nextNode": 13
+        },
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews through a reflection technique: (1) Amplified reflection: Exaggerate or reframe what the client says to highlight a point or (2) Double-sided reflection: Acknowledge both sides of the client’s ambivalence.",
+            "additionalInfo": "From the time you’re born, your relationships help you learn to navigate the world. You learn how to interact with others, express yourself, conduct everyday health habits, and be a part of different communities from those around you. Positive social habits can help you build support systems and stay healthier mentally and physically. Flip each card below for checklists on how to improve your health in each area.\n\nStrategies for Improving Social Health\n\n6 strategies for improving your social health:\n\n1. Make connections.\n   Social connections might help protect health and lengthen life. Scientists are finding that our links to others can have powerful effects on our health. Whether with family, friends, neighbors, romantic partners, or others, social connections can influence our biology and well-being. Look for ways to get involved with others.\n\n   To find new social connections:\n   - Join a group focused on a favorite hobby, such as reading, hiking, painting, or wood carving.\n   - Learn something new, like cooking, writing, art, music, or a computer class.\n   - Take a yoga, tai chi, or other physical activity class.\n   - Join a choral group, theater troupe, band, or orchestra.\n   - Help with gardening at a community garden or park.\n   - Volunteer at a school, library, hospital, or place of worship.\n   - Participate in neighborhood events, like park clean-ups.\n   - Get active in your community (e.g., help others to reduce loneliness).\n   - Travel to different places and meet new people.\n\n2. Take care of yourself while caring for others.\n   The stress and strain of caregiving can take a toll on your health. It’s important to find ways to care for your health while caring for others.\n\n   To take care of yourself:\n   - Get organized. Make to-do lists and set a daily routine.\n   - Ask for help. Create a list of ways others can assist.\n   - Take daily breaks and find respite care.\n   - Keep up with hobbies and interests.\n   - Join a caregiver’s support group.\n   - Eat healthy foods and exercise.\n   - Build your skills through classes or training.\n\n3. Get active together.\n   Physical activity has many benefits for health, mood, and energy levels. Social support can inspire you to get moving and improve health.\n\n   To get moving with others:\n   - Build a network with groups of shared interests like hiking or biking clubs.\n   - Make shared routines like walking schedules.\n   - Be accountable by sharing goals and asking for support.\n   - Take fitness classes with friends or virtually.\n   - Join local sports teams.\n   - Engage in family activities like bike rides.\n   - Dance at home, classes, or local events.\n   - Move more at work with walking groups.\n\n4. Build healthy relationships.\n   Strong relationships can impact mental and physical well-being. It’s important to know what healthy relationships look like.\n\n   To build healthy relationships:\n   - Recognize how others influence you.\n   - Share feelings honestly.\n   - Ask for what you need.\n   - Listen empathetically without judgment.\n   - Resolve conflicts respectfully without personal attacks.\n   - Avoid being overly critical or violent.\n   - Expect respect and honesty in return.\n   - Compromise and set boundaries.\n   - Protect yourself from violence or abuse.\n   - Learn the differences between healthy and unhealthy relationships.\n\nAdditional Resources",
+            "randomizedLength": true,
+            "fixedLength": 70
+
+        }
+    },
+    {
+        "nodeId": 13,
+        "dialogue": "If you're interested, I can share a few resources on mental wellness. Would you like to hear more or continue moving forward?",
+        "options": [
+            {
+                "optionText": "I'd like to briefly hear about other mental health techniques or resources.",
+                "nextNode": 14
+            },
+            {
+                "optionText": "I'd like to move onto the next topic of the conversation",
+                "subOptionText": "This will continue to the next topic of the conversation.",
+                "nextNode": 18
+            }
+        ],
+        "response": {
+            "alterDialogue": true,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response based on the following properties of motivational interviews: (1) support the user's self-efficacy and ability to accomplish their goal, and (2) ensure autonomy is promoted",
+            "randomizedLength": true
+        },
+        "progressInterview": true
+    },
+    {
+        "nodeId": 14,
+        "dialogue": "Let’s talk about a few techniques that are commonly used to support mental health and can be particularly helpful for students. These approaches are grounded in research and can fit into your daily routine with a little bit of effort. I can go into more detail about any of them.",
+        "options": [
+            {
+                "optionText": "Physical Activity Techniques",
+                "subOptionText": "Discover how even small amounts of exercise can boost your mood and energy.",
+                "nextNode": 15
+            },
+            {
+                "optionText": "Mindfulness and Relaxation Techniques",
+                "subOptionText": "Learn about ways to reduce stress and refocus through practices like meditation, gratitude journaling, or deep breathing exercises.",
+                "nextNode": 16
+            },
+            {
+                "optionText": "Social Connection",
+                "subOptionText": "Isolation is one of the biggest problems in addressing mental health. How can your network support you?",
+                "nextNode": 17
+            },
+            {
+                "optionText": "I'd like to move onto the next topic of the conversation",
+                "subOptionText": "This will continue to the next topic of the conversation.",
+                "nextNode": 18
+            }
+        ]
+    },
+    {
+        "nodeId": 15,
+        "dialogue": "Physical activity is a proven way to boost your mood and reduce stress. Even small amounts of exercise, like a 10-minute walk, can release endorphins and help clear your mind. Activities like yoga, jogging, or even dancing in your room can have a big impact over time. The key is finding something you enjoy so that it feels sustainable. Take a look at the link to see how exercise can benefit your mental health.",
+        "url": "https://www.cdc.gov/mental-health/living-with/index.html",
+        "options": [
+            {
+                "optionText": "Mindfulness and Relaxation Techniques",
+                "subOptionText": "Learn about ways to reduce stress and refocus through practices like meditation, gratitude journaling, or deep breathing exercises.",
+                "nextNode": 16
+            },
+            {
+                "optionText": "Social Connection",
+                "subOptionText": "Isolation is one of the biggest problems in addressing mental health. How can your network support you?",
+                "nextNode": 17
+            },
+            {
+                "optionText": "I'd like to move onto the next topic of the conversation.",
+                "subOptionText": "This will continue to the next topic of the conversation.",
+                "nextNode": 18
+            }
+        ]
+    },
+    {
+        "nodeId": 16,
+        "dialogue": "Mindfulness techniques can help you manage stress and stay present. Practices like meditation, gratitude journaling, or deep breathing exercises are simple but powerful. For example, you can try a 5-4-3-2-1 grounding exercise: name five things you see, four you can touch, three you can hear, two you can smell, and one you can taste. This can be a great tool when you’re feeling overwhelmed. For more ideas on mindfulness and self-care, visit the attached link.",
+        "url": "https://www.cdc.gov/emotional-well-being/improve-your-emotional-well-being/index.html",
+        "options": [
+            {
+                "optionText": "Physical Activity Techniques",
+                "subOptionText": "Discover how even small amounts of exercise can boost your mood and energy.",
+                "nextNode": 15
+            },
+            {
+                "optionText": "Social Connection",
+                "subOptionText": "Isolation is one of the biggest problems in addressing mental health. How can your network support you?",
+                "nextNode": 17
+            },
+            {
+                "optionText": "I'd like to move onto the next topic of the conversation",
+                "subOptionText": "This will continue to the next topic of the conversation.",
+                "nextNode": 18
+            }
+        ]
+    },
+    {
+        "nodeId": 17,
+        "dialogue": "Connecting with others is an essential part of mental health. Whether it’s chatting with a friend, joining a study group, or calling a family member, these interactions provide emotional support and help combat feelings of isolation. Even small steps, like sending a quick text or scheduling a coffee break with a peer, can make a difference. For more guidance on building social connections, check out the resource link.",
+        "url": "https://www.nih.gov/health-information/social-wellness-toolkit",
+        "options": [
+            {
+                "optionText": "Physical Activity Techniques",
+                "subOptionText": "Discover how even small amounts of exercise can boost your mood and energy.",
+                "nextNode": 15
+            },
+            {
+                "optionText": "Mindfulness and Relaxation Techniques",
+                "subOptionText": "Learn about ways to reduce stress and refocus through practices like meditation, gratitude journaling, or deep breathing exercises.",
+                "nextNode": 16
+            },
+            {
+                "optionText": "I'd like to move onto the next topic of the conversation",
+                "subOptionText": "This will continue to the next topic of the conversation.",
+                "nextNode": 18
+            }
+        ]
+    },
+    {
+        "nodeId": 18,
+        "dialogue": "One other opportunity to consider is participating in other mental health research, which is something you're already doing today! Engaging in research not only can give access to emerging treatments and wellness practices but you're also helping pave the way for advancements that can benefit countless others. Many studies even offer compensation while contributing to meaningful change.",
+        "options": [
+            {
+                "optionText": "Interesting. Tell me more.",
+                "nextNode": 19
+            },
+            {
+                "optionText": "Why are you telling me this?",
+                "nextNode": 19
+            }
+        ]
+    },
+    {
+        "nodeId": 19,
+        "dialogue": "One of my team's goals is to see if a virtual assistant like me can help make research studies feel less intimidating. Research can sometimes seem like a confusing black box, and I want to help make it more approachable. Would you be open to seeing a few examples? Don’t worry, I have no intention of trying to get you to enroll. This is just a chance to learn more about research studies look like.",
+        "options": [
+            {
+                "optionText": "Sure, I'd like to hear more.",
+                "nextNode": 20
+            },
+            {
+                "optionText": "No, thanks.",
+                "nextNode": 22
+            }
+        ]
+    },
+    {
+        "nodeId": 20,
+        "dialogue": "Here are a few research study trials you can explore -- both completed and ongoing. These can help you get a better sense of what research studies look like and how people just like you may actually qualify to get involved. What do you think about these studies? Do these help illustrate the picture better?",
+        "input": {
+            "allowed": true,
+            "nextNode": 21
+        },
+        "showTrials": true
+    },
+    {
+        "nodeId": 21,
+        "dialogue": "Thinking about everything we’ve talked about - your mental health, your coping techniques, and other resources out there - what do you feel is a next step that you can could take today? There is no wrong answer, and only you know what makes sense for yourself.",
+        "input": {
+            "allowed": true,
+            "nextNode": 23
+        },
+        "response": {
+            "alterDialogue": false,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response on mental health research studies with the following properties: (1) support the users rationale and autonomy, and (2) thank them for sharing their insights.",
+            "randomizedLength": true
+        },
+        "progressInterview": true
+    },
+    {
+        "nodeId": 22,
+        "dialogue": "Thinking about everything we’ve talked about - your mental health, your coping techniques, and other resources out there - what do you feel is a next step that you can could take today? There is no wrong answer, and only you know what makes sense for yourself.",
+        "input": {
+            "allowed": true,
+            "nextNode": 23
+        }
+    },
+    {
+        "nodeId": 23,
+        "dialogue": "How confident do you feel in your ability to take steps to manage or improve your mental health moving forward from today?",
+        "options": [
+            {
+                "optionText": "1",
+                "nextNode": 24
+            },
+            {
+                "optionText": "2",
+                "nextNode": 24
+            },
+            {
+                "optionText": "3",
+                "nextNode": 24
+            },
+            {
+                "optionText": "4",
+                "nextNode": 24
+            },
+            {
+                "optionText": "5",
+                "nextNode": 24
+            },
+            {
+                "optionText": "6",
+                "nextNode": 24
+            },
+            {
+                "optionText": "7",
+                "nextNode": 24
+            },
+            {
+                "optionText": "8",
+                "nextNode": 24
+            },
+            {
+                "optionText": "9",
+                "nextNode": 24
+            },
+            {
+                "optionText": "10",
+                "nextNode": 24
+            }
+        ],
+        "response": {
+            "alterDialogue": false,
+            "prompt": "You are a virtual mental mental health assistant named Alex. Please address the user's response on goals for themselves with the following properties: (1) promoting the goal the user chose for themselves, and (2) promoting the user's autonomy in choosing that goal ",
+            "randomizedLength": true,
+            "additionalInfo": "Managing Stress\n\n**Key points**:\n- Everyone experiences occasional stress; it is a normal part of life.\n- Long-term stress can lead to worsening health problems.\n- Managing stress daily can prevent you from developing long-term stress.\n- Find resources if you are struggling to cope with stress for extra support.\n\n**How it impacts everyday life**:\nEveryone experiences stress, which is your body's physical and emotional response to new or challenging situations. This can occur when you face problems such as those related to work, school, health, and relationships. Feeling stress can be a normal coping response and can forge a healthy sense of our ability to solve problems. However, when the stress is long term, known as chronic stress, it can lead to worsening health problems.\n\n**Stress can cause the following**:\n- Feelings of fear, anger, sadness, worry, numbness, or frustration.\n- Changes in appetite, energy, desires, and interests.\n- Trouble concentrating and making decisions.\n- Nightmares or problems sleeping.\n- Physical reactions, such as headaches, body pains, stomach problems, or skin rashes.\n- Worsening of chronic health problems and mental health conditions.\n- Increased use of alcohol, drugs, and other substances.\n\n**Healthy ways to cope with stress**:\nLearning to cope in a healthy way can help reduce your stress. Taking small steps in your daily life to manage stress can have a big impact. Everyone manages stress differently. You can find and manage what triggers your stress and the right combination of healthy techniques that work for you.\n\n**Take care of your mind**:\n- Take breaks from news and social media. It's good to be informed, but constant information about negative events can be upsetting.\n- Make time to unwind:\n  - Take deep breaths, stretch, or meditate.\n  - Keep a journal.\n  - Spend time outdoors either being active or relaxing.\n  - Try to do some other relaxing activities you enjoy.\n- Practice gratitude daily. Remind yourself of specific things you are grateful for and write them down.\n- Connect with others:\n  - Talk with people you trust about your concerns and how you are feeling.\n  - Connect with your community-based or faith-based organizations.\n\n**Take care of your body**:\n- Get enough sleep. Go to bed and wake up at the same time each day to help you sleep better. Adults need 7 or more hours per night.\n- Move more. Staying physically healthy can improve your emotional well-being. Every little bit of physical activity helps.\n  - Start small and build up to 2 ½ hours a week.\n  - Break it into smaller amounts such as 20 to 30 minutes a day.\n- Eat healthy. Have fruits and vegetables, lean protein, whole grains, and low-fat or no-fat dairy. Limit foods with unhealthy fats, salt, and added sugars.\n- Limit alcohol intake. Choose not to drink, or drink in moderation on days you drink alcohol. Moderation means:\n  - 2 drinks or less a day for men.\n  - 1 drink or less for women.\n- Avoid using illegal drugs or prescription drugs in ways other than prescribed. Don't take someone else's prescription. Substance use treatment is available, and recovery starts with asking for help.\n- Avoid smoking, vaping, and the use of other tobacco products. People can and do quit smoking for good.\n- Continue with regular health appointments, tests, screenings, and vaccinations.",
+            "fixedLength": 70
+        }
+    },
+    {
+        "nodeId": 24,
+        "dialogue": "Thanks again for chatting with me today. Remember, taking care of your mental well-being is an ongoing journey. No matter anyone or even another virtual assistant like me might say, you’re the one in control of the decisions that best support you. Please click the button below to complete the remainder of this study.",
+        "options": [
+            {
+                "optionText": "Continue to End",
+                "nextNode": "REFLECTION"
+            }
+        ]
+    }
+]

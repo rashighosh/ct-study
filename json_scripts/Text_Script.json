@@ -1,0 +1,38 @@
+[
+    {
+        "nodeId": 1,
+        "dialogue": "Hi! I'm Alex, a virtual assistant, here to help you talk through participating in cancer clinical research. My goal is to give you personalized information to help you understand what clinical research can mean for your cancer journey. Ready to get started?",
+        "input": {
+            "allowed": true,
+            "nextNode": 2
+        },
+        "options": [
+            {
+                "optionText": "Let's get started!",
+                "nextNode": 2
+            }
+        ]
+    },
+    {
+        "nodeId": 2,
+        "dialogue": "Alright, let's start by understanding some of your preferences regarding treatment. Would you prefer the usual, standard treatment, or latest, new treatment?",
+        "input": {
+            "allowed": true,
+            "nextNode": 3
+        },
+        "options": [
+            {
+                "optionText": "I'd prefer the usual, standard treatment.",
+                "nextNode": 4
+            },
+            {
+                "optionText": "I'd hope to get the latest, new treatment.",
+                "nextNode": 5
+            },
+            {
+                "optionText": "No preference, as long as there's evidence the treatment works.",
+                "nextNode": 6
+            }
+        ]
+    }
+]
