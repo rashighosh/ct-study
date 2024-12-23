@@ -336,22 +336,12 @@ class TalkingHead {
           { name: 'pose',
             idle: {
               alt: [
-                { p: 0.6, delay: [5000,20000], vs: { pose: ['side'] } },
-                { p: 0.2, delay: [5000,20000], vs: { pose: ['hip'] },
-                  'M': { delay: [5000,20000], vs: { pose: ['side'] } }
-                },
                 { p: 0.1, delay: [5000,20000], vs: { pose: ['straight'] } },
-                { delay: [5000,10000], vs: { pose: ['wide'] } },
-                { delay: [1000,3000], vs: { pose: ['turn'] } },
               ]
             },
             talking: {
               alt: [
-                { p: 0.4, delay: [5000,20000], vs: { pose: ['side'] } },
                 { p: 0.4, delay: [5000,20000], vs: { pose: ['straight'] } },
-                { delay: [5000,20000], vs: { pose: ['hip'] },
-                  'M': { delay: [5000,20000], vs: { pose: ['wide'] } }
-                },
               ]
             }
           },
