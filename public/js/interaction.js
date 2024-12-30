@@ -1,9 +1,29 @@
 import { characterAudio, characterAudioQueue } from './virtualcharacter.js';
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('send-btn').addEventListener('click', function() {
-        appendMessage('text', 'user');
-    });    
+var continueNode = null
+var progressCounter = 0;
+var userInfo = ""
+var informationTranscript = new Map()
+var id = ''
+var condition = ''
+
+function getCurrentDateTime() {
+    var currentDate = new Date();
+    // Convert the date and time to the user's local time zone
+    var localDateTime = currentDate.toLocaleString();
+    // Output the local date and time
+    return localDateTime
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {  
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    condition = urlParams.get('c')
+    id = urlParams.get('id')
+    condition = parseInt(condition)
+    var currentDate = new Date();
+    logToDatabase(id, condition, currentDate);
+
     document.getElementById('start').addEventListener('click', function() {
         showLoading();
     });
@@ -16,13 +36,20 @@ function showLoading() {
     const animatedElement = document.getElementById("animate-charcter");
 
     animatedElement.onanimationend = () => {
-    console.log("Animation has ended.");
-    document.getElementById('loading-screen').classList.add("out")
-    handleUserInput(1, { userInput: "Start Introduction" });
-};
+        document.getElementById('loading-screen').classList.add("out")
+        informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
+        updateTranscript()
+        handleUserInput(1, { userInput: "Start Introduction" });
+    };
 }
 
-function appendMessage(message, speaker) {
+function incrementProgressBar() {
+    progressCounter = progressCounter + 1;
+    var progressId = "step" + progressCounter
+    document.getElementById(progressId).classList.add("visited")
+}
+
+function appendMessage(message, speaker, nextNode = null) {
     const chatBox = document.getElementById("chat-container")
     const labelText = document.createElement('div');
     const messageText = document.createElement('div');
@@ -36,18 +63,26 @@ function appendMessage(message, speaker) {
     if (speaker === 'user') {
         if (message === 'text') {
             message = document.getElementById('user-input').value;
+            let messageBody = { userMessage: message }
+            handleUserInput(nextNode, messageBody)
         }
         messageText.innerHTML = `${message}`;
         messageItem.className = "message-item"
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem);
+        informationTranscript.set("USER " + getCurrentDateTime(), message);
+        console.log("INFORMATION TRANSCRIPT", informationTranscript)
+        updateTranscript()
     } else {
         messageItem.className = "message-item"
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
         displaySubtitles(message, messageText)
+        informationTranscript.set("ALEX " + getCurrentDateTime(), message);
+        console.log("INFORMATION TRANSCRIPT", informationTranscript)
+        updateTranscript()
     }
     if (speaker === 'user') {
         document.getElementById('user-input').value = '';
@@ -76,8 +111,72 @@ function appendLoadingDots() {
     chatBox.appendChild(ellipse);
 }
 
+async function handleStreamedResponse(reader) {
+    const decoder = new TextDecoder();
+    let partialData = '';
+    var isFirstChunk = true;
+
+    while (true) {
+        const { value, done } = await reader.read();
+
+        if (done) {
+            break;
+        }
+
+        partialData += decoder.decode(value, { stream: true });
+
+        // Process each complete JSON chunk
+        let boundaryIndex;
+        while ((boundaryIndex = partialData.indexOf('\n')) !== -1) {
+            const chunk = partialData.slice(0, boundaryIndex).trim();
+            partialData = partialData.slice(boundaryIndex + 1);
+
+            if (chunk) {
+                const data = JSON.parse(chunk);
+
+                // Special handling for the first chunk
+                if (isFirstChunk) {
+                    // Handle audio if present
+                    if (data.audio && data.audio.audioBase64) {
+                        if (data.type == "PLACEHOLDER") { // agent lets user know is thinking about response as dynamic ChatGPT response is being generated
+                            const audioData = await parseAudio(data.audio, null);
+                            characterAudio(audioData, null); // placeholder always first speech in dialogue turn
+                            // typewriter effect!
+                            renderStreamedDialogue(data.dialogue, data.type);
+                        }
+                        else {
+                            // first piece of dynamic response
+                            isFirstChunk = false;
+                            const audioData = await parseAudio(data.audio, null);
+                            characterAudioQueue(audioData, null); // queue to play after placeholder ends
+                            // only need to render front end input/buttons/stuff once
+                            // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
+                            const ellipse = document.getElementById('lds-ellipsis');
+                            ellipse.remove();
+        
+                            // Update dialogue
+                            appendMessage(data.wholeDialogue, 'Alex');
+                            if (data.options) {
+                                displayOptions(data.options)
+                            }
+        
+                        }
+                    }
+                } else {
+                    // keep rendering rest of audio stream as they come in!
+                    if (data.audio && data.audio.audioBase64) {
+                        const audioData = await parseAudio(data.audio, null);
+                        characterAudioQueue(audioData, null);
+                    }
+                }
+            }
+        }
+    }
+}
+
 async function handleUserInput(nodeId, body) {
-    const response = await fetch(`/${nodeId}`, {
+    body.userInfo = userInfo
+    const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -93,23 +192,20 @@ async function handleUserInput(nodeId, body) {
     // Handle streamed response
     if (contentType && contentType.includes('prerecorded')) { // not expecting ANY streamed response
         // Handle pre-recorded response
-        console.log("Pre-recorded responses");
         const data = await response.json(); // gives ENTIRE audio at once
         // process audio for front end
         await handlePreRecordedResponse(data);
     }
-    // else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
-    //     console.log("Streamed Response.")
-    //     const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
-    //     await handleStreamedResponse(reader);
-    // }
-    // else {
-    //     console.error("Unknown response type. Unable to process.");
-    // }
+    else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
+        const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
+        await handleStreamedResponse(reader);
+    }
+    else {
+        console.error("Unknown response type. Unable to process.");
+    }
 }
 
 async function handlePreRecordedResponse(data) {
-    console.log('Received pre-recorded response:', data);
     // Handle audio if present; parse it for being ready for front end
     if (data.audio && data.audio.audioBase64) {
         const audioData = await parseAudio(data.audio, null);
@@ -127,24 +223,49 @@ async function handlePreRecordedResponse(data) {
         if (data.options) {
             displayOptions(data.options)
         }
+        if (data.input.allowed === true) {
+            const inputArea = document.getElementById("input-area")
+            inputArea.style.display = 'flex'
+            document.getElementById('send-btn').onclick = function() {
+                appendMessage('text', 'user', data.input.nextNode);
+                const optionsArea = document.getElementById("options-area")
+                optionsArea.innerHTML = ''
+            };  
+        } else {
+            const inputArea = document.getElementById("input-area")
+            inputArea.style.display = 'none'
+        }
     }, 1500); // 1500 milliseconds = 1.5 seconds
 }
 
 function displayOptions(options) {
     options.forEach(option => {
         const optionsArea = document.getElementById("options-area")
-        optionsArea.style.display = "none"
+        optionsArea.style.visibility = "hidden"
         const button = document.createElement('button');
         const userText = option.optionText
         button.textContent = userText;
         button.classList.add("option-btn")
+        if (option.continueNode) {
+            continueNode = option.continueNode
+        }
         button.addEventListener('click', () => {
             optionsArea.innerHTML = ''
-            console.log("OPTION IS:", userText)
             appendMessage(userText, 'user')
             let messageBody = { userMessage: option.optionText }
-            console.log(messageBody)
-            handleUserInput(option.nextNode, messageBody)
+            if (option.nextNode) {
+                if (option.nextNode !== 99) {
+                    if (option.userInfo) {
+                        userInfo = userInfo + " ; " + option.userInfo
+                    }
+                    incrementProgressBar();
+                }
+                handleUserInput(option.nextNode, messageBody)
+            } else {
+                incrementProgressBar();
+                handleUserInput(continueNode, messageBody)
+            }
+            
             // You can add more actions here based on nextNode
         });
         optionsArea.appendChild(button);
@@ -153,8 +274,6 @@ function displayOptions(options) {
 
 // Important to Keep
 async function parseAudio(audio, emoji) {
-    console.log("parseAudio called with audio and emoji:", { audio, emoji });
-
     try {
         // Get the Base64 audio string
         const base64Audio = audio.audioBase64;
@@ -162,15 +281,12 @@ async function parseAudio(audio, emoji) {
         // Decode the Base64 audio string into an ArrayBuffer
         const arrayBuffer = await fetch(`data:audio/wav;base64,${base64Audio}`)
             .then(response => response.arrayBuffer());
-        console.log("Audio decoded into ArrayBuffer.");
 
         // Create an AudioContext
         const audioContext = new AudioContext();
-        console.log("AudioContext created.");
 
         // Decode the ArrayBuffer into an AudioBuffer
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        console.log("AudioBuffer decoded:", audioBuffer);
 
         // Create a new audio object with the decoded AudioBuffer
         const audioWithWav = {
@@ -188,6 +304,7 @@ async function parseAudio(audio, emoji) {
 
 function displaySubtitles(dialogue, divItem, url = null) {
     const dialogueSection = divItem;
+    const chatBox = document.getElementById("chat-container")
 
     // Start with the current content to avoid overwriting
     let existingText = dialogueSection.innerText.trim();
@@ -213,8 +330,9 @@ function displaySubtitles(dialogue, divItem, url = null) {
         } else {
             typewriterRunning = false; // Reset the flag when done
             const optionsArea = document.getElementById("options-area")
-            optionsArea.style.display = "flex"
+            optionsArea.style.visibility = "visible"
         }
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
     }
 
     typeWriter(); // Start typing animation
@@ -223,5 +341,46 @@ function displaySubtitles(dialogue, divItem, url = null) {
 function cancelTypewriterEffect(dialogueSection, wholeDialogue, url = null) {
     typewriterRunning = false;
     dialogueSection.innerHTML = wholeDialogue; // Instantly display the complete dialogue
-    console.log("Typewriter effect canceled and completed instantly.");
+}
+
+function updateTranscript() {
+    let transcriptString = JSON.stringify(Object.fromEntries(informationTranscript));
+    fetch('/updateTranscript', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            id: id, 
+            transcriptType: 'informationTranscript', 
+            transcript: transcriptString
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+    })
+    .catch(error => console.error('Error logging transcript:', error));
+}
+
+function logToDatabase(id, condition, currentDate) {
+    fetch('/logUser', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id, condition: condition, startTime: currentDate})
+    })
+    .then(async response => {
+        if (response.status === 409) {
+            const data = await response.json();
+            throw new Error(data.message); // Throw error with the message from server
+        }
+        if (!response.ok) {
+            throw new Error('Server responded with error ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+    });
+    
 }

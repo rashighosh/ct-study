@@ -67,16 +67,16 @@ export async function characterAudio(audio, emoji) {
 
 // for streaming audio, waits for current audio to finish
 export async function characterAudioQueue(audio, emoji) {
-  // try {
-  //   // console.log("Checking speaking: ", head.isSpeaking, head.speechQueue);      
-  //   if (emoji) {
-  //     head.playGesture(emoji);
-  //   }
+  try {
+    // console.log("Checking speaking: ", head.isSpeaking, head.speechQueue);      
+    if (emoji) {
+      head.playGesture(emoji);
+    }
 
-  //   // can have subtitles! and other stuff. hve to look more into if u want it
-  //   head.speakAudio(audio, null, null);
+    // can have subtitles! and other stuff. hve to look more into if u want it
+    head.speakAudio(audio, null, null);
 
-  // } catch (error) {
-  //   console.error('Error during speech processing:', error);
-  // }
+  } catch (error) {
+    console.error('Error during speech processing:', error);
+  }
 }
