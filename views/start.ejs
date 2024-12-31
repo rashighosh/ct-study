@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn About Clinical Trials</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lily+Script+One&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/css/start.css">
+</head>
+
+<body>
+        <div id="start">
+            <span><h1>Alex&nbsp;</h1><h2>| Virtual Health Assistant</h2></span>
+            <hr/>
+            <h3>Learn About Clinical Trials</h3>
+            <p id="intro">Welcome! You are about to start chatting with <b>Alex, a Virtual Health Assistant,</b> to learn about clinical trials. Before you begin, you will view some <b>instructions</b> on how to interact with Alex. Click the button below to begin!</p>
+            <button class="default" id="instructions-btn">Continue</button>
+            <div id="information">
+                <div class="loader" style="--n: 1; --f: 0;">Instructions:&nbsp;<span id="number">1/4</span></div>
+                <div id="loader-animation" class="progress2 progress-moved">
+                    <div class="progress-bar2"></div>
+                </div>
+                <p id="instruction">Alex will respond with both text and audio, so <b>make sure your sound is on</b>!</p>
+                <img id="image-instruction" src="/images/1.png" />
+                <!-- <ul>
+                    <li>Alex will respond with both text and audio, so <b>make sure your sound is on</b>!</li>
+                    <li>You can interact with Alex using by <b>clicking buttons</b> or by <b>typing</b>.</li>
+                    <li>Note that Alex may use AI to respond to you, so responses can take up to 10 seconds.</li>
+                    <li>Alex will walk you through a few topics. When finished, a button will appear in the bottom right which you can click to continue.</li>
+                </ul> -->
+            </div>
+            <div id="navigation">
+                <button id="back-btn" class="start-page">Back</button>
+                <button id="next-btn" class="start-page">Next</button>
+            </div>
+            <button class="default" id="start-btn" class="start-page">Begin</button>
+            <p id="review-btn">Review Instructions</p>
+        </div>
+        <script type="module" src="/js/start.js"></script>
+</body>
+
+</html>

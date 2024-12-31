@@ -485,19 +485,16 @@
     },
     {
         "nodeId": 23,
-        "dialogue": "Okay, thanks for chatting with me today! That's all the topics I wanted to talk about. If you have anymore questions, feel free to ask, or you can click 'I'm Done'.",
+        "dialogue": "Okay, thanks for chatting with me today! That's all the topics I wanted to talk about. If you have anymore questions, feel free to ask, or you can click the 'End Conversation' button on the right of your screen.",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "options": [
             {
-                "optionText": "I'm done."
-            },
-            {
                 "optionText": "I have more questions.",
                 "nextNode": 99,
-                "continueNode": "END"
+                "continueNode": "23"
             }
         ]
     },
@@ -511,7 +508,7 @@
     },
     {
         "nodeId": 100,
-        "dialogue": "If you have more questions, please type your question below. Or, you can click 'I'm done' to continue.",
+        "dialogue": "If you have more questions, please type your question below. Or, you can click 'I'm done' to continue our conversation.",
         "input": {
             "allowed": true,
             "nextNode": 100

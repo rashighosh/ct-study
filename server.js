@@ -43,9 +43,13 @@ app.set('view engine', 'ejs');
 
 // index page
 app.get('/', function(req, res) {
-  res.render('interaction.ejs')
+  res.render('start.ejs')
 });
 
+app.get('/interaction', function(req, res) {
+    res.render('interaction.ejs')
+  });
+  
 
 try {
     scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
@@ -79,7 +83,7 @@ app.get("/generate/prescripted", async (req, res) => {
       try {
         console.log("Processing node " + node.nodeId)
           let audioDataF = null;
-          // let audioDataM = null;
+          let audioDataM = null;
 
           // Process nodes with dialogue
           if (node.dialogue && (node.response == null || node.response.alterDialogue === false)) {
@@ -87,16 +91,16 @@ app.get("/generate/prescripted", async (req, res) => {
               const textToConvert = node.dialogue;
 
               // Generate audio for Female voice
-              audioDataF = await generateAudio(textToConvert, 'shimmer');
+              audioDataF = await generateAudio(textToConvert, 'nova');
 
-              // Generate audio for Male voice
-              // audioDataM = await generateAudio(textToConvert, 'echo');
+            //   Generate audio for Male voice
+              audioDataM = await generateAudio(textToConvert, 'onyx');
           }
 
           // Add audioM and audioF fields to the node
           const updatedNode = {
               ...node,
-              // audioM: audioDataM,
+              audioM: audioDataM,
               audioF: audioDataF,
           };
 
@@ -175,11 +179,12 @@ async function generateAudio(text, voice) {
   }
 }
 
-async function processSentence(sentence, nodeData, req, isFirstChunk) {
+async function processSentence(sentence, nodeData, req, isFirstChunk, agentGender) {
     const chunkType = isFirstChunk ? "NEW AUDIO" : "CHUNK";
     const createdFiles = [];
     const tempDir = '/tmp'; // Directory for temporary files
-    const gender = req.session?.params?.gender;
+    const gender = agentGender;
+    console.log("IN PROCESS SENTENCE GENDER IS", gender)
 
     try {
         // Ensure /tmp directory exists
@@ -187,7 +192,7 @@ async function processSentence(sentence, nodeData, req, isFirstChunk) {
             fs.mkdirSync(tempDir, { recursive: true });
             console.log(`Created directory: ${tempDir}`);
         }
-        const voice = gender === "male" ? 'echo' : 'shimmer';
+        const voice = gender === "male" ? 'onyx' : 'nova';
 
         // Generate audio
         const mp3 = await openai.audio.speech.create({
@@ -287,6 +292,9 @@ app.post('/interact/:nodeId', async (req, res, next) => {
   var message = req.body.userMessage || {};
   console.log("GOT NODE", nodeId)
   console.log("REQUEST BODY", req.body)
+  var gender = req.body.characterGender
+  console.log("AGENT GENDER", gender)
+
 
   try {
       // Find node data in preloaded metadata
@@ -298,8 +306,15 @@ app.post('/interact/:nodeId', async (req, res, next) => {
       }
 
       if (nodeData.dialogue && nodeData.response == null) {
-          console.log("Pre-recorded response detected.");
-          const audio = nodeData.audioF;
+          console.log("Pre-recorded response detected, Gender is", gender);
+          var audio
+          if (gender === "male") {
+            audio = nodeData.audioM;
+            console.log("GENDER IS MALE")
+          } else {
+            audio = nodeData.audioF;
+            console.log("GENDER IS FEMALE")
+          }
           const responseData = {
               nodeId: nodeId,
               dialogue: nodeData.dialogue,
@@ -315,9 +330,9 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         const thread = await rashi_openai.beta.threads.create();
         console.log("CREATING THREAD, SENDING TO ASSISTANTS API")
         if (nodeData.response.alterDialogue === true) {
-            message = "Adjust the following Response using any relevant information from userInfo:\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
+            message = "Adjust the following Response using any relevant information from userInfo. Focus mainly on the given Response:\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
         } else {
-            message = "Respond to the following Message using any relevant information from userInfo:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
+            message = "Respond to the following Message using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
         }
         console.log("MESSAGE IS:", message)
         await rashi_openai.beta.threads.messages.create(thread.id, {
@@ -377,12 +392,12 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         // console.log("Split dialogue into sentences:", sentences);
 
         // Process first chunk immediately
-        const firstChunk = await processSentence(sentences[0], responseData, req, true);
+        const firstChunk = await processSentence(sentences[0], responseData, req, true, gender);
         res.write(JSON.stringify(firstChunk) + '\n');
 
         // Process remaining chunks concurrently
         const remainingChunksPromises = sentences.slice(1).map((sentence, index) =>
-            processSentence(sentence, responseData, req, false)
+            processSentence(sentence, responseData, req, false, gender)
         );
         try {
             const remainingChunks = await Promise.all(remainingChunksPromises);
@@ -395,7 +410,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
             // Only execute this AFTER all remaining chunks are done
             if (nodeData.response != null) {
                 // console.log("Sending pre-generated sentence:", nodeData.dialogue);
-                const audio = nodeData.audioF;
+                const audio = gender === "female" ? nodeData.audioF : nodeData.audioM;
                 responseData.dialogue = nodeData.dialogue;
                 responseData.audio = audio;
                 responseData.type = "END CHUNK";

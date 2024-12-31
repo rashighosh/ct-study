@@ -1,11 +1,12 @@
 import { characterAudio, characterAudioQueue } from './virtualcharacter.js';
 
 var continueNode = null
-var progressCounter = 0;
+var progress = 0;
 var userInfo = ""
 var informationTranscript = new Map()
 var id = ''
 var condition = ''
+var gender = "male"
 
 function getCurrentDateTime() {
     var currentDate = new Date();
@@ -21,19 +22,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
     condition = urlParams.get('c')
     id = urlParams.get('id')
     condition = parseInt(condition)
-    var currentDate = new Date();
-    logToDatabase(id, condition, currentDate);
-
-    document.getElementById('start').addEventListener('click', function() {
-        showLoading();
-    });
+    showLoading();
 });
 
 function showLoading() {
-    document.getElementById('start').style.display = "none";
+    // document.getElementById('start').style.display = "none";
     document.getElementById('loading-animation').style.display = "block";
-    document.getElementById('animate-charcter').classList.add("animate-start")
-    const animatedElement = document.getElementById("animate-charcter");
+    CSS.registerProperty({
+        name: "--p",
+        syntax: "<integer>",
+        initialValue: 0,
+        inherits: true,
+      });
+    // document.getElementById('loader-animation').classList.add("animate-start")
+    const animatedElement = document.getElementById("loader-animation");
 
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
@@ -43,10 +45,34 @@ function showLoading() {
     };
 }
 
-function incrementProgressBar() {
-    progressCounter = progressCounter + 1;
-    var progressId = "step" + progressCounter
-    document.getElementById(progressId).classList.add("visited")
+function updateProgress(progress) {
+    const progressBar = document.querySelector('.progress-bar3');
+    
+    // Update progress bar width
+    progressBar.style.width = `${progress}%`;
+    
+    // Update loader text
+    document.getElementById("progress-percent").innerHTML = Math.round(progress)
+}
+
+// Function to increment progress
+function incrementProgress() {
+    console.log("INCREMENTING PROGRESS")
+    var increment = (1/13)*100
+    var nextIncrement = progress + increment;
+    if (nextIncrement > 100) {
+        nextIncrement = 100
+    }
+    const interval = setInterval(() => {
+        progress += 1;
+        updateProgress(progress);
+        if (progress >= nextIncrement) {
+            clearInterval(interval);
+        }
+    }, 50); // Adjust this value to change the speed of the progress
+    if (nextIncrement === 100) {
+        document.getElementById("finish-btn").style.display = "block"
+    }
 }
 
 function appendMessage(message, speaker, nextNode = null) {
@@ -176,6 +202,7 @@ async function handleStreamedResponse(reader) {
 
 async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
+    body.characterGender = gender
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -258,11 +285,11 @@ function displayOptions(options) {
                     if (option.userInfo) {
                         userInfo = userInfo + " ; " + option.userInfo
                     }
-                    incrementProgressBar();
+                    incrementProgress();
                 }
                 handleUserInput(option.nextNode, messageBody)
             } else {
-                incrementProgressBar();
+                incrementProgress();
                 handleUserInput(continueNode, messageBody)
             }
             
@@ -358,29 +385,4 @@ function updateTranscript() {
     .then(data => {
     })
     .catch(error => console.error('Error logging transcript:', error));
-}
-
-function logToDatabase(id, condition, currentDate) {
-    fetch('/logUser', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: id, condition: condition, startTime: currentDate})
-    })
-    .then(async response => {
-        if (response.status === 409) {
-            const data = await response.json();
-            throw new Error(data.message); // Throw error with the message from server
-        }
-        if (!response.ok) {
-            throw new Error('Server responded with error ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data.message);
-    })
-    .catch(error => {
-        console.error('Error:', error.message);
-    });
-    
 }

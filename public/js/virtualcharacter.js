@@ -2,7 +2,7 @@
 import { TalkingHead } from 'talkinghead';
 var head; // TalkingHead instance
 
-const character = "/character-models/rashi.glb"
+const character = "/character-models/male.glb"
 
 var first=true;
 
@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   head = new TalkingHead(nodeAvatar, {
     ttsEndpoint: "blah",
     lipsyncModules: ["en"], // language
+    cameraY: -.75,
     cameraView: "upper", // full, mid, upper, head
-    cameraDistance: -.5, // negative is zoom in from base, postitive zoom out (in meters)
+    cameraDistance: -1.75, // negative is zoom in from base, postitive zoom out (in meters)
     // interactions w 3d scene, usually disable
     cameraRotateEnable: false,
     cameraPanEnable: false,

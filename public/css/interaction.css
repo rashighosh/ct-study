@@ -2,7 +2,7 @@
     --blue: #002657;
     --orange: #fa4616;
     /* --gradient: linear-gradient(90deg, #000000 0%, #014b46 50%, #19928a 100%); */
-    --gradient: linear-gradient(45deg, #231557 0%, #44107a 29%, rgb(250,70,22,1) 67%, rgba(242, 169, 0,1) 100%);
+    --gradient: linear-gradient(45deg, #231557 0%, #44107a 29%, #fa4616 67%, #f2a900 100%);
     --small-gradient: linear-gradient(45deg, #231557 0%, #60279d 100%);
     --gradient-bg: linear-gradient(45deg, rgba(0,38,87, 0.15) 0%, rgba(250,70,22, 0.15) 100%);
     --gradient-light: linear-gradient(90deg, rgba(242, 169, 0,1) 0%, rgb(250,70,22,1) 100%);
@@ -97,10 +97,10 @@ body {
 }
 
 #virtualcharacter {
-    width: 65%;
+    width: 100%;
     height: 100vh;
     position: fixed;
-    right: 75px;
+    right: -255px;
 }
 
 #chat-container {
@@ -135,14 +135,15 @@ body {
 .input-area {
   display: none;
   width: 100%;
-  height: 15%;
+  height: 65px;
   justify-content: center;
 }
 
 button.option-btn {
   padding: 15px;
   border-radius: 21px;
-  margin: 5px 5px 5px 0;
+  margin: 5px 9px 5px 0;
+  font-size: 19px;
 }
 
 #send-btn {
@@ -151,7 +152,12 @@ button.option-btn {
     align-items: center;
     justify-content: space-between;
     border-radius: 0 25px 25px 0 !important;
-    background-color: white;
+    background-color: var(--blue);
+    padding: 0 25px;
+  }
+
+  #send-btn:hover {
+    transform: scale(1);
   }
   
   #send-svg {
@@ -162,7 +168,7 @@ button.option-btn {
 
   #send-svg:hover {
     cursor: pointer;
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
 
   .user-input {
@@ -173,7 +179,6 @@ button.option-btn {
     border: 0px;
     border-radius: 25px 0 0 25px;
     padding: 15px;
-    height: 40px;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
@@ -184,10 +189,11 @@ button {
     font-family: "Poppins", sans-serif;
     font-weight: 400;
     border: 0px;
-    border-radius: 25px;
+    border-radius: 15px;
     background-color: var(--blue);
     color: white;
     transition: .2s ease-in-out;
+    font-size: 21px;
 }
 
 button:hover {
@@ -199,6 +205,18 @@ button:hover {
 button.start-page {
   padding: 15px !important;
   border-radius: 25px !important;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+#start {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #options-area {
@@ -215,6 +233,7 @@ button.start-page {
     display: flex;
     flex-direction: column;
     margin: 9px 0 9px 0;
+    font-size: 19px;
 }
 
 .label-text {
@@ -336,146 +355,82 @@ button.start-page {
   #loading-animation {
     display: none;
   }
-  
-  
-  .animate-charcter
-  {
-     text-transform: uppercase;
-    background-image: var(--gradient);
-    background-size: auto auto;
-    background-clip: border-box;
-    background-size: 200% auto;
-    color: #fff;
-    background-clip: text;
-    text-fill-color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-    font-size: 75px;
-    letter-spacing: 9px;
-  }
 
-  .animate-start {
-    animation: textclip 3s linear;
-  }
-  
-  @keyframes textclip {
-    from {
-      background-position: 100% center;
-    }
-  }
-
-  .progress-container {
+  .progress-description {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    position: fixed;
-    top: 5px;
-  }
-  
-  .progress-bar {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    position: relative;
-  }
-  
-#step0 {
-  border-radius: 7px 0 0 7px;
-}
-
-#step13 {
-  border-radius: 0 7px 7px 0;
-}
-
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    width: 20%;
-  }
-  
-  .step::before,
-  .step::after {
-      content: '';
-      position: absolute;
-      top: 15px;
-      height: 4px;
-      background: #dcdcdc;
-      z-index: 1;
-  }
-  
-  .step::before {
-      left: -50%;
-      width: 100%;
-      z-index: 1;
-  }
-  
-  .step::after {
-      left: 50%;
-      width: 100%;
-      z-index: 1;
-  }
-  
-  .step:first-child::before {
-      display: none;
-  }
-  
-  .step:last-child::after {
-      display: none;
-  }
-  
-  .step.active::before,
-  .step.active::after {
-    background-image: linear-gradient(
-      90deg,
-      #002657,#fa4616
-    );
-  }
-  
-  .step.visited::before {
-    background-color:  #002657;
-  }
-
-  .step p {
-    margin: 10px 0 0;
-    color: #999;
+    margin: 0px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     font-size: 15px;
   }
   
-  .bullet {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #fff;
-    border: 3px solid #dcdcdc;
-    color: #dcdcdc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    position: relative;
-    z-index: 2;
-  }
-  
-  .bullet.active {
-    background: #fa4616;
-    border: 3px solid #fa4616;
-    color: #fff;
-  }
-  
-  .bullet.visited {
-    background: #002657;
-    border: 3px solid #002657;
-    color: white;
-  }
+  #progress-animation {
+    width: 55%;
+}
 
-/* button:hover {
-    background-image: var(--gradient);
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transform: scale(1.1);
-} */
+.loader {
+    display: flex;
+    text-transform: uppercase;
+    font-size: 15px;
+    margin: 10px;
+}
+
+.progress3 {
+    border-radius: 30px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    padding: 1px;
+    background-color: white;
+    margin-bottom: 5px;
+}
+
+.progress-bar3 {
+    height: 7px;
+    border-radius: 30px;
+    transition: 0.4s linear;
+    transition-property: width;
+    background: linear-gradient(to right, #231557, #7a46b2);
+    background-position: 0 0;
+    width: 0%;
+}
+
+#finish-btn {
+  position: fixed;
+  top: 50%;
+  right: 15px; /* Positions on the right side */
+  transform: translateY(-50%); /* Vertically centers */
+  padding: 15px;
+  animation: pulse-animation 2s infinite;
+  transition: 0.5s;
+  display: none;
+}
+
+button#finish-btn:after {
+  content: '»';
+  position: absolute;
+  opacity: 0;  
+  top: 14px;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button#finish-btn:hover{
+  padding-right: 24px;
+  padding-left:8px;
+  background-image: var(--small-gradient);
+  transform: scale(1.1) translateY(-50%);
+  animation: pulse-animation 2s infinite;
+}
+
+button#finish-btn:hover:after {
+  opacity: 1;
+  right: 10px;
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+  }
+}
