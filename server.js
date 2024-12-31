@@ -38,16 +38,16 @@ const config = {
 }
 
 
-app.use(express.static('public'));
-app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // index page
 app.get('/', function(req, res) {
-  res.render('start.ejs')
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/interaction', function(req, res) {
-    res.render('interaction.ejs')
+  res.sendFile(path.join(__dirname, 'public', 'interaction.html'));
   });
   
 
