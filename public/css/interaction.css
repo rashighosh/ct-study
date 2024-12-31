@@ -345,6 +345,7 @@ a {
 
   #loading-screen {
     transition: transform 2s ease, opacity 2s ease;
+    z-index: 999999999999999;
   }
 
   #loading-screen.out {
@@ -433,4 +434,75 @@ button#finish-btn:hover:after {
   100% {
     box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
   }
+}
+
+.help-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-col {
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  text-align: center;
+}
+
+#help-icon {
+  background-color: var(--blue);
+  border: none;
+  border-radius: 50%;
+  font-size: 15px;
+  cursor: pointer;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  height: 25px;
+  width: 25px;
+  z-index: 9999999;
+}
+
+#help-icon:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+.help-modal {
+  display: none;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;  /* Center vertically */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.help-modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 35px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 55%;
+}
+
+.help-close {
+  width: 105px !important;
+  padding: 15px;
+  border-radius: 19px;
+}
+
+.help-close:hover,
+.help-close:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
 }

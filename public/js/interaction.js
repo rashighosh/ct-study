@@ -394,3 +394,32 @@ function updateTranscript() {
     })
     .catch(error => console.error('Error logging transcript:', error));
 }
+
+// Get the modal
+var helpModal = document.getElementById("help-modal");
+
+// Get the button that opens the modal
+var helpBtn = document.getElementById("help-icon");
+
+// Get the <span> element that closes the modal
+var helpSpan = document.getElementsByClassName("help-close")[0];
+
+// When the user clicks on the button, open the modal
+helpBtn.onclick = function() {
+    helpModal.style.display = "flex";
+    var currentURLelement = document.getElementById("current-link-help")
+    const currentURL = window.location.href;
+    currentURLelement.innerHTML = currentURL
+}
+
+// When the user clicks on <span> (x), close the modal
+helpSpan.onclick = function() {
+    helpModal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == helpModal) {
+    helpModal.style.display = "none";
+  }
+}
