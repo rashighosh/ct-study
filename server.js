@@ -7,6 +7,9 @@ const { v4: uuidv4 } = require('uuid');
 const ffmpeg = require('fluent-ffmpeg'); // Import ffmpeg for audio processing
 const bodyParser = require('body-parser');
 var sql = require("mssql");
+var favicon = require('serve-favicon');
+
+app.use(favicon(path.join(__dirname,'public','favicon.ico')));
 
 require('dotenv').config();
 const openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
