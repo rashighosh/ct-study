@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     condition = urlParams.get('c')
     id = urlParams.get('id')
     condition = parseInt(condition)
+    if (condition === 1) {
+        gender = "male"
+    } else {
+        gender = "female"
+    }
+    document.getElementById("finish-btn").addEventListener('click', () => {
+        window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+    });
     showLoading();
 });
 

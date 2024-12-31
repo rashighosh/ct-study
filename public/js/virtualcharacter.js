@@ -2,7 +2,20 @@
 import { TalkingHead } from 'talkinghead';
 var head; // TalkingHead instance
 
-const character = "/character-models/male.glb"
+var character
+var characterBody
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+var condition = urlParams.get('c')
+condition = parseInt(condition)
+if (condition === 1) {
+    character = "/character-models/male.glb";
+    characterBody = 'M'
+} else {
+    character = "/character-models/female.glb"
+    characterBody = 'F'
+}
 
 var first=true;
 
@@ -27,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
     // renders avatar on screen
     await head.showAvatar({
       url: character,
-      body: 'F', // either M or F, specified in charaterType
+      body: characterBody, // either M or F, specified in charaterType
       avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
       lipsyncLang: 'en',
     }, (ev) => { // loading animation for fun while character is loading

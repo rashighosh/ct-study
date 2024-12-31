@@ -330,9 +330,9 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         const thread = await rashi_openai.beta.threads.create();
         console.log("CREATING THREAD, SENDING TO ASSISTANTS API")
         if (nodeData.response.alterDialogue === true) {
-            message = "Adjust the following Response using any relevant information from userInfo. Focus mainly on the given Response:\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
+            message = "Adjust the following Response optionally using any relevant information from userInfo. Be sure to include all information from Response:\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
         } else {
-            message = "Respond to the following Message using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
+            message = "Respond to the following Message optionally using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
         }
         console.log("MESSAGE IS:", message)
         await rashi_openai.beta.threads.messages.create(thread.id, {
