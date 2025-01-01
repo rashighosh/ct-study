@@ -195,6 +195,11 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
             fs.mkdirSync(tempDir, { recursive: true });
             console.log(`Created directory: ${tempDir}`);
         }
+      } catch (error) {
+        console.error("Error creating temp directory:", error);
+        return { error: `Failed to create temp directory` };
+    }
+    try{
         const voice = gender === "male" ? 'onyx' : 'nova';
 
         // Generate audio

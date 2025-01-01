@@ -85,6 +85,11 @@ body {
     margin-bottom: 0px;
 }
 
+.loading-header {
+  position: relative;
+  width: 100%;
+}
+
 .interaction {
     display: flex;
     flex-direction: column;
@@ -343,6 +348,11 @@ a {
     box-shadow: none;
   }
 
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+  }
+
   #loading-screen {
     transition: transform 2s ease, opacity 2s ease;
     z-index: 999999999999999;
@@ -382,6 +392,10 @@ a {
     padding: 1px;
     background-color: white;
     margin-bottom: 5px;
+}
+
+.progress2 {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .progress-bar3 {
