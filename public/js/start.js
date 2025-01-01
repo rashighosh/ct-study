@@ -53,6 +53,7 @@ document.getElementById("back-btn").addEventListener('click', () => {
 
 document.getElementById("review-btn").addEventListener('click', () => {
     counter = 4;
+    document.getElementById("intro").style.display = "none" 
     document.getElementById("next-btn").style.display = "block"
     document.getElementById("back-btn").style.display = "block"
     document.getElementById("number").innerHTML = counter + "/4"
