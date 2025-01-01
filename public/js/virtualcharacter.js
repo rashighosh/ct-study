@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
 
 // start audio for first agent audio (interrupts/disrupts any current audio)
 export async function characterAudio(audio, emoji) {
+  console.log("PLAYING ANIMATION AND DELIVERING AUDIO")
   try {
     // if first audio turn, wave
     // chris: hand gestures are good, face gestures weird   

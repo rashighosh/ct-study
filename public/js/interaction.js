@@ -174,28 +174,21 @@ async function handleStreamedResponse(reader) {
                     console.log("GOT FIRST CHUNK")
                     // Handle audio if present
                     if (data.audio && data.audio.audioBase64) {
-                        if (data.type == "PLACEHOLDER") { // agent lets user know is thinking about response as dynamic ChatGPT response is being generated
-                            const audioData = await parseAudio(data.audio, null);
-                            characterAudio(audioData, null); // placeholder always first speech in dialogue turn
-                            // typewriter effect!
-                            renderStreamedDialogue(data.dialogue, data.type);
-                        }
-                        else {
-                            // first piece of dynamic response
-                            isFirstChunk = false;
-                            const audioData = await parseAudio(data.audio, null);
-                            characterAudioQueue(audioData, null); // queue to play after placeholder ends
-                            // only need to render front end input/buttons/stuff once
-                            // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
-                            const ellipse = document.getElementById('lds-ellipsis');
-                            ellipse.remove();
-        
-                            // Update dialogue
-                            appendMessage(data.wholeDialogue, 'Alex');
-                            if (data.options) {
-                                displayOptions(data.options)
-                            }
-        
+                        console.log("GOT AUDIO FOR FIRST CHUNK")
+                        // first piece of dynamic response
+                        isFirstChunk = false;
+                        const audioData = await parseAudio(data.audio, null);
+                        characterAudioQueue(audioData, null); // queue to play after placeholder ends
+                        // only need to render front end input/buttons/stuff once
+                        // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
+                        const ellipse = document.getElementById('lds-ellipsis');
+                        ellipse.remove();
+
+                        console.log("DISPLAYING RESPONSE TO FRONT END")
+                        // Update dialogue
+                        appendMessage(data.wholeDialogue, 'Alex');
+                        if (data.options) {
+                            displayOptions(data.options)
                         }
                     }
                 } else {
