@@ -4,12 +4,14 @@ const app = express();
 const OpenAI = require('openai')
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path; // for aws, comment out for local testing
 const ffmpeg = require('fluent-ffmpeg'); // Import ffmpeg for audio processing
 const bodyParser = require('body-parser');
 var sql = require("mssql");
 var favicon = require('serve-favicon');
 
 app.use(favicon(path.join(__dirname,'public','favicon.ico')));
+
 
 require('dotenv').config();
 const openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
@@ -195,11 +197,6 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
             fs.mkdirSync(tempDir, { recursive: true });
             console.log(`Created directory: ${tempDir}`);
         }
-      } catch (error) {
-        console.error("Error creating temp directory:", error);
-        return { error: `Failed to create temp directory` };
-    }
-    try{
         const voice = gender === "male" ? 'onyx' : 'nova';
 
         // Generate audio
