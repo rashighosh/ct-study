@@ -354,13 +354,12 @@ a {
   }
 
   #loading-screen {
-    transition: transform 2s ease, opacity 2s ease;
-    z-index: 999999999999999;
+    transition: opacity 1s ease;
   }
 
   #loading-screen.out {
-    transform: translateX(100%); /* Move left */
     opacity: 0; /* Fade out */
+    z-index: -1;
 }
 
   #loading-animation {
@@ -417,6 +416,7 @@ a {
   animation: pulse-animation 2s infinite;
   transition: 0.5s;
   display: none;
+  z-index: 99999999999;
 }
 
 button#finish-btn:after {
