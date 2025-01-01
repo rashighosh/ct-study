@@ -172,6 +172,7 @@ async function handleStreamedResponse(reader) {
                 // Special handling for the first chunk
                 if (isFirstChunk) {
                     console.log("GOT FIRST CHUNK")
+                    console.log(data)
                     // Handle audio if present
                     if (data.audio && data.audio.audioBase64) {
                         console.log("GOT AUDIO FOR FIRST CHUNK")
