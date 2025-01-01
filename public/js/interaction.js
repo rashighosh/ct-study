@@ -208,6 +208,7 @@ async function handleStreamedResponse(reader) {
 async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
     body.characterGender = gender
+    console.log("BODY IS", body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
