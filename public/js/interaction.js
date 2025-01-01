@@ -146,6 +146,7 @@ function appendLoadingDots() {
 }
 
 async function handleStreamedResponse(reader) {
+    console.log("HANDLING STREAMED RESPONSE ...")
     const decoder = new TextDecoder();
     let partialData = '';
     var isFirstChunk = true;
@@ -170,6 +171,7 @@ async function handleStreamedResponse(reader) {
 
                 // Special handling for the first chunk
                 if (isFirstChunk) {
+                    console.log("GOT FIRST CHUNK")
                     // Handle audio if present
                     if (data.audio && data.audio.audioBase64) {
                         if (data.type == "PLACEHOLDER") { // agent lets user know is thinking about response as dynamic ChatGPT response is being generated
@@ -197,6 +199,7 @@ async function handleStreamedResponse(reader) {
                         }
                     }
                 } else {
+                    console.log("GETTING REMAINING CHUNKS")
                     // keep rendering rest of audio stream as they come in!
                     if (data.audio && data.audio.audioBase64) {
                         const audioData = await parseAudio(data.audio, null);
@@ -232,6 +235,7 @@ async function handleUserInput(nodeId, body) {
         await handlePreRecordedResponse(data);
     }
     else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
+        console.log("AI ALTERED RESPONSE ...")
         const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
         await handleStreamedResponse(reader);
     }
