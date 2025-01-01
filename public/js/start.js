@@ -5,7 +5,7 @@ const instructions = [
     "Alex will respond with both text and audio, so <b>make sure your sound is on</b>!",
     "You can interact with Alex using by <b>clicking buttons</b> or by <b>typing</b>.",
     "Note that Alex may use AI to respond to you, so <b>responses can take up to 10 seconds</b>.",
-    "Alex will walk you through a few topics. When <b>finished</b>, a button will appear in the <b>bottom right corner</b> which you can click to continue."
+    "Alex will walk you through a few topics. When <b>finished</b>, a button will appear in the <b>right middle side of your screen</b> which you can click to continue."
 ]
 
 document.addEventListener('DOMContentLoaded', (event) => {  
