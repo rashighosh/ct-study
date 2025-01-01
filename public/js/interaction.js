@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById("finish-btn").addEventListener('click', () => {
         window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
     });
+
     showLoading();
 });
 
@@ -73,6 +74,9 @@ function incrementProgress() {
     }
     const interval = setInterval(() => {
         progress += 1;
+        if (progress >= 100) {
+            progress = 100
+        }
         updateProgress(progress);
         if (progress >= nextIncrement) {
             clearInterval(interval);
@@ -259,12 +263,22 @@ async function handlePreRecordedResponse(data) {
         }
         if (data.input.allowed === true) {
             const inputArea = document.getElementById("input-area")
+            const userInput = document.getElementById('user-input');
             inputArea.style.display = 'flex'
             document.getElementById('send-btn').onclick = function() {
                 appendMessage('text', 'user', data.input.nextNode);
                 const optionsArea = document.getElementById("options-area")
                 optionsArea.innerHTML = ''
             };  
+            userInput.onkeydown = function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    appendMessage('text', 'user', data.input.nextNode);
+                    const optionsArea = document.getElementById("options-area")
+                    optionsArea.innerHTML = ''
+                }
+            };
+            
         } else {
             const inputArea = document.getElementById("input-area")
             inputArea.style.display = 'none'
