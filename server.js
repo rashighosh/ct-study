@@ -22,7 +22,6 @@ const jsonDir = path.resolve(__dirname, './json_scripts')
 
 
 // Preload data at the beginning
-let scriptData;
 
 const config = {
     user: 'VergAdmin',
@@ -54,25 +53,12 @@ app.get('/interaction', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'interaction.html'));
   });
 
-  app.post('/loadTranscript', (req, res) => {
-    const { transcript } = req.body;
-    const scriptPath = path.join(jsonDir, transcript);
-    try {
-      scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
-      console.log("Successfully preloaded script metadata from " + transcript);
-      res.status(200).json({ 
-        success: true, 
-        message: "Script loaded successfully",
-      });
-    } catch (err) {
-      console.error("Error reading or parsing audio_metadata.json:", err);
-      res.status(500).json({ 
-        success: false, 
-        message: "Error loading script",
-      });
-    }  
-  });
-  
+const scriptPath = path.join(jsonDir, "Text_Script_Audio.json");
+const scriptPathControl = path.join(jsonDir, "Text_Script_Control_Audio.json");
+
+var scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
+var scriptDataControl = JSON.parse(fs.readFileSync(scriptPathControl, 'utf8'));
+
 
 // try {
 //     scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
@@ -317,10 +303,17 @@ app.post('/interact/:nodeId', async (req, res, next) => {
   console.log("REQUEST BODY", req.body)
   var gender = req.body.characterGender
   console.log("AGENT GENDER", gender)
+  var script = req.body.script
 
   try {
       // Find node data in preloaded metadata
-      const nodeData = scriptData.find(item => item.nodeId === nodeId);
+      var nodeData
+      if (script === "Text_Script_Audio.json") {
+        nodeData = scriptData.find(item => item.nodeId === nodeId);
+      }
+      if (script === "Text_Script_Control_Audio.json") {
+        nodeData = scriptDataControl.find(item => item.nodeId === nodeId);
+      } 
 
       if (!nodeData) {
           console.error(`Node with ID ${nodeId} not found.`);

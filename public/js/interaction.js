@@ -1,4 +1,4 @@
-import { characterAudio, characterAudioQueue } from './virtualcharacter.js';
+import { characterAudio, characterAudioQueue, stopSpeaking } from './virtualcharacter.js';
 
 var continueNode = null
 var progress = 0;
@@ -18,25 +18,6 @@ function getCurrentDateTime() {
     var localDateTime = currentDate.toLocaleString();
     // Output the local date and time
     return localDateTime
-}
-
-async function loadScriptOnServer(loadBody) {
-    console.log("IN LOAD SCRIPT ON SERVER")
-    const response = await fetch(`/loadTranscript`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loadBody),
-    });
-
-    console.log("GETTING SCRIPT")
-
-    if (!response.ok) {
-        console.error('Failed to fetch response:', response.statusText);
-        return;
-    }
-    console.log("GOT SCRIPT")
-    console.log(response)
-    showLoading();
 }
 
 
@@ -69,7 +50,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     let loadBody = { transcript: script }
 
-    loadScriptOnServer(loadBody)
+    showLoading();
 });
 
 function showLoading() {
@@ -82,13 +63,14 @@ function showLoading() {
         inherits: true,
       });
     // document.getElementById('loader-animation').classList.add("animate-start")
+    handleUserInput(1, { userInput: "Start Introduction" });
+
     const animatedElement = document.getElementById("loader-animation");
 
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
-        handleUserInput(1, { userInput: "Start Introduction" });
     };
 }
 
@@ -250,6 +232,7 @@ async function handleStreamedResponse(reader) {
 async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
     body.characterGender = gender
+    body.script = script
     console.log("BODY IS", body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
@@ -287,6 +270,7 @@ async function handlePreRecordedResponse(data) {
     if (data.audio && data.audio.audioBase64) {
         audioData = await parseAudio(data.audio, null);
     }
+    stopSpeaking();
     // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
     setTimeout(() => {
         characterAudio(audioData, null);

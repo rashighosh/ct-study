@@ -101,3 +101,12 @@ export async function characterAudioQueue(audio, emoji) {
     console.error('Error during speech processing:', error);
   }
 }
+
+// for streaming audio, waits for current audio to finish
+export async function stopSpeaking() {
+  try {
+    head.stopSpeaking();
+  } catch (error) {
+    console.error('Stopping speaking', error);
+  }
+}

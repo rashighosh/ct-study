@@ -15,7 +15,7 @@
   
   .progress-moved .progress-bar2 {
     background-color: #f3c623;
-    animation: progress 5s forwards;
+    animation: progress 4s forwards;
   }
   
   @keyframes progress {
@@ -43,8 +43,8 @@
   
   .loader {
     --p: 0;
-    animation: p 5s steps(100) forwards, 
-                pcolor 5s forwards;
+    animation: p 4s steps(100) forwards, 
+                pcolor 4s forwards;
     counter-reset: p var(--p);
     font-size: 2.1em;
     color: #f3c623;
