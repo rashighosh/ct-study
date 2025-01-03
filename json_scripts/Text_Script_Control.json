@@ -129,15 +129,12 @@
     },
     {
         "nodeId": 8,
-        "dialogue": "Okay, thanks for chatting with me today! That's all the topics I wanted to talk about. If you have anymore questions, let me know, or you can click 'I'm Done'.",
+        "dialogue": "Okay, thanks for chatting with me today! That's all the topics I wanted to talk about. If you have anymore questions, let me know, or you can click the 'End Conversation' button on the right of your screen.",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "options": [
-            {
-                "optionText": "I'm done."
-            },
             {
                 "optionText": "I have more questions.",
                 "nextNode": 99,
@@ -147,7 +144,7 @@
     },
     {
         "nodeId": 99,
-        "dialogue": "I see you have more questions! Please click the 'View Resource' button below to see a resource with more information. Otherwise, click 'I'm done' to continue.",
+        "dialogue": "Please click the 'View Resource' button below to see a resource with more information. Otherwise, click 'I'm done' to continue.",
         "input": {
             "allowed": false,
             "nextNode": 100

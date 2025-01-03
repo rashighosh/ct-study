@@ -53,27 +53,24 @@ app.get('/interaction', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'interaction.html'));
   });
 
-const scriptPath = path.join(jsonDir, "Text_Script_Audio.json");
-const scriptPathControl = path.join(jsonDir, "Text_Script_Control_Audio.json");
-
-var scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
-var scriptDataControl = JSON.parse(fs.readFileSync(scriptPathControl, 'utf8'));
 
 
-// try {
-//     scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
-//     console.log("Successfully preloaded script metadata from " + textScriptAudio);
-// } catch (err) {
-//     console.error("Error reading or parsing audio_metadata.json:", err);
-//     scriptData = []; // Fallback to empty data
-// }
+try {
+  const scriptPath = path.join(jsonDir, "Text_Script_Audio.json");
+  const scriptPathControl = path.join(jsonDir, "Text_Script_Control_Audio.json");
+  
+  var scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
+  var scriptDataControl = JSON.parse(fs.readFileSync(scriptPathControl, 'utf8'));
+} catch (err) {
+    console.error("Scripts do not exist.", err);
+}
 
 // Route to generate audio for all dialogue nodes and save as JSON
 app.get("/generate/prescripted", async (req, res) => {
     console.log("GENERATING PRESCRIPT")
   const audioMetadata = [];
-  const inputFile = path.join(jsonDir, 'Text_Script.json');
-  const outputFile = path.join(jsonDir, 'Text_Script_Audio.json');
+  const inputFile = path.join(jsonDir, 'Text_Script_Control.json');
+  const outputFile = path.join(jsonDir, 'Text_Script_Control_Audio.json');
 
   // Load the original JSON data
   let dialogueNodes;

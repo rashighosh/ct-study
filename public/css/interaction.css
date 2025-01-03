@@ -465,6 +465,31 @@ button#finish-btn:hover:after {
   text-align: center;
 }
 
+p.info-title.help {
+  font-size: 21px;
+  color:#44107a;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 5px 0;
+}
+
+p.info.help {
+  font-size: 19px;
+  margin: 5px 0;
+}
+
+p.info.help a {
+  color: var(--blue);
+}
+
+.help-modal-content hr {
+  width: 100%;
+  border: none;
+  background: var(--gradient);
+  height: 1px;
+  margin: 25px 0;
+}
+
 #help-icon {
   background-color: var(--blue);
   border: none;
@@ -570,7 +595,6 @@ button#finish-btn:hover:after {
 }
 
 #help-close {
-  width: 105px !important;
   padding: 15px;
   border-radius: 19px;
 }
