@@ -20,7 +20,6 @@ app.use(bodyParser.json());
 
 const jsonDir = path.resolve(__dirname, './json_scripts')
 
-const scriptPath = path.join(jsonDir, '/Text_Script_Audio.json');
 
 // Preload data at the beginning
 let scriptData;
@@ -54,15 +53,34 @@ app.get('/', function(req, res) {
 app.get('/interaction', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'interaction.html'));
   });
+
+  app.post('/loadTranscript', (req, res) => {
+    const { transcript } = req.body;
+    const scriptPath = path.join(jsonDir, transcript);
+    try {
+      scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
+      console.log("Successfully preloaded script metadata from " + transcript);
+      res.status(200).json({ 
+        success: true, 
+        message: "Script loaded successfully",
+      });
+    } catch (err) {
+      console.error("Error reading or parsing audio_metadata.json:", err);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error loading script",
+      });
+    }  
+  });
   
 
-try {
-    scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
-    console.log("Successfully preloaded script metadata.");
-} catch (err) {
-    console.error("Error reading or parsing audio_metadata.json:", err);
-    scriptData = []; // Fallback to empty data
-}
+// try {
+//     scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
+//     console.log("Successfully preloaded script metadata from " + textScriptAudio);
+// } catch (err) {
+//     console.error("Error reading or parsing audio_metadata.json:", err);
+//     scriptData = []; // Fallback to empty data
+// }
 
 // Route to generate audio for all dialogue nodes and save as JSON
 app.get("/generate/prescripted", async (req, res) => {
@@ -299,7 +317,6 @@ app.post('/interact/:nodeId', async (req, res, next) => {
   console.log("REQUEST BODY", req.body)
   var gender = req.body.characterGender
   console.log("AGENT GENDER", gender)
-
 
   try {
       // Find node data in preloaded metadata

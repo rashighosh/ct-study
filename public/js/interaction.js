@@ -7,6 +7,10 @@ var informationTranscript = new Map()
 var id = ''
 var condition = ''
 var gender = "male"
+const textScript = "Text_Script_Audio.json"
+const textScriptControl = "Text_Script_Control_Audio.json"
+var script
+var incrementTotal
 
 function getCurrentDateTime() {
     var currentDate = new Date();
@@ -16,22 +20,56 @@ function getCurrentDateTime() {
     return localDateTime
 }
 
+async function loadScriptOnServer(loadBody) {
+    console.log("IN LOAD SCRIPT ON SERVER")
+    const response = await fetch(`/loadTranscript`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loadBody),
+    });
+
+    console.log("GETTING SCRIPT")
+
+    if (!response.ok) {
+        console.error('Failed to fetch response:', response.statusText);
+        return;
+    }
+    console.log("GOT SCRIPT")
+    console.log(response)
+    showLoading();
+}
+
+
 document.addEventListener('DOMContentLoaded', (event) => {  
+    console.log("DOM LOADED")
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     condition = urlParams.get('c')
     id = urlParams.get('id')
     condition = parseInt(condition)
-    if (condition === 1) {
-        gender = "male"
-    } else {
+
+    if (condition === 0 || condition === 2) {
         gender = "female"
+    } else if (condition === 1 || condition === 3) {
+        gender = "male"
     }
+
+    if (condition === 0 || condition === 1) {
+        script = textScript
+        incrementTotal = 13
+    } else if (condition === 2 || condition === 3) {
+        script = textScriptControl
+        incrementTotal = 7
+    }
+
     document.getElementById("finish-btn").addEventListener('click', () => {
         window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
     });
+    console.log("ABOUT TO LOAD SCRIPT ON SERVER")
 
-    showLoading();
+    let loadBody = { transcript: script }
+
+    loadScriptOnServer(loadBody)
 });
 
 function showLoading() {
@@ -67,7 +105,7 @@ function updateProgress(progress) {
 // Function to increment progress
 function incrementProgress() {
     console.log("INCREMENTING PROGRESS")
-    var increment = (1/13)*100
+    var increment = (1/incrementTotal)*100
     var nextIncrement = progress + increment;
     if (nextIncrement > 100) {
         nextIncrement = 100
@@ -245,13 +283,13 @@ async function handleUserInput(nodeId, body) {
 
 async function handlePreRecordedResponse(data) {
     // Handle audio if present; parse it for being ready for front end
+    var audioData
     if (data.audio && data.audio.audioBase64) {
-        const audioData = await parseAudio(data.audio, null);
-        characterAudio(audioData, null);
+        audioData = await parseAudio(data.audio, null);
     }
-
     // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
     setTimeout(() => {
+        characterAudio(audioData, null);
         const ellipse = document.getElementById('lds-ellipsis');
         if (ellipse) {
             ellipse.remove();
@@ -283,7 +321,7 @@ async function handlePreRecordedResponse(data) {
             const inputArea = document.getElementById("input-area")
             inputArea.style.display = 'none'
         }
-    }, 1500); // 1500 milliseconds = 1.5 seconds
+    }, 5000); // 1500 milliseconds = 1.5 seconds
 }
 
 function displayOptions(options) {
@@ -297,25 +335,33 @@ function displayOptions(options) {
         if (option.continueNode) {
             continueNode = option.continueNode
         }
-        button.addEventListener('click', () => {
-            optionsArea.innerHTML = ''
-            appendMessage(userText, 'user')
-            let messageBody = { userMessage: option.optionText }
-            if (option.nextNode) {
-                if (option.nextNode !== 99) {
-                    if (option.userInfo) {
-                        userInfo = userInfo + " ; " + option.userInfo
-                    }
-                    incrementProgress();
-                }
-                handleUserInput(option.nextNode, messageBody)
-            } else {
-                incrementProgress();
-                handleUserInput(continueNode, messageBody)
+        if (option.optionText === "View Resource.") {
+            button.onclick = function() {
+                moreInfoModal.style.display = "flex";
             }
-            
-            // You can add more actions here based on nextNode
-        });
+        } else {
+            button.addEventListener('click', () => {
+                optionsArea.innerHTML = ''
+                appendMessage(userText, 'user')
+                let messageBody = { userMessage: option.optionText }
+                if (option.nextNode) {
+                    if (option.nextNode !== 99) {
+                        if (option.userInfo) {
+                            userInfo = userInfo + " ; " + option.userInfo
+                        }
+                        incrementProgress();
+                    }
+                    handleUserInput(option.nextNode, messageBody)
+                } else {
+                    console.log("CONTINUING FROM NODE", continueNode)
+                    incrementProgress();
+                    handleUserInput(continueNode, messageBody)
+                }
+                
+                // You can add more actions here based on nextNode
+            });
+        }
+        
         optionsArea.appendChild(button);
     });
 }
@@ -414,8 +460,11 @@ var helpModal = document.getElementById("help-modal");
 // Get the button that opens the modal
 var helpBtn = document.getElementById("help-icon");
 
-// Get the <span> element that closes the modal
-var helpSpan = document.getElementsByClassName("help-close")[0];
+var closeHelp = document.getElementById("help-close");
+
+closeHelp.onclick = function() {
+    helpModal.style.display = "none";
+}
 
 // When the user clicks on the button, open the modal
 helpBtn.onclick = function() {
@@ -425,14 +474,20 @@ helpBtn.onclick = function() {
     currentURLelement.innerHTML = currentURL
 }
 
-// When the user clicks on <span> (x), close the modal
-helpSpan.onclick = function() {
-    helpModal.style.display = "none";
+// Get the modal
+var moreInfoModal = document.getElementById("more-info-modal");
+var closeMoreInfoModal = document.getElementById("close-more-info-modal");
+closeMoreInfoModal.onclick = function() {
+    moreInfoModal.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-  if (event.target == helpModal) {
-    helpModal.style.display = "none";
+    if (event.target == helpModal) {
+      helpModal.style.display = "none";
+    }
+  
+    if (event.target == moreInfoModal) {
+      moreInfoModal.style.display = "none";
+    }
   }
-}
