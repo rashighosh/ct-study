@@ -63,12 +63,13 @@ function showLoading() {
         inherits: true,
       });
     // document.getElementById('loader-animation').classList.add("animate-start")
-    handleUserInput(1, { userInput: "Start Introduction" });
+    // handleUserInput(1, { userInput: "Start Introduction" });
 
     const animatedElement = document.getElementById("loader-animation");
 
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
+        handleUserInput(1, { userInput: "Start Introduction" });
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
     };
@@ -107,7 +108,7 @@ function incrementProgress() {
     }
 }
 
-function appendMessage(message, speaker, nextNode = null) {
+function appendMessage(message, speaker, nextNode = null, showInput) {
     const chatBox = document.getElementById("chat-container")
     const labelText = document.createElement('div');
     const messageText = document.createElement('div');
@@ -137,7 +138,7 @@ function appendMessage(message, speaker, nextNode = null) {
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
-        displaySubtitles(message, messageText)
+        displaySubtitles(message, messageText, showInput)
         informationTranscript.set("ALEX " + getCurrentDateTime(), message);
         console.log("INFORMATION TRANSCRIPT", informationTranscript)
         updateTranscript()
@@ -211,9 +212,32 @@ async function handleStreamedResponse(reader) {
 
                         console.log("DISPLAYING RESPONSE TO FRONT END")
                         // Update dialogue
-                        appendMessage(data.wholeDialogue, 'Alex');
+                        appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed);
                         if (data.options) {
                             displayOptions(data.options)
+                        }
+                        if (data.input.allowed === true) {
+                            const inputArea = document.getElementById("input-area")
+                            const userInput = document.getElementById('user-input');
+                            document.getElementById('send-btn').onclick = function() {
+                                appendMessage('text', 'user', data.input.nextNode);
+                                const optionsArea = document.getElementById("options-area")
+                                optionsArea.innerHTML = ''
+                                inputArea.style.visibility = 'hidden'
+                            };  
+                            userInput.onkeydown = function(event) {
+                                if (event.key === 'Enter' && !event.shiftKey) {
+                                    event.preventDefault();
+                                    appendMessage('text', 'user', data.input.nextNode, data.input.allowed);
+                                    const optionsArea = document.getElementById("options-area")
+                                    optionsArea.innerHTML = ''
+                                    inputArea.style.visibility = 'hidden'
+                                }
+                            };
+                            
+                        } else {
+                            const inputArea = document.getElementById("input-area")
+                            inputArea.style.visibility = 'hidden'
                         }
                     }
                 } else {
@@ -271,7 +295,13 @@ async function handlePreRecordedResponse(data) {
         audioData = await parseAudio(data.audio, null);
     }
     stopSpeaking();
+    var timeout;
     // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
+    if (condition === 0 || condition === 1) {
+        timeout = 1500
+    } else {
+        timeout = 5000
+    }
     setTimeout(() => {
         characterAudio(audioData, null);
         const ellipse = document.getElementById('lds-ellipsis');
@@ -279,33 +309,34 @@ async function handlePreRecordedResponse(data) {
             ellipse.remove();
         }
         // Update dialogue
-        appendMessage(data.dialogue, 'Alex');
+        appendMessage(data.dialogue, 'Alex',  null, data.input.allowed);
         if (data.options) {
             displayOptions(data.options)
         }
         if (data.input.allowed === true) {
             const inputArea = document.getElementById("input-area")
             const userInput = document.getElementById('user-input');
-            inputArea.style.display = 'flex'
             document.getElementById('send-btn').onclick = function() {
-                appendMessage('text', 'user', data.input.nextNode);
+                inputArea.style.visibility = 'hidden'
+                appendMessage('text', 'user', data.input.nextNode, data.input.allowed);
                 const optionsArea = document.getElementById("options-area")
                 optionsArea.innerHTML = ''
             };  
             userInput.onkeydown = function(event) {
                 if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();
-                    appendMessage('text', 'user', data.input.nextNode);
+                    appendMessage('text', 'user', data.input.nextNode, data.input.allowed);
                     const optionsArea = document.getElementById("options-area")
                     optionsArea.innerHTML = ''
+                    inputArea.style.visibility = 'hidden'
                 }
             };
             
         } else {
             const inputArea = document.getElementById("input-area")
-            inputArea.style.display = 'none'
+            inputArea.style.visibility = 'hidden'
         }
-    }, 5000); // 1500 milliseconds = 1.5 seconds
+    }, timeout); // 1500 milliseconds = 1.5 seconds
 }
 
 function displayOptions(options) {
@@ -326,7 +357,7 @@ function displayOptions(options) {
         } else {
             button.addEventListener('click', () => {
                 optionsArea.innerHTML = ''
-                appendMessage(userText, 'user')
+                appendMessage(userText, 'user', null, false)
                 let messageBody = { userMessage: option.optionText }
                 if (option.nextNode) {
                     if (option.nextNode !== 99) {
@@ -380,7 +411,7 @@ async function parseAudio(audio, emoji) {
     }
 }
 
-function displaySubtitles(dialogue, divItem, url = null) {
+function displaySubtitles(dialogue, divItem, showInput) {
     const dialogueSection = divItem;
     const chatBox = document.getElementById("chat-container")
 
@@ -394,7 +425,7 @@ function displaySubtitles(dialogue, divItem, url = null) {
     function typeWriter() {
         if (!typewriterRunning) {
             // If the effect is canceled, instantly show remaining text
-            cancelTypewriterEffect(dialogueSection, dialogue, url);
+            cancelTypewriterEffect(dialogueSection, dialogue);
             return;
         }
         if (i < textToAdd.length) {
@@ -409,6 +440,9 @@ function displaySubtitles(dialogue, divItem, url = null) {
             typewriterRunning = false; // Reset the flag when done
             const optionsArea = document.getElementById("options-area")
             optionsArea.style.visibility = "visible"
+            if (showInput === true) {
+                document.getElementById('input-area').style.visibility = 'visible'
+            }
         }
         chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
     }
@@ -416,7 +450,7 @@ function displaySubtitles(dialogue, divItem, url = null) {
     typeWriter(); // Start typing animation
 }
 
-function cancelTypewriterEffect(dialogueSection, wholeDialogue, url = null) {
+function cancelTypewriterEffect(dialogueSection, wholeDialogue) {
     typewriterRunning = false;
     dialogueSection.innerHTML = wholeDialogue; // Instantly display the complete dialogue
 }

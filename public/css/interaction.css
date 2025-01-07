@@ -138,11 +138,12 @@ body {
 }
 
 
-.input-area {
-  display: none;
+#input-area {
+  visibility: hidden;
   width: 100%;
   height: 65px;
   justify-content: center;
+  display: flex;
 }
 
 button.option-btn {
