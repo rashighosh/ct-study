@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
 const app = express();
-const OpenAI = require('openai')
+const {Configuration, OpenAI, OpenAIApi} = require('openai')
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 // const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path; // for aws, comment out for local testing
@@ -9,6 +9,9 @@ const ffmpeg = require('fluent-ffmpeg'); // Import ffmpeg for audio processing
 const bodyParser = require('body-parser');
 var sql = require("mssql");
 var favicon = require('serve-favicon');
+const PDFDocument = require('pdfkit');
+const { marked } = require('marked');
+
 
 app.use(favicon(path.join(__dirname,'public','favicon.ico')));
 
@@ -51,7 +54,11 @@ app.get('/', function(req, res) {
 
 app.get('/interaction', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'interaction.html'));
-  });
+});
+
+app.get('/summary', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'summary.html'));
+});
 
 
 
@@ -69,8 +76,8 @@ try {
 app.get("/generate/prescripted", async (req, res) => {
     console.log("GENERATING PRESCRIPT")
   const audioMetadata = [];
-  const inputFile = path.join(jsonDir, 'Text_Script_Control.json');
-  const outputFile = path.join(jsonDir, 'Text_Script_Control_Audio.json');
+  const inputFile = path.join(jsonDir, 'Text_Script.json');
+  const outputFile = path.join(jsonDir, 'Text_Script_Audio.json');
 
   // Load the original JSON data
   let dialogueNodes;
@@ -190,13 +197,11 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
     const createdFiles = [];
     const tempDir = '/tmp'; // Directory for temporary files
     const gender = agentGender;
-    console.log("IN PROCESS SENTENCE GENDER IS", gender)
 
     try {
         // Ensure /tmp directory exists
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
-            console.log(`Created directory: ${tempDir}`);
         }
         const voice = gender === "male" ? 'onyx' : 'nova';
 
@@ -267,7 +272,6 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
         for (const filePath of createdFiles) {
             try {
                 await fs.promises.unlink(filePath);
-                // console.log(`Deleted file: ${filePath}`);
             } catch (cleanupError) {
                 console.error(`Failed to delete file: ${filePath}`, cleanupError);
             }
@@ -293,13 +297,9 @@ function removeSpecialFormat(text) {
 
 
 app.post('/interact/:nodeId', async (req, res, next) => {
-  // console.log(req.session.params);
   const nodeId = parseInt(req.params.nodeId);
   var message = req.body.userMessage || {};
-  console.log("GOT NODE", nodeId)
-  console.log("REQUEST BODY", req.body)
   var gender = req.body.characterGender
-  console.log("AGENT GENDER", gender)
   var script = req.body.script
 
   try {
@@ -318,14 +318,11 @@ app.post('/interact/:nodeId', async (req, res, next) => {
       }
 
       if (nodeData.dialogue && nodeData.response == null) {
-          console.log("Pre-recorded response detected, Gender is", gender);
           var audio
           if (gender === "male") {
             audio = nodeData.audioM;
-            console.log("GENDER IS MALE")
           } else {
             audio = nodeData.audioF;
-            console.log("GENDER IS FEMALE")
           }
           const responseData = {
               nodeId: nodeId,
@@ -334,19 +331,15 @@ app.post('/interact/:nodeId', async (req, res, next) => {
               input: nodeData.input || null,
               options: nodeData.options || [],
           };
-          console.log("Sending pre-recorded response:", responseData.dialogue);
           res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
           return res.json(responseData);
       } else {
-        console.log("USER FREE TEXT INPUT")
         const thread = await rashi_openai.beta.threads.create();
-        console.log("CREATING THREAD, SENDING TO ASSISTANTS API")
         if (nodeData.response.alterDialogue === true) {
             message = "Adjust the following Response optionally using any relevant information from userInfo. Be sure to include all information from Response:\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
         } else {
             message = "Respond to the following Message optionally using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
         }
-        console.log("MESSAGE IS:", message)
         await rashi_openai.beta.threads.messages.create(thread.id, {
             role: 'user',
             content: message
@@ -360,7 +353,6 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
         }
-        console.log("GOT RESPONSE")
         const messages = await rashi_openai.beta.threads.messages.list(thread.id);
         var generatedDialogue = messages.data[0].content[0].text.value;
         // var sources = messages.data[0].content[0].text.annotations;
@@ -375,17 +367,14 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         
         generatedDialogue = removeSpecialFormat(generatedDialogue)
 
-        console.log("ALTER DIALOGUE IS", nodeData.response.alterDialogue)
         let entireDialogue
 
         if (nodeData.response.alterDialogue === false) {
-            console.log("ADDING ORIGINAL DIALOGUE TO GENERATED DIALOGUE")
             entireDialogue = generatedDialogue + nodeData.dialogue
         } else {
             entireDialogue = generatedDialogue
         }
 
-        console.log(generatedDialogue)
 
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         
@@ -468,6 +457,62 @@ app.post('/updateTranscript', (req, res) => {
     });
   });
 
+  app.post('/logItem', (req, res) => {
+    const { id, columnName, value } = req.body;
+  
+    sql.connect(config, function (err) {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+  
+      var request = new sql.Request();
+      const queryString = `UPDATE CTStudy SET ${columnName} = @value WHERE id = @id`;
+  
+      request.input('id', sql.NVarChar, id);
+      request.input('value', sql.Int, value);
+  
+      request.query(queryString, function (err, recordset) {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+  
+        res.status(200).json({ message: 'Value inserted successfully.' });
+      });
+    });
+  });
+
+  async function getTranscript(id) {
+    return new Promise((resolve, reject) => {
+      sql.connect(config, function (err) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+  
+        var request = new sql.Request();
+        const queryString = `SELECT * FROM CTStudy WHERE id = @id`;
+  
+        request.input('id', sql.NVarChar, id);
+  
+        request.query(queryString, function (err, recordset) {
+          if (err) {
+            console.log(err);
+            reject(err);
+          }
+  
+          if (recordset.recordset.length === 0) {
+            reject(new Error('Transcript not found'));
+          }
+  
+          resolve(recordset.recordset[0].informationTranscript);
+        });
+      });
+    });
+  }
+  
+
   app.post('/logUser', (req, res) => {
     // Extracting data from the request body
     const { id, condition, startTime } = req.body;
@@ -518,6 +563,74 @@ app.post('/updateTranscript', (req, res) => {
       });
     });
   });
+
+
+// Endpoint to handle chat transcript summarization and PDF generation
+app.post('/summarize', async (req, res) => {
+  const { id, condition } = req.body;
+  var transcript = await getTranscript(id)
+  var instructions
+  if (condition === 'tailored') {
+    instructions = `Please generate a summary based on the information in the transcript, using the following headers (use ### for headers): Paying for Clinical Trials, Treatment Options, Randomization, Discussing with Family, Trust, Reasons for Participation. Refer to the user as "you", and mention their preferences at the beginning of each section. Here is the transcript:\n\n${JSON.stringify(transcript)}`
+  } else {
+    instructions = `Please generate a summary based on the information in the transcript, using the following headers (use ### for headers): Paying for Clinical Trials, Treatment Options, Randomization, Discussing with Family, Trust, Reasons for Participation. Here is the transcript:\n\n${JSON.stringify(transcript)}`
+  }
+
+  try {
+    // Step 1: Summarize the chat transcript using OpenAI API
+    const summaryResponse = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: 'You are an assistant that generates summaries based on chat transcripts.' },
+        { role: 'user', content: instructions }
+      ],
+    });
+
+    const summary = summaryResponse.choices[0].message;
+
+    // Step 2: Generate PDF from the summary
+    const doc = new PDFDocument();
+    // Register custom fonts
+    doc.registerFont('Poppins-Light', 'fonts/Poppins-Light.ttf');
+    doc.registerFont('Poppins-Bold', 'fonts/Poppins-Bold.ttf');
+    const pdfBuffer = [];
+    const tokens = marked.lexer(summary.content);
+    doc.on('data', chunk => pdfBuffer.push(chunk));
+    doc.on('end', () => {
+      // Send the PDF as a response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=chat-summary.pdf');
+      res.send(Buffer.concat(pdfBuffer));
+    });
+
+  // Add an image
+  const pageWidth = doc.page.width; // Width of the current page
+  const imageWidth = 250; // Width you set for the image (fit width)
+  const imageX = (pageWidth - imageWidth) / 2; // Centered X position
+
+  doc.image('images/example.png', imageX, doc.y, {
+    fit: [250, 250], // Fit the image within these dimensions
+  });
+
+  // Move the cursor down to avoid text overlapping the image
+  doc.moveDown(5.5); // Adjust as needed
+    doc.font('Poppins-Bold').fontSize(19).text('Conversation Summary', { align: 'center' });
+    doc.moveDown();
+
+    tokens.forEach((token) => {
+      if (token.type === 'heading') {
+        doc.font('Poppins-Bold').fontSize(15).text(token.text, { underline: true }).moveDown(0.5);
+      } else if (token.type === 'paragraph') {
+        doc.font('Poppins-Light').fontSize(13).text(token.text).moveDown(0.5);
+      }
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while generating the summary.');
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;

@@ -22,7 +22,33 @@ function getCurrentDateTime() {
 
 
 document.addEventListener('DOMContentLoaded', (event) => {  
-    console.log("DOM LOADED")
+    document.getElementById("study-button-1").onclick = function() {
+        document.getElementById("study1").style.display = 'block'
+        document.getElementById("study2").style.display = 'none'
+        document.getElementById("study3").style.display = 'none'
+        document.getElementById("study-button-1").classList.add('active')
+        document.getElementById("study-button-2").classList.remove('active')
+        document.getElementById("study-button-3").classList.remove('active')
+    }
+    
+    document.getElementById("study-button-2").onclick = function() {
+        document.getElementById("study2").style.display = 'block'
+        document.getElementById("study1").style.display = 'none'
+        document.getElementById("study3").style.display = 'none'
+        document.getElementById("study-button-2").classList.add('active')
+        document.getElementById("study-button-1").classList.remove('active')
+        document.getElementById("study-button-3").classList.remove('active')
+    }
+    
+    document.getElementById("study-button-3").onclick = function() {
+        document.getElementById("study3").style.display = 'block'
+        document.getElementById("study1").style.display = 'none'
+        document.getElementById("study2").style.display = 'none'
+        document.getElementById("study-button-3").classList.add('active')
+        document.getElementById("study-button-2").classList.remove('active')
+        document.getElementById("study-button-1").classList.remove('active')
+    }
+
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     condition = urlParams.get('c')
@@ -37,16 +63,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     if (condition === 0 || condition === 1) {
         script = textScript
-        incrementTotal = 13
+        incrementTotal = 15
     } else if (condition === 2 || condition === 3) {
         script = textScriptControl
-        incrementTotal = 7
+        incrementTotal = 9
     }
 
     document.getElementById("finish-btn").addEventListener('click', () => {
-        window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+        window.location.href = "/summary?id=" + id + "&c=" + condition;
     });
-    console.log("ABOUT TO LOAD SCRIPT ON SERVER")
 
     let loadBody = { transcript: script }
 
@@ -86,26 +111,26 @@ function updateProgress(progress) {
 }
 
 // Function to increment progress
-function incrementProgress() {
-    console.log("INCREMENTING PROGRESS")
+function incrementProgress(double = false) {
     var increment = (1/incrementTotal)*100
+    if (double === true) {
+        increment = increment * 2
+    }
     var nextIncrement = progress + increment;
-    if (nextIncrement > 100) {
+    if (nextIncrement >= 100) {
         nextIncrement = 100
     }
     const interval = setInterval(() => {
         progress += 1;
         if (progress >= 100) {
             progress = 100
+            document.getElementById("finish-btn").style.display = "block"
         }
         updateProgress(progress);
         if (progress >= nextIncrement) {
             clearInterval(interval);
         }
     }, 50); // Adjust this value to change the speed of the progress
-    if (nextIncrement === 100) {
-        document.getElementById("finish-btn").style.display = "block"
-    }
 }
 
 function appendMessage(message, speaker, nextNode = null, showInput) {
@@ -131,7 +156,6 @@ function appendMessage(message, speaker, nextNode = null, showInput) {
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem);
         informationTranscript.set("USER " + getCurrentDateTime(), message);
-        console.log("INFORMATION TRANSCRIPT", informationTranscript)
         updateTranscript()
     } else {
         messageItem.className = "message-item"
@@ -140,7 +164,6 @@ function appendMessage(message, speaker, nextNode = null, showInput) {
         chatBox.appendChild(messageItem)
         displaySubtitles(message, messageText, showInput)
         informationTranscript.set("ALEX " + getCurrentDateTime(), message);
-        console.log("INFORMATION TRANSCRIPT", informationTranscript)
         updateTranscript()
     }
     if (speaker === 'user') {
@@ -171,7 +194,6 @@ function appendLoadingDots() {
 }
 
 async function handleStreamedResponse(reader) {
-    console.log("HANDLING STREAMED RESPONSE ...")
     const decoder = new TextDecoder();
     let partialData = '';
     var isFirstChunk = true;
@@ -196,11 +218,8 @@ async function handleStreamedResponse(reader) {
 
                 // Special handling for the first chunk
                 if (isFirstChunk) {
-                    console.log("GOT FIRST CHUNK")
-                    console.log(data)
                     // Handle audio if present
                     if (data.audio && data.audio.audioBase64) {
-                        console.log("GOT AUDIO FOR FIRST CHUNK")
                         // first piece of dynamic response
                         isFirstChunk = false;
                         const audioData = await parseAudio(data.audio, null);
@@ -210,7 +229,6 @@ async function handleStreamedResponse(reader) {
                         const ellipse = document.getElementById('lds-ellipsis');
                         ellipse.remove();
 
-                        console.log("DISPLAYING RESPONSE TO FRONT END")
                         // Update dialogue
                         appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed);
                         if (data.options) {
@@ -241,7 +259,6 @@ async function handleStreamedResponse(reader) {
                         }
                     }
                 } else {
-                    console.log("GETTING REMAINING CHUNKS")
                     // keep rendering rest of audio stream as they come in!
                     if (data.audio && data.audio.audioBase64) {
                         const audioData = await parseAudio(data.audio, null);
@@ -257,7 +274,6 @@ async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
     body.characterGender = gender
     body.script = script
-    console.log("BODY IS", body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -279,7 +295,6 @@ async function handleUserInput(nodeId, body) {
         await handlePreRecordedResponse(data);
     }
     else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
-        console.log("AI ALTERED RESPONSE ...")
         const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
         await handleStreamedResponse(reader);
     }
@@ -354,21 +369,31 @@ function displayOptions(options) {
             button.onclick = function() {
                 moreInfoModal.style.display = "flex";
             }
+        } 
+        else if (option.optionText === "View Clinical Trials.") {
+            button.onclick = function() {
+                document.getElementById("studies-modal").style.display = "flex";
+            }
         } else {
             button.addEventListener('click', () => {
                 optionsArea.innerHTML = ''
                 appendMessage(userText, 'user', null, false)
                 let messageBody = { userMessage: option.optionText }
                 if (option.nextNode) {
-                    if (option.nextNode !== 99) {
+                    if (option.increment === true) {
                         if (option.userInfo) {
                             userInfo = userInfo + " ; " + option.userInfo
                         }
+                        if (option.value === 0 || option.value ===1) {
+                           logItem("browseChoice", option.value)
+                        }
                         incrementProgress();
+                        if (option.doubleIncrement) {
+                            incrementProgress(true);
+                        }
                     }
                     handleUserInput(option.nextNode, messageBody)
                 } else {
-                    console.log("CONTINUING FROM NODE", continueNode)
                     incrementProgress();
                     handleUserInput(continueNode, messageBody)
                 }
@@ -472,6 +497,22 @@ function updateTranscript() {
     .catch(error => console.error('Error logging transcript:', error));
 }
 
+function logItem(columnName, value) {
+    fetch('/logItem', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            id: id, 
+            columnName: columnName, 
+            value: value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+    })
+    .catch(error => console.error('Error logging transcript:', error));
+}
+
 // Get the modal
 var helpModal = document.getElementById("help-modal");
 
@@ -499,6 +540,11 @@ closeMoreInfoModal.onclick = function() {
     moreInfoModal.style.display = "none";
 }
 
+var ctModal = document.getElementById("studies-modal");
+document.getElementById("close-ct-modal").onclick = function() {
+    ctModal.style.display = "none";
+}
+
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
     if (event.target == helpModal) {
@@ -508,4 +554,10 @@ window.onclick = function(event) {
     if (event.target == moreInfoModal) {
       moreInfoModal.style.display = "none";
     }
+
+    if (event.target == ctModal) {
+        ctModal.style.display = "none";
+      }
   }
+
+

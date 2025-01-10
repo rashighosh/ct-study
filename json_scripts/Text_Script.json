@@ -9,7 +9,8 @@
         "options": [
             {
                 "optionText": "Let's get started!",
-                "nextNode": 2
+                "nextNode": 2,
+                "increment": true
             }
         ]
     },
@@ -23,17 +24,20 @@
             {
                 "optionText": "Yes.",
                 "userInfo": "Has health insurance",
-                "nextNode": 3
+                "nextNode": 3,
+                "increment": true
             },
             {
                 "optionText": "No.",
                 "userInfo": "Does not have health insurance",
-                "nextNode": 4
+                "nextNode": 4,
+                "increment": true
             },
             {
                 "optionText": "Not sure.",
                 "userInfo": "Unsure if has health insurance",
-                "nextNode": 5
+                "nextNode": 5,
+                "increment": true
             }
         ]
     },
@@ -47,12 +51,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 6
+                "nextNode": 6,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 6
+                "continueNode": 6,
+                "increment": false
             }
         ]
     },
@@ -66,12 +72,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 6
+                "nextNode": 6,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 6
+                "continueNode": 6,
+                "increment": false
             }
         ]
     },
@@ -85,12 +93,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 6
+                "nextNode": 6,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 6
+                "continueNode": 6,
+                "increment": false
             }
         ]
     },
@@ -105,17 +115,20 @@
             {
                 "optionText": "I'd prefer the usual, standard treatment for my cancer.",
                 "userInfo": "Prefers usual, standard cancer treatment",
-                "nextNode": 7
+                "nextNode": 7,
+                "increment": true
             },
             {
                 "optionText": "I'd hope to get the latest, new treatment for my cancer.",
                 "userInfo": "Prefers latest, new cancer treatment",
-                "nextNode": 8
+                "nextNode": 8,
+                "increment": true
             },
             {
                 "optionText": "It doesn't matter, as long as the treatment works.",
                 "userInfo": "Doesn't care what treatment as long as it works",
-                "nextNode": 9
+                "nextNode": 9,
+                "increment": true
             }
         ]
     },
@@ -132,12 +145,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 10
+                "nextNode": 10,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 10
+                "continueNode": 10,
+                "increment": false
             }
         ]
     },
@@ -154,12 +169,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 10
+                "nextNode": 10,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 10
+                "continueNode": 10,
+                "increment": false
             }
         ]
     },
@@ -176,12 +193,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 10
+                "nextNode": 10,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 10
+                "continueNode": 10,
+                "increment": false
             }
         ]
     },
@@ -196,17 +215,20 @@
             {
                 "optionText": "Yes.",
                 "userInfo": "Comfortable with randomization",
-                "nextNode": 11
+                "nextNode": 11,
+                "increment": true
             },
             {
                 "optionText": "No.",
                 "userInfo": "No",
-                "nextNode": 12
+                "nextNode": 12,
+                "increment": true
             },
             {
                 "optionText": "Not sure.",
                 "userInfo": "Not sure if comfortable with randomization",
-                "nextNode": 12
+                "nextNode": 12,
+                "increment": true
             }
         ]
     },
@@ -223,12 +245,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 13
+                "nextNode": 13,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 13
+                "continueNode": 13,
+                "increment": false
             }
         ]
     },
@@ -245,12 +269,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 13
+                "nextNode": 13,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 13
+                "continueNode": 13,
+                "increment": false
             }
         ]
     },
@@ -265,17 +291,20 @@
             {
                 "optionText": "Yes, my family would be okay with this.",
                 "userInfo": "Family supports their clinical research participation",
-                "nextNode": 14
+                "nextNode": 14,
+                "increment": true
             },
             {
                 "optionText": "No, my family would be upset.",
                 "userInfo": "Family does not support their clinical research participation",
-                "nextNode": 15
+                "nextNode": 15,
+                "increment": true
             },
             {
                 "optionText": "Not sure.",
                 "userInfo": "Not sure if family would support their clinical research participation",
-                "nextNode": 15
+                "nextNode": 15,
+                "increment": true
             }
         ]
     },
@@ -292,12 +321,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 16
+                "nextNode": 16,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 16
+                "continueNode": 16,
+                "increment": false
             }
         ]
     },
@@ -314,12 +345,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 16
+                "nextNode": 16,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 16
+                "continueNode": 16,
+                "increment": false
             }
         ]
     },
@@ -334,17 +367,20 @@
             {
                 "optionText": "Yes, I trust doctors and researchers.",
                 "userInfo": "Trusts doctors and researchers",
-                "nextNode": 17
+                "nextNode": 17,
+                "increment": true
             },
             {
                 "optionText": "No, I do not trust doctors and researchers.",
                 "userInfo": "Does not trust doctors and researchers",
-                "nextNode": 18
+                "nextNode": 18,
+                "increment": true
             },
             {
                 "optionText": "Not sure.",
                 "userInfo": "Not sure if trusts doctors and researchers",
-                "nextNode": 18
+                "nextNode": 18,
+                "increment": true
             }
         ]
     },
@@ -361,12 +397,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 19
+                "nextNode": 19,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 19
+                "continueNode": 19,
+                "increment": false
             }
         ]
     },
@@ -383,12 +421,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 19
+                "nextNode": 19,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 19
+                "continueNode": 19,
+                "increment": false
             }
         ]
     },
@@ -403,17 +443,20 @@
             {
                 "optionText": "Yes, I want to help others by participating in research.",
                 "userInfo": "Wants to help others by being in research",
-                "nextNode": 20
+                "nextNode": 20,
+                "increment": true
             },
             {
                 "optionText": "No, helping others is not a priority for me.",
                 "userInfo": "Helping others not a priority for being in research",
-                "nextNode": 21
+                "nextNode": 21,
+                "increment": true
             },
             {
                 "optionText": "Not sure.",
                 "userInfo": "Not sure if helping others is a priority for being in research",
-                "nextNode": 22
+                "nextNode": 22,
+                "increment": true
             }
         ]
     },
@@ -430,12 +473,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 23
+                "nextNode": 23,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 23
+                "continueNode": 23,
+                "increment": false
             }
         ]
     },
@@ -452,12 +497,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 23
+                "nextNode": 23,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 23
+                "continueNode": 23,
+                "increment": false
             }
         ]
     },
@@ -474,27 +521,72 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 23
+                "nextNode": 23,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 23
+                "continueNode": 23,
+                "increment": false
             }
         ]
     },
     {
         "nodeId": 23,
-        "dialogue": "Okay, thanks for chatting with me today! That's all the topics I wanted to talk about. If you have anymore questions, feel free to ask, or you can click the 'End Conversation' button on the right of your screen.",
+        "dialogue": "Okay, that's all the topics I wanted to talk about! Before ending our conversation, now that we've talked about clinical research, would you like to browse a few clinical trials?",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "options": [
             {
-                "optionText": "I have more questions.",
+                "optionText": "Yes.",
+                "nextNode": 24,
+                "value": 1,
+                "increment": true
+            },
+            {
+                "optionText": "No.",
+                "nextNode": 25,
+                "value": 0,
+                "increment": true,
+                "doubleIncrement": true
+            }
+        ]
+    },
+    {
+        "nodeId": 24,
+        "dialogue": "Okay, great! Please click the 'View Clinical Trials' button below to browse. When you're done, click the 'Continue' button to wrap up our conversation.",
+        "input": {
+            "allowed": false,
+            "nextNode": 4
+        },
+        "options": [
+            {
+                "optionText": "View Clinical Trials.",
+                "increment": false
+            },
+            {
+                "optionText": "Continue.",
+                "nextNode": 25,
+                "increment": true
+            }
+        ]
+    },
+    {
+        "nodeId": 25,
+        "dialogue": "Okay, thanks for chatting about clinical research with me! If you have any more questions, feel free to ask. Otherwise, please click the 'End Conversation' button on the right to continue.",
+        "input": {
+            "allowed": false,
+            "nextNode": 4
+        },
+        "options": [
+            {
+                "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": "23"
+                "continueNode": 23,
+                "increment": false
             }
         ]
     },
@@ -518,7 +610,8 @@
         },
         "options": [
             {
-                "optionText": "I'm done."
+                "optionText": "I'm done.",
+                "increment": false
             }
         ]
     }

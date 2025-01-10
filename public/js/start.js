@@ -105,8 +105,7 @@ function logToDatabase(id, condition, currentDate) {
     })
     .catch(error => {
         console.error('Error:', error.message);
-    });
-    
+    });  
 }
 
 function updateProgress(progress) {
@@ -146,4 +145,3 @@ function decrementProgress() {
 }
 
 // Call the function when you want to start the progress
-

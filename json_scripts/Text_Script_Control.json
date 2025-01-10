@@ -9,7 +9,8 @@
         "options": [
             {
                 "optionText": "Let's get started!",
-                "nextNode": 2
+                "nextNode": 2,
+                "increment": true
             }
         ]
     },
@@ -23,12 +24,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 3
+                "nextNode": 3,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 3
+                "continueNode": 3,
+                "increment": false
             }
         ]
     },
@@ -42,12 +45,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 4
+                "nextNode": 4,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 4
+                "continueNode": 4,
+                "increment": false
             }
         ]
     },
@@ -61,12 +66,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 5
+                "nextNode": 5,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 5
+                "continueNode": 5,
+                "increment": false
             }
         ]
     },
@@ -80,12 +87,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 6
+                "nextNode": 6,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 6
+                "continueNode": 6,
+                "increment": true
             }
         ]
     },
@@ -99,12 +108,14 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 7
+                "nextNode": 7,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 7
+                "continueNode": 7,
+                "increment": false
             }
         ]
     },
@@ -118,18 +129,62 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 8
+                "nextNode": 8,
+                "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 8
+                "continueNode": 8,
+                "increment": false
             }
         ]
     },
     {
         "nodeId": 8,
-        "dialogue": "Okay, thanks for chatting with me today! That's all the topics I wanted to talk about. If you have anymore questions, let me know, or you can click the 'End Conversation' button on the right of your screen.",
+        "dialogue": "Okay, that's all the topics I wanted to talk about! Before ending our conversation, now that we've talked about clinical research, would you like to browse a few clinical trials?",
+        "input": {
+            "allowed": false,
+            "nextNode": 4
+        },
+        "options": [
+            {
+                "optionText": "Yes.",
+                "nextNode": 9,
+                "value": 1,
+                "increment": true
+            },
+            {
+                "optionText": "No.",
+                "nextNode": 10,
+                "value": 0,
+                "increment": true,
+                "doubleIncrement": true
+            }
+        ]
+    },
+    {
+        "nodeId": 9,
+        "dialogue": "Please click the 'View Clinical Trials' button below to browse some clinical trials. When you're done, click the 'Continue' button to wrap up our conversation.",
+        "input": {
+            "allowed": false,
+            "nextNode": 4
+        },
+        "options": [
+            {
+                "optionText": "View Clinical Trials.",
+                "increment": false
+            },
+            {
+                "optionText": "Continue.",
+                "nextNode": 10,
+                "increment": true
+            }
+        ]
+    },
+    {
+        "nodeId": 10,
+        "dialogue": "Okay, thanks for chatting about clinical research with me! If you have any more questions, let me know. Otherwise, please click the 'End Conversation' button on the right to continue.",
         "input": {
             "allowed": false,
             "nextNode": 4
@@ -138,7 +193,8 @@
             {
                 "optionText": "I have more questions.",
                 "nextNode": 99,
-                "continueNode": "8"
+                "continueNode": "10",
+                "increment": false
             }
         ]
     },
@@ -151,10 +207,12 @@
         },
         "options": [
             {
-                "optionText": "View Resource."
+                "optionText": "View Resource.",
+                "increment": false
             },
             {
-                "optionText": "I'm done."
+                "optionText": "I'm done.",
+                "increment": false
             }
         ]
     }
