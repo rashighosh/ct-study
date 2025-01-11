@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     document.getElementById("finish-btn").addEventListener('click', () => {
-        window.location.href = "/summary?id=" + id + "&c=" + condition;
+        window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
     });
 
     let loadBody = { transcript: script }
