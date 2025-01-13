@@ -352,7 +352,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
 
         while (runStatus.status !== 'completed') {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
         }
         const messages = await rashi_openai.beta.threads.messages.list(thread.id);
