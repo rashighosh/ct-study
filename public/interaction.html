@@ -43,6 +43,19 @@
             </div>
           </div>
     </div>
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <button id="close-pdf-modal">ⓧ Close</button>
+          <p class="info-title help" id="resource-item"></p>
+          <p>Alex used some information from the following resource from the National Cancer Institute (NCI) to generate your response.</p>
+          <iframe 
+            id="pdfViewer"
+            width="100%" 
+            height="85%"
+            src="../sources/ObservationalStudies.pdf#toolbar=0&navpanes=0"></iframe>
+        </div>
+      </div>
+      
     <div id="help-modal" class="help-modal">
         <div class="help-modal-content">
           <div class="help-row">
@@ -492,7 +505,11 @@
             </div>
         </div>
           
-        <div id="virtualcharacter"></div>
+        <div id="virtualcharacter">
+            <div id="thinking">
+                <p class="thinking-text">Alex is checking their National Cancer Institute information sources...</p>
+            </div>
+        </div>
         <div class="interaction">
             <div id="chat-container"></div>
             <div id="options-area"></div>

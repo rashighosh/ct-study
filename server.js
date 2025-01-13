@@ -76,8 +76,8 @@ try {
 app.get("/generate/prescripted", async (req, res) => {
     console.log("GENERATING PRESCRIPT")
   const audioMetadata = [];
-  const inputFile = path.join(jsonDir, 'Text_Script.json');
-  const outputFile = path.join(jsonDir, 'Text_Script_Audio.json');
+  const inputFile = path.join(jsonDir, 'Text_Script_Control.json');
+  const outputFile = path.join(jsonDir, 'Text_Script_Control_Audio.json');
 
   // Load the original JSON data
   let dialogueNodes;
@@ -262,7 +262,8 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
             url: nodeData.url || null,
             progressInterview: nodeData.progressInterview || null,
             type: chunkType,
-            wholeDialogue: nodeData.wholeDialogue
+            wholeDialogue: nodeData.wholeDialogue,
+            sources: nodeData.sources
         };
     } catch (error) {
         console.error("Error processing sentence:", error);
@@ -330,13 +331,14 @@ app.post('/interact/:nodeId', async (req, res, next) => {
               audio: audio,
               input: nodeData.input || null,
               options: nodeData.options || [],
+              sources: nodeData.sources || null
           };
           res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
           return res.json(responseData);
       } else {
         const thread = await rashi_openai.beta.threads.create();
         if (nodeData.response.alterDialogue === true) {
-            message = "Adjust the following Response optionally using any relevant information from userInfo. Be sure to include all information from Response:\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
+            message = "Construct a similar response based on the given 'Response' using your knowledge base, using any relevant information from 'userInfo':\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
         } else {
             message = "Respond to the following Message optionally using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
         }
@@ -355,16 +357,29 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         }
         const messages = await rashi_openai.beta.threads.messages.list(thread.id);
         var generatedDialogue = messages.data[0].content[0].text.value;
-        // var sources = messages.data[0].content[0].text.annotations;
-        // console.log(sources)
-        // const fileIds = sources.map(source => source.file_citation.file_id);
-        // const sourceTexts = sources.map(source => source.text);
 
-        // for (let i = 0; i < fileIds.length; i++) {
-        //     console.log(fileIds[i]);
-        //     const file = await openai.files.retrieve("file-abc123");
-        // }
+        // var messageContent = messages.data[0].content[0].text;
+        // const annotations = messageContent.annotations;
+        // let citations = [];
+        // console.log("MESSAGE:", messages.data[0].content[0].text)
         
+        // // Iterate over the annotations and add footnotes
+        // annotations.forEach((annotation, index) => {
+        //   // Replace the text with a footnote
+        //   // messageContent.value = messageContent.value.replace(annotation.text, ` [${index + 1}]`);
+        //   console.log("ANNOTATION", annotation.file_citation.file_id)
+        //   // Gather citations based on annotation attributes
+ 
+        //   rashi_openai.files.retrieve(annotation.file_citation.file_id)
+        //   .then(citedFile => {
+        //     console.log("CITED FILE", citedFile);
+        //     citations.push(citedFile.filename)
+        //   })
+        //   .catch(error => {
+        //     console.error("Error retrieving file:", error);
+        //   });       
+        // });
+
         generatedDialogue = removeSpecialFormat(generatedDialogue)
 
         let entireDialogue
@@ -386,6 +401,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
             options: nodeData.options || [],
             wholeDialogue: entireDialogue,
             type: "NEW AUDIO",
+            sources: nodeData.sources || null
         };
 
         // Audio Chunk Streaming

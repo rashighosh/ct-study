@@ -55,13 +55,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     id = urlParams.get('id')
     condition = parseInt(condition)
 
-    if (condition === 0 || condition === 2) {
+    if (condition === 0 || condition === 2 || condition === 4) {
         gender = "female"
-    } else if (condition === 1 || condition === 3) {
+    } else if (condition === 1 || condition === 3 || condition === 5) {
         gender = "male"
     }
 
-    if (condition === 0 || condition === 1) {
+    if (condition === 0 || condition === 1 || condition === 4 || condition === 5) {
         script = textScript
         incrementTotal = 15
     } else if (condition === 2 || condition === 3) {
@@ -133,7 +133,7 @@ function incrementProgress(double = false) {
     }, 50); // Adjust this value to change the speed of the progress
 }
 
-function appendMessage(message, speaker, nextNode = null, showInput) {
+function appendMessage(message, speaker, nextNode = null, showInput, sources = null) {
     const chatBox = document.getElementById("chat-container")
     const labelText = document.createElement('div');
     const messageText = document.createElement('div');
@@ -162,7 +162,7 @@ function appendMessage(message, speaker, nextNode = null, showInput) {
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
-        displaySubtitles(message, messageText, showInput)
+        displaySubtitles(message, messageText, showInput, sources)
         informationTranscript.set("ALEX " + getCurrentDateTime(), message);
         updateTranscript()
     }
@@ -228,9 +228,10 @@ async function handleStreamedResponse(reader) {
                         // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
                         const ellipse = document.getElementById('lds-ellipsis');
                         ellipse.remove();
+                        document.getElementById("thinking").style.display = "none"
 
                         // Update dialogue
-                        appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed);
+                        appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed, data.sources);
                         if (data.options) {
                             displayOptions(data.options)
                         }
@@ -312,7 +313,7 @@ async function handlePreRecordedResponse(data) {
     stopSpeaking();
     var timeout;
     // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
-    if (condition === 0 || condition === 1) {
+    if (condition === 0 || condition === 1 || condition === 4 || condition === 5) {
         timeout = 1500
     } else {
         timeout = 5000
@@ -320,11 +321,12 @@ async function handlePreRecordedResponse(data) {
     setTimeout(() => {
         characterAudio(audioData, null);
         const ellipse = document.getElementById('lds-ellipsis');
+        document.getElementById("thinking").style.display = "none"
         if (ellipse) {
             ellipse.remove();
         }
         // Update dialogue
-        appendMessage(data.dialogue, 'Alex',  null, data.input.allowed);
+        appendMessage(data.dialogue, 'Alex',  null, data.input.allowed, data.sources);
         if (data.options) {
             displayOptions(data.options)
         }
@@ -383,6 +385,7 @@ function displayOptions(options) {
                     if (option.increment === true) {
                         if (option.userInfo) {
                             userInfo = userInfo + " ; " + option.userInfo
+                            document.getElementById("thinking").style.display = "flex"
                         }
                         if (option.value === 0 || option.value ===1) {
                            logItem("browseChoice", option.value)
@@ -436,7 +439,7 @@ async function parseAudio(audio, emoji) {
     }
 }
 
-function displaySubtitles(dialogue, divItem, showInput) {
+function displaySubtitles(dialogue, divItem, showInput, sources) {
     const dialogueSection = divItem;
     const chatBox = document.getElementById("chat-container")
 
@@ -450,7 +453,7 @@ function displaySubtitles(dialogue, divItem, showInput) {
     function typeWriter() {
         if (!typewriterRunning) {
             // If the effect is canceled, instantly show remaining text
-            cancelTypewriterEffect(dialogueSection, dialogue);
+            cancelTypewriterEffect(dialogueSection, dialogue, sources);
             return;
         }
         if (i < textToAdd.length) {
@@ -463,6 +466,46 @@ function displaySubtitles(dialogue, divItem, showInput) {
             setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
+            if (sources !== null) {
+                console.log(sources)
+                for (var j = 0; j < sources.length; j++) {
+                    const link = document.createElement('p');
+                    link.className = "source-link";
+                    // Remove the file extension
+                    const withoutExtension = sources[j].replace(/\.[^/.]+$/, "");
+
+                    // Add spaces before capital letters (except the first one)
+                    const withSpaces = withoutExtension.replace(/([A-Z])/g, " $1").trim();
+
+                    // Capitalize the first letter of each word
+                    const finalResult = withSpaces.replace(/\b\w/g, c => c.toUpperCase());
+
+                    console.log(finalResult); // Output: "Clinical Trials Info"
+                    link.textContent = `[ Source: ${finalResult} ]`;
+                
+                    var pdfModal = document.getElementById('pdfModal');
+                    var pdfViewer = document.getElementById('pdfViewer');
+                
+                    link.onclick = (function(index) {
+                        return function() {
+                            console.log("CLICKED");
+                            pdfModal.style.display = 'flex';
+                            pdfViewer.src = '../sources/' + sources[index];
+                        };
+                    })(j);
+                
+                    dialogueSection.appendChild(document.createTextNode(' ')); // Add a space
+                    dialogueSection.appendChild(link);
+                }
+                
+                // Move this outside the loop
+                window.onclick = function(event) {
+                    if (event.target == pdfModal) {
+                        pdfModal.style.display = 'none';
+                    }
+                };
+                
+            }
             const optionsArea = document.getElementById("options-area")
             optionsArea.style.visibility = "visible"
             if (showInput === true) {
@@ -475,9 +518,40 @@ function displaySubtitles(dialogue, divItem, showInput) {
     typeWriter(); // Start typing animation
 }
 
-function cancelTypewriterEffect(dialogueSection, wholeDialogue) {
+function cancelTypewriterEffect(dialogueSection, wholeDialogue, sources) {
     typewriterRunning = false;
     dialogueSection.innerHTML = wholeDialogue; // Instantly display the complete dialogue
+    if (sources !== null) {
+        console.log(sources)
+        for (var j = 0; j < sources.length; j++) {
+            const link = document.createElement('p');
+            link.className = "source-link";
+            link.textContent = `[ Source: ${j+1} ]`;
+        
+            var pdfModal = document.getElementById('pdfModal');
+            var pdfViewer = document.getElementById('pdfViewer');
+            document.getElementById('resource-item').innerText = sources[j].slice(0, -4);
+        
+            link.onclick = (function(index) {
+                return function() {
+                    console.log("CLICKED");
+                    pdfModal.style.display = 'flex';
+                    pdfViewer.src = '../sources/' + sources[index];
+                };
+            })(j);
+        
+            dialogueSection.appendChild(document.createTextNode(' ')); // Add a space
+            dialogueSection.appendChild(link);
+        }
+        
+        // Move this outside the loop
+        window.onclick = function(event) {
+            if (event.target == pdfModal) {
+                pdfModal.style.display = 'none';
+            }
+        };
+        
+    }
 }
 
 function updateTranscript() {
@@ -543,6 +617,11 @@ closeMoreInfoModal.onclick = function() {
 var ctModal = document.getElementById("studies-modal");
 document.getElementById("close-ct-modal").onclick = function() {
     ctModal.style.display = "none";
+}
+
+var closePDFModal = document.getElementById("close-pdf-modal");
+closePDFModal.onclick = function() {
+    document.getElementById("pdfModal").style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it

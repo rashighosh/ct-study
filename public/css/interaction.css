@@ -399,6 +399,67 @@ a {
     margin-top: 3px;
   }
 
+  #thinking {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: fixed;
+    right: 15px;
+  }
+
+  .thinking-text {
+    margin-top: 105px;
+    width: 305px;
+    font-size: 25px;
+    font-weight: 700;
+  }
+
+  p.source-link {
+    color:#44107a;
+    font-size: 15px;
+    font-weight: 700;
+    transition: .2s ease-in-out;
+  }
+
+  p.source-link:hover {
+    color:#fa4616;
+    cursor: pointer;
+  }
+
+  #pdfModal {
+    display: none;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;  /* Center vertically */
+    position: fixed;
+    z-index: 9999999999999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+  }
+
+  #pdfModal .modal-content {
+    background-color: white;
+    height: 55%;
+    width: 55%;
+    padding: 25px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  #pdfViewer {
+    margin: 0;
+    border: 0;
+    border-radius: 15px;
+    width: 85%;
+  }
+
   #studies-modal {
     width: 100%;
     height: 100%;
@@ -652,7 +713,7 @@ p.info.help a {
   background: var(--gradient);
 }
 
-#close-more-info-modal {
+#close-more-info-modal, #close-pdf-modal {
   position: sticky;
   top: 5px;
   right: 5px;

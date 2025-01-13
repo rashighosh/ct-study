@@ -9,18 +9,12 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 var condition = urlParams.get('c')
 condition = parseInt(condition)
-if (condition === 0) {
+if (condition === 0 || condition === 2 || condition === 4) {
     character = "/character-models/female.glb";
     characterBody = 'F'
-} else if (condition === 1) {
+} else {
     character = "/character-models/male.glb"
     characterBody = 'M'
-} else if (condition === 2) {
-  character = "/character-models/female.glb"
-  characterBody = 'F'
-} else if (condition === 3) {
-  character = "/character-models/male.glb"
-  characterBody = 'M'
 }
 
 var first=true;

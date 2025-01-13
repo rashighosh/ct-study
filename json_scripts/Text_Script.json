@@ -1,7 +1,7 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hi! I'm Alex, a virtual assistant, here to help you talk through participating in cancer clinical research. My goal is to give you personalized information to help you understand what clinical research can mean for your cancer journey. Ready to get started?",
+        "dialogue": "Hi! I'm Alex, a virtual assistant, here to help you talk through participating in cancer clinical research. My goal is to give you personalized information from the National Cancer Institute to help you understand what clinical research can mean for your cancer journey. Ready to get started?",
         "input": {
             "allowed": false,
             "nextNode": 2
@@ -48,6 +48,7 @@
             "allowed": false,
             "nextNode": 4
         },
+        "sources": ["PayingForClinicalTrials.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -69,6 +70,7 @@
             "allowed": false,
             "nextNode": 4
         },
+        "sources": ["PayingForClinicalTrials.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -90,6 +92,7 @@
             "allowed": false,
             "nextNode": 4
         },
+        "sources": ["PayingForClinicalTrials.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -142,6 +145,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -166,6 +170,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["HowClinicalTrialsWork.pdf", "ClinicalTrialsPhases.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -190,6 +195,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["HowClinicalTrialsWork.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -242,6 +248,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -266,6 +273,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -318,6 +326,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["SafetyAndClinicalTrials.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -342,6 +351,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["SafetyAndClinicalTrials.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -394,6 +404,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["SafetyAndClinicalTrials.pdf", "ClinicalTrialsFacts.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -418,6 +429,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["SafetyAndClinicalTrials.pdf", "ClinicalTrialsFacts.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -470,6 +482,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["WhyParticipateInAClinicalTrial.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -494,6 +507,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["WhyParticipateInAClinicalTrial.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -518,6 +532,7 @@
         "response": {
             "alterDialogue": true
         },
+        "sources": ["WhyParticipateInAClinicalTrial.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
