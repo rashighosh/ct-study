@@ -6,6 +6,8 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 // const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path; // for aws, comment out for local testing
 const ffmpeg = require('fluent-ffmpeg'); // Import ffmpeg for audio processing
+const ffmpegPath = require('ffmpeg-static'); // Path to the static binary
+ffmpeg.setFfmpegPath(ffmpegPath); // Set the path explicitly
 const bodyParser = require('body-parser');
 var sql = require("mssql");
 var favicon = require('serve-favicon');
@@ -193,6 +195,7 @@ async function generateAudio(text, voice) {
 }
 
 async function processSentence(sentence, nodeData, req, isFirstChunk, agentGender) {
+    console.log("IN PROCESS SENTENCE, AB TO SEND TO FRONT END")
     const chunkType = isFirstChunk ? "NEW AUDIO" : "CHUNK";
     const createdFiles = [];
     const tempDir = '/tmp'; // Directory for temporary files
@@ -251,6 +254,7 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
                 wdurations: transcriptionResponse.words.map(x => 1000 * (x.end - x.start)),
             }
             : { audioBase64 };
+            console.log("GOT AUDIO, SENDING TO FRONT END")
 
         return {
             userId: req.session?.params?.id || null,
@@ -336,6 +340,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
           res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
           return res.json(responseData);
       } else {
+        console.log("MAKING CALL TO OPENAI")
         const thread = await rashi_openai.beta.threads.create();
         if (nodeData.response.alterDialogue === true) {
             message = "Construct a similar response based on the given 'Response' using your knowledge base, using any relevant information from 'userInfo':\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
@@ -352,9 +357,11 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
 
         while (runStatus.status !== 'completed') {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
+          console.log("WAITING FOR RESPONSE ...")
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
         }
+        console.log("GOT RESPONSE")
         const messages = await rashi_openai.beta.threads.messages.list(thread.id);
         var generatedDialogue = messages.data[0].content[0].text.value;
 
@@ -410,6 +417,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
 
         // Process first chunk immediately
         const firstChunk = await processSentence(sentences[0], responseData, req, true, gender);
+        console.log("BACK IN BACKEND CALL, SENDING TO FRONT END")
         res.write(JSON.stringify(firstChunk) + '\n');
 
         // Process remaining chunks concurrently

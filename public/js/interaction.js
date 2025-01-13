@@ -275,12 +275,13 @@ async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
     body.characterGender = gender
     body.script = script
+    console.log("ABOUT TO CALL BACKEND")
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     });
-
+    console.log("GOT RESPONSE FROM BACKEND")
     if (!response.ok) {
         console.error('Failed to fetch response:', response.statusText);
         return;
@@ -467,7 +468,6 @@ function displaySubtitles(dialogue, divItem, showInput, sources) {
         } else {
             typewriterRunning = false; // Reset the flag when done
             if (sources !== null) {
-                console.log(sources)
                 for (var j = 0; j < sources.length; j++) {
                     const link = document.createElement('p');
                     link.className = "source-link";
@@ -480,7 +480,6 @@ function displaySubtitles(dialogue, divItem, showInput, sources) {
                     // Capitalize the first letter of each word
                     const finalResult = withSpaces.replace(/\b\w/g, c => c.toUpperCase());
 
-                    console.log(finalResult); // Output: "Clinical Trials Info"
                     link.textContent = `[ Source: ${finalResult} ]`;
                 
                     var pdfModal = document.getElementById('pdfModal');
@@ -488,7 +487,6 @@ function displaySubtitles(dialogue, divItem, showInput, sources) {
                 
                     link.onclick = (function(index) {
                         return function() {
-                            console.log("CLICKED");
                             pdfModal.style.display = 'flex';
                             pdfViewer.src = '../sources/' + sources[index];
                         };
@@ -522,7 +520,6 @@ function cancelTypewriterEffect(dialogueSection, wholeDialogue, sources) {
     typewriterRunning = false;
     dialogueSection.innerHTML = wholeDialogue; // Instantly display the complete dialogue
     if (sources !== null) {
-        console.log(sources)
         for (var j = 0; j < sources.length; j++) {
             const link = document.createElement('p');
             link.className = "source-link";
@@ -534,7 +531,6 @@ function cancelTypewriterEffect(dialogueSection, wholeDialogue, sources) {
         
             link.onclick = (function(index) {
                 return function() {
-                    console.log("CLICKED");
                     pdfModal.style.display = 'flex';
                     pdfViewer.src = '../sources/' + sources[index];
                 };
