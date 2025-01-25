@@ -358,7 +358,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
 
         while (runStatus.status !== 'completed') {
           console.log("WAITING FOR RESPONSE ...")
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          await new Promise(resolve => setTimeout(resolve, 1000));
           runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
         }
         console.log("GOT RESPONSE")
@@ -654,6 +654,17 @@ app.post('/summarize', async (req, res) => {
     console.error(error);
     res.status(500).send('An error occurred while generating the summary.');
   }
+});
+
+// prevent server from restarting
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // Decide whether to keep the process alive or shut it down
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optionally handle cleanup or decide to shut down gracefully
 });
 
 // Start the server
