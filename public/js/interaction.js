@@ -67,7 +67,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
     } else if (condition === 2 || condition === 3) {
         script = textScriptControl
         incrementTotal = 9
+    } 
+
+    if (condition === 6) {
+        script = textScript
+        incrementTotal = 13
+        gender = "female"
     }
+    if (condition === 7) {
+        script = textScriptControl
+        incrementTotal = 13
+        gender = "female"
+    }
+
 
     document.getElementById("finish-btn").addEventListener('click', () => {
         window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
@@ -112,6 +124,7 @@ function updateProgress(progress) {
 
 // Function to increment progress
 function incrementProgress(double = false) {
+    console.log("INCREMENT TOTAL IS", incrementTotal)
     var increment = (1/incrementTotal)*100
     if (double === true) {
         increment = increment * 2
@@ -228,7 +241,7 @@ async function handleStreamedResponse(reader) {
                         // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
                         const ellipse = document.getElementById('lds-ellipsis');
                         ellipse.remove();
-                        document.getElementById("thinking").style.display = "none"
+                        // document.getElementById("thinking").style.display = "none"
 
                         // Update dialogue
                         appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed, data.sources);
@@ -322,7 +335,7 @@ async function handlePreRecordedResponse(data) {
     setTimeout(() => {
         characterAudio(audioData, null);
         const ellipse = document.getElementById('lds-ellipsis');
-        document.getElementById("thinking").style.display = "none"
+        // document.getElementById("thinking").style.display = "none"
         if (ellipse) {
             ellipse.remove();
         }
@@ -385,8 +398,8 @@ function displayOptions(options) {
                 if (option.nextNode) {
                     if (option.increment === true) {
                         if (option.userInfo) {
-                            userInfo = userInfo + " ; " + option.userInfo
-                            document.getElementById("thinking").style.display = "flex"
+                            userInfo = option.userInfo
+                            // document.getElementById("thinking").style.display = "flex"
                         }
                         if (option.value === 0 || option.value ===1) {
                            logItem("browseChoice", option.value)

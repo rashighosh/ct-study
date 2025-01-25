@@ -26,7 +26,7 @@ document.getElementById("next-btn").addEventListener('click', () => {
     console.log(counter)
     if (counter <= 4) {
         document.getElementById("number").innerHTML = counter + "/4"
-        incrementProgress();
+        // incrementProgress();
         document.getElementById("back-btn").style.visibility = "visible"
         var image = "/images/" + counter + ".png"
         console.log(image)
@@ -44,7 +44,7 @@ document.getElementById("back-btn").addEventListener('click', () => {
     if (counter <= 1) {
         document.getElementById("back-btn").style.visibility = "hidden"
     }
-    decrementProgress();
+    // decrementProgress();
     var image = "/images/" + counter + ".png"
     console.log(image)
     document.getElementById("image-instruction").src = image

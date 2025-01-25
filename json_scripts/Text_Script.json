@@ -1,7 +1,7 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hi! I'm Alex, a virtual assistant, here to help you talk through participating in cancer clinical research. My goal is to give you personalized information from the National Cancer Institute to help you understand what clinical research can mean for your cancer journey. Ready to get started?",
+        "dialogue": "Hi! I'm Alex, a virtual assistant, here to help you talk through participating in cancer clinical trials. My goal is to help you understand what clinical trials could mean for your cancer journey by sharing real stories from people who have participated in clinical trials before. Ready to get started?",
         "input": {
             "allowed": false,
             "nextNode": 2
@@ -23,36 +23,39 @@
         "options": [
             {
                 "optionText": "Yes.",
-                "userInfo": "Has health insurance",
+                "userInfo": "I have health insurance.",
                 "nextNode": 3,
                 "increment": true
             },
             {
                 "optionText": "No.",
-                "userInfo": "Does not have health insurance",
-                "nextNode": 4,
+                "userInfo": "I do not have health insurance.",
+                "nextNode": 3,
                 "increment": true
             },
             {
                 "optionText": "Not sure.",
-                "userInfo": "Unsure if has health insurance",
-                "nextNode": 5,
+                "userInfo": "Not sure if I have health insurance.",
+                "nextNode": 3,
                 "increment": true
             }
         ]
     },
     {
         "nodeId": 3,
-        "dialogue": "That's great you have health insurance or that you have Medicare or Medicaid! This can make participating in a cancer clinical research study easier. Your health insurance may cover routine patient care costs associated with the research study, such as doctor visits, hospital stays, standard cancer treatments, and necessary lab tests. However, research-specific costs—like the study drug, additional tests performed solely for the study, and extra doctor visits required by the study—are often covered by the study’s sponsor (like the university, government, or drug company in charge of the study).",
+        "dialogue": " Let me know if you have more questions about this, or if you'd like to continue!",
         "input": {
             "allowed": false,
             "nextNode": 4
+        },
+        "response": {
+            "alterDialogue": false
         },
         "sources": ["PayingForClinicalTrials.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 6,
+                "nextNode": 4,
                 "increment": true
             },
             {
@@ -65,51 +68,7 @@
     },
     {
         "nodeId": 4,
-        "dialogue": "If you don't have insurance, that's okay! Many study sponsors (like the university, government, or drug company in charge of the study) cover research-related costs, and some may offer help with routine care expenses. Additionally, there are federal programs and resources that might provide support. You can talk to your doctor, the research study coordinator, or social worker to explore available options and ensure you understand any costs involved and what might be covered.",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "sources": ["PayingForClinicalTrials.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 6,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 6,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 5,
-        "dialogue": "If you aren't sure if you have insurance, that's okay! If you do have insurance, it may cover routine care costs like doctor visits and lab tests, while the research study sponsor (like the university, government, or drug company in charge of the study) often pays for research-specific expenses, such as the study drug. If you don’t have insurance, many studies still cover research-related costs, and there may be programs or resources to help with other expenses.",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "sources": ["PayingForClinicalTrials.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 6,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 6,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 6,
-        "dialogue": "Alright, next, if you were to join a clinical research study, would you have a preference for what treatment you'd get?",
+        "dialogue": "Alright, next, if you were to join a clinical trial, would you have a preference for what treatment you'd get?",
         "input": {
             "allowed": false,
             "nextNode": 4
@@ -117,33 +76,33 @@
         "options": [
             {
                 "optionText": "I'd prefer the usual, standard treatment for my cancer.",
-                "userInfo": "Prefers usual, standard cancer treatment",
-                "nextNode": 7,
+                "userInfo": "I'd prefer usual, standard treatment for my cancer.",
+                "nextNode": 5,
                 "increment": true
             },
             {
                 "optionText": "I'd hope to get the latest, new treatment for my cancer.",
-                "userInfo": "Prefers latest, new cancer treatment",
-                "nextNode": 8,
+                "userInfo": "I'd hope to get the latest, new treatment for my cancer.",
+                "nextNode": 5,
                 "increment": true
             },
             {
                 "optionText": "It doesn't matter, as long as the treatment works.",
-                "userInfo": "Doesn't care what treatment as long as it works",
-                "nextNode": 9,
+                "userInfo": "I don't care if I get standard treatment or the latest treatment as long as it works",
+                "nextNode": 5,
                 "increment": true
             }
         ]
     },
     {
-        "nodeId": 7,
-        "dialogue": "I see! Like you, many people only want a treatment that has already been tested. And that’s okay. A lot of clinical research relies on randomly deciding your treatment, meaning you wouldn’t get to choose between the new and standard treatment. However, if you really want the standard treatment, observational studies might be worth looking into, since these studies don’t assign any type of treatment, and you may be able to continue getting standard care. Ultimately, all treatments, whether standard or experimental, aim to provide the best outcomes possible for participants.",
+        "nodeId": 5,
+        "dialogue": " Let me know if you have more questions about this, or if you'd like to continue!",
         "input": {
             "allowed": false,
-            "nextNode": 4
+            "nextNode": 6
         },
         "response": {
-            "alterDialogue": true
+            "alterDialogue": false
         },
         "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
         "options": [
@@ -161,41 +120,97 @@
         ]
     },
     {
-        "nodeId": 8,
-        "dialogue": "I see! Like you, many people only want a new type of treatment. A lot of clinical research relies on randomly deciding your treatment, meaning you wouldn’t get to choose between the new or standard treatment. However, if you really want the new treatment, you could look into phase 1 clinical trials, which usually only offer the new treatment in order to determine safety and the correct dosage. These are riskier, but you’d be closely monitored to evaluate how the treatment affects your cancer and to manage side effects. Ultimately, all treatments, whether standard or experimental, aim to provide the best outcomes possible for participants.",
+        "nodeId": 6,
+        "dialogue": "Okay, next question: would you be okay with a computer (instead of your doctor) deciding what treatment you get?",
+        "input": {
+            "allowed": false,
+            "nextNode": 7
+        },
+        "options": [
+            {
+                "optionText": "Yes.",
+                "userInfo": "I'm comfortable with randomization",
+                "nextNode": 7,
+                "increment": true
+            },
+            {
+                "optionText": "No.",
+                "userInfo": "I'm not comfortable with randomization",
+                "nextNode": 7,
+                "increment": true
+            },
+            {
+                "optionText": "Not sure.",
+                "userInfo": "I am not sure if I'm comfortable with randomization",
+                "nextNode": 7,
+                "increment": true
+            }
+        ]
+    },
+    {
+        "nodeId": 7,
+        "dialogue": " Let me know if you have more questions about this, or if you'd like to continue!",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "response": {
-            "alterDialogue": true
+            "alterDialogue": false
         },
-        "sources": ["HowClinicalTrialsWork.pdf", "ClinicalTrialsPhases.pdf"],
+        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 10,
+                "nextNode": 8,
                 "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 10,
+                "continueNode": 8,
                 "increment": false
             }
         ]
     },
     {
+        "nodeId": 8,
+        "dialogue": "Now, do you think your family would be okay with you participating in cancer clinical trials?",
+        "input": {
+            "allowed": false,
+            "nextNode": 4
+        },
+        "options": [
+            {
+                "optionText": "Yes, my family would be okay with this.",
+                "userInfo": "My family would be okay with me joining a clinical trial.",
+                "nextNode": 9,
+                "increment": true
+            },
+            {
+                "optionText": "No, my family would be upset.",
+                "userInfo": "My family wouldn't be okay with me joining a clinical trial.",
+                "nextNode": 9,
+                "increment": true
+            },
+            {
+                "optionText": "Not sure.",
+                "userInfo": "I'm not sure if my family would be okay with me joining a clinical trial.",
+                "nextNode": 9,
+                "increment": true
+            }
+        ]
+    },
+    {
         "nodeId": 9,
-        "dialogue": "I see! It's perfectly understandable to prioritize treatment efficacy over the specific type of treatment you receive. A lot of clinical research relies on randomly deciding your treatment, meaning you wouldn’t get to choose between the standard or new treatment. Ultimately, all treatments, whether standard or experimental, aim to provide the best outcomes possible for participants.",
+        "dialogue": " Let me know if you have more questions about this, or if you'd like to continue!",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "response": {
-            "alterDialogue": true
+            "alterDialogue": false
         },
-        "sources": ["HowClinicalTrialsWork.pdf"],
+        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
@@ -212,240 +227,59 @@
     },
     {
         "nodeId": 10,
-        "dialogue": "Okay, next question: would you be okay with a computer (instead of your doctor) deciding what treatment you get?",
+        "dialogue": "Moving on, do you generally trust doctors and researchers who are involved in clinical trials?",
         "input": {
             "allowed": false,
-            "nextNode": 4
+            "nextNode": 10
         },
         "options": [
             {
-                "optionText": "Yes.",
-                "userInfo": "Comfortable with randomization",
+                "optionText": "Yes, I trust doctors and researchers.",
+                "userInfo": "I trust doctors and researchers.",
                 "nextNode": 11,
                 "increment": true
             },
             {
-                "optionText": "No.",
-                "userInfo": "No",
-                "nextNode": 12,
+                "optionText": "No, I do not trust doctors and researchers.",
+                "userInfo": "I do not trust doctors and researchers.",
+                "nextNode": 11,
                 "increment": true
             },
             {
                 "optionText": "Not sure.",
-                "userInfo": "Not sure if comfortable with randomization",
-                "nextNode": 12,
+                "userInfo": "I'm not sure if I trust doctors and researchers.",
+                "nextNode": 11,
                 "increment": true
             }
         ]
     },
     {
         "nodeId": 11,
-        "dialogue": "As mentioned before, many clinical research studies randomly decide your treatment, so your doctor doesn’t get to choose. Instead, a computer randomly chooses if you get the new or standard treatment – this is called randomization. Note that placebos (or “sugar pills”) are not commonly used in cancer research since effective treatments exist. You can talk to your doctor about the possible treatments you might get so you feel more comfortable. People like you, who are okay with the randomization process, are more likely to participate in clinical research!",
+        "dialogue": " Let me know if you have more questions about this, or if you'd like to continue!",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "response": {
-            "alterDialogue": true
+            "alterDialogue": false
         },
-        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
+        "sources": ["SafetyAndClinicalTrials.pdf", "ClinicalTrialsFacts.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 13,
+                "nextNode": 12,
                 "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 13,
+                "continueNode": 12,
                 "increment": false
             }
         ]
     },
     {
         "nodeId": 12,
-        "dialogue": "As mentioned before, many clinical research studies randomly decide your treatment, so your doctor doesn’t get to choose. Instead, a computer randomly chooses if you get the new or standard treatment – this is called randomization. Note that placebos (or “sugar pills”) are not commonly used in cancer research since effective treatments exist. You can talk to your doctor about the possible treatments you might get so you feel more comfortable. If you still aren’t comfortable with a computer deciding your treatment, consider observational studies, which don’t involve randomization or taking any treatment.",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["HowClinicalTrialsWork.pdf", "ObservationalStudies.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 13,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 13,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 13,
-        "dialogue": "Now, do you think your family would be okay with you participating in cancer clinical research?",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "options": [
-            {
-                "optionText": "Yes, my family would be okay with this.",
-                "userInfo": "Family supports their clinical research participation",
-                "nextNode": 14,
-                "increment": true
-            },
-            {
-                "optionText": "No, my family would be upset.",
-                "userInfo": "Family does not support their clinical research participation",
-                "nextNode": 15,
-                "increment": true
-            },
-            {
-                "optionText": "Not sure.",
-                "userInfo": "Not sure if family would support their clinical research participation",
-                "nextNode": 15,
-                "increment": true
-            }
-        ]
-    },
-    {
-        "nodeId": 14,
-        "dialogue": "Great! Choosing to be in a study is an important decision and you should talk about it with your family and friends. They may find comfort that you’d have access to advanced treatments and get extra attention from medical experts, enhancing your side effect management and overall care. If anyone in your family has any questions about clinical research your doctor (or someone on the study team) can help. People like you, who have family support, tend to be more likely to join clinical research studies!",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["SafetyAndClinicalTrials.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 16,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 16,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 15,
-        "dialogue": "I see. Choosing to be in a study is an important decision and you should talk about it with your family and friends. They may find comfort that you’d have access to advanced treatments and even get extra attention from medical experts, enhancing your side effect management and overall care. Your doctor and the members of the study team can help answer any questions your family members have. When everyone in your family is comfortable with your decision, it can make being in a study a little easier.",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["SafetyAndClinicalTrials.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 16,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 16,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 16,
-        "dialogue": "Moving on, do you generally trust doctors and researchers who do cancer research?",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "options": [
-            {
-                "optionText": "Yes, I trust doctors and researchers.",
-                "userInfo": "Trusts doctors and researchers",
-                "nextNode": 17,
-                "increment": true
-            },
-            {
-                "optionText": "No, I do not trust doctors and researchers.",
-                "userInfo": "Does not trust doctors and researchers",
-                "nextNode": 18,
-                "increment": true
-            },
-            {
-                "optionText": "Not sure.",
-                "userInfo": "Not sure if trusts doctors and researchers",
-                "nextNode": 18,
-                "increment": true
-            }
-        ]
-    },
-    {
-        "nodeId": 17,
-        "dialogue": "That's great! Deciding to join clinical research may be affected by how you feel about doctors and researchers, and trusting them makes it easier! It’s good to know that research studies are strictly evaluated and approved by an ethics board made up of not only scientists, but community members too. And it doesn’t stop there. During your participation, a safety board closely monitors you and can adjust or stop the study if needed. You can also choose to leave at any time! Ultimately, the priority of clinical research is to advance cancer treatment for people like you while providing the best, most ethical care!",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["SafetyAndClinicalTrials.pdf", "ClinicalTrialsFacts.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 19,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 19,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 18,
-        "dialogue": "That's okay -- deciding to join clinical research may be affected by how you feel about doctors and researchers, and mistrust can make it hard. It may be helpful for you to know that research studies are strictly evaluated and approved by an ethics board made up of not only scientists, but community members too. And it doesn’t stop there. During your participation, a safety board closely monitors you and can adjust or stop the study if needed. You can also choose to leave at any time! Ultimately, the priority of clinical research is to advance cancer treatment for people like you while providing the best, most ethical care!",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["SafetyAndClinicalTrials.pdf", "ClinicalTrialsFacts.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 19,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 19,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 19,
         "dialogue": "Finally, is it important to you to help others who might be affected with your type of cancer in the future?",
         "input": {
             "allowed": false,
@@ -453,103 +287,53 @@
         },
         "options": [
             {
-                "optionText": "Yes, I want to help others by participating in research.",
-                "userInfo": "Wants to help others by being in research",
-                "nextNode": 20,
+                "optionText": "Yes, I want to help others by participating in clinical trials.",
+                "userInfo": "I want to help others by joining a clinical trial.",
+                "nextNode": 13,
                 "increment": true
             },
             {
                 "optionText": "No, helping others is not a priority for me.",
-                "userInfo": "Helping others not a priority for being in research",
-                "nextNode": 21,
+                "userInfo": "Helping others not a priority for me joining a clinical trial.",
+                "nextNode": 13,
                 "increment": true
             },
             {
                 "optionText": "Not sure.",
-                "userInfo": "Not sure if helping others is a priority for being in research",
-                "nextNode": 22,
+                "userInfo": "Not sure if helping others is a priority for joining a clinical trial.",
+                "nextNode": 13,
                 "increment": true
             }
         ]
     },
     {
-        "nodeId": 20,
-        "dialogue": "Like you, many people participate in cancer research to improve cancer care for others! Your participation not only aids researchers in understanding the disease better but also helps future patients benefit from improved therapies and care options. People also join because they want a chance to receive the newest treatment or get extra care from the clinical research staff. People like you, who join to help others, are more likely to join cancer research!",
+        "nodeId": 13,
+        "dialogue": " Let me know if you have more questions about this, or if you'd like to continue!",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "response": {
-            "alterDialogue": true
+            "alterDialogue": false
         },
         "sources": ["WhyParticipateInAClinicalTrial.pdf"],
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 23,
+                "nextNode": 14,
                 "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 23,
+                "continueNode": 14,
                 "increment": false
             }
         ]
     },
     {
-        "nodeId": 21,
-        "dialogue": "Of course, your choice should be based on your personal values as well as the facts about clinical research. In addition to helping others, clinical research can offer great opportunities for you as an individual. For example, you’d have the chance to try a new treatment, and you’d get extra attention from the clinical research staff in addition to your current care.",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["WhyParticipateInAClinicalTrial.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 23,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 23,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 22,
-        "dialogue": "Helping others by helping develop new cancer treatments is one reason why many people join clinical trials, but others join for personal benefits. For example, you’d have the chance to try a new treatment, and you’d get extra attention from the clinical research staff in addition to your current care. Ultimately, your choice should be based on your personal values as well as the facts about clinical research.",
-        "input": {
-            "allowed": false,
-            "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": true
-        },
-        "sources": ["WhyParticipateInAClinicalTrial.pdf"],
-        "options": [
-            {
-                "optionText": "Okay, continue.",
-                "nextNode": 23,
-                "increment": true
-            },
-            {
-                "optionText": "Okay, I have more questions.",
-                "nextNode": 99,
-                "continueNode": 23,
-                "increment": false
-            }
-        ]
-    },
-    {
-        "nodeId": 23,
-        "dialogue": "Okay, that's all the topics I wanted to talk about! Before ending our conversation, now that we've talked about clinical research, would you like to browse a few clinical trials?",
+        "nodeId": 14,
+        "dialogue": "Okay, that's all the topics I wanted to talk about! Before ending our conversation, now that we've talked about clinical trials, would you like to browse a few clinical trials?",
         "input": {
             "allowed": false,
             "nextNode": 4
@@ -557,13 +341,13 @@
         "options": [
             {
                 "optionText": "Yes.",
-                "nextNode": 24,
+                "nextNode": 15,
                 "value": 1,
                 "increment": true
             },
             {
                 "optionText": "No.",
-                "nextNode": 25,
+                "nextNode": 16,
                 "value": 0,
                 "increment": true,
                 "doubleIncrement": true
@@ -571,7 +355,7 @@
         ]
     },
     {
-        "nodeId": 24,
+        "nodeId": 15,
         "dialogue": "Okay, great! Please click the 'View Clinical Trials' button below to browse. When you're done, click the 'Continue' button to wrap up our conversation.",
         "input": {
             "allowed": false,
@@ -584,14 +368,14 @@
             },
             {
                 "optionText": "Continue.",
-                "nextNode": 25,
+                "nextNode": 16,
                 "increment": true
             }
         ]
     },
     {
-        "nodeId": 25,
-        "dialogue": "Okay, thanks for chatting about clinical research with me! If you have any more questions, feel free to ask. Otherwise, please click the 'End Conversation' button on the right to continue.",
+        "nodeId": 16,
+        "dialogue": "Okay, thanks for chatting about clinical trials with me! I hope sharing real stories from people who have participated before helps you understand what clinical trials could mean for your cancer journey. If you have any more questions, feel free to ask. Otherwise, please click the 'End Conversation' button on the right to continue.",
         "input": {
             "allowed": false,
             "nextNode": 4
@@ -600,7 +384,7 @@
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 23,
+                "continueNode": 16,
                 "increment": false
             }
         ]
@@ -615,7 +399,7 @@
     },
     {
         "nodeId": 100,
-        "dialogue": "If you have more questions, please type your question below. Or, you can click 'I'm done' to continue our conversation.",
+        "dialogue": " If you have more questions, please type your question below. Or, you can click 'I'm done' to continue our conversation.",
         "input": {
             "allowed": true,
             "nextNode": 100

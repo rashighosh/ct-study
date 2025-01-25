@@ -9,7 +9,7 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 var condition = urlParams.get('c')
 condition = parseInt(condition)
-if (condition === 0 || condition === 2 || condition === 4) {
+if (condition === 0 || condition === 2 || condition === 4 || condition === 6 || condition === 7) {
     character = "/character-models/female.glb";
     characterBody = 'F'
 } else {

@@ -78,8 +78,8 @@ try {
 app.get("/generate/prescripted", async (req, res) => {
     console.log("GENERATING PRESCRIPT")
   const audioMetadata = [];
-  const inputFile = path.join(jsonDir, 'Text_Script_Control.json');
-  const outputFile = path.join(jsonDir, 'Text_Script_Control_Audio.json');
+  const inputFile = path.join(jsonDir, 'Text_Script.json');
+  const outputFile = path.join(jsonDir, 'Text_Script_Audio.json');
 
   // Load the original JSON data
   let dialogueNodes;
@@ -306,15 +306,18 @@ app.post('/interact/:nodeId', async (req, res, next) => {
   var message = req.body.userMessage || {};
   var gender = req.body.characterGender
   var script = req.body.script
+  var openai_assistant = ''
 
   try {
       // Find node data in preloaded metadata
       var nodeData
       if (script === "Text_Script_Audio.json") {
         nodeData = scriptData.find(item => item.nodeId === nodeId);
+        openai_assistant = "asst_fcNdxIROJV8pDLdeQpLLIvpm"
       }
       if (script === "Text_Script_Control_Audio.json") {
         nodeData = scriptDataControl.find(item => item.nodeId === nodeId);
+        openai_assistant = "asst_3bdqP1yDe38blhEGJNGS2qaT"
       } 
 
       if (!nodeData) {
@@ -352,7 +355,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
             content: message
           });
           const run = await rashi_openai.beta.threads.runs.create(thread.id, {
-            assistant_id: 'asst_iPjLaF7ODxGVWInpqLB2GHB7'
+            assistant_id: openai_assistant
           });
         let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
 
