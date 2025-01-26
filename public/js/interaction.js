@@ -392,7 +392,7 @@ function displayOptions(options) {
                 moreInfoModal.style.display = "flex";
             }
         } 
-        else if (option.optionText === "View Clinical Trials.") {
+        else if (option.optionText === "View Sample Clinical Trials.") {
             button.onclick = function() {
                 document.getElementById("studies-modal").style.display = "flex";
             }
