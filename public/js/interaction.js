@@ -71,12 +71,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     if (condition === 6) {
         script = textScript
-        incrementTotal = 13
+        incrementTotal = 15
         gender = "female"
     }
     if (condition === 7) {
         script = textScriptControl
-        incrementTotal = 13
+        incrementTotal = 15
         gender = "female"
     }
 
@@ -133,6 +133,8 @@ function incrementProgress(double = false) {
     if (nextIncrement >= 100) {
         nextIncrement = 100
     }
+    console.log("PROGRESS IS", progress)
+    console.log("NEXT INCREMENT IS", nextIncrement)
     const interval = setInterval(() => {
         progress += 1;
         if (progress >= 100) {
@@ -206,6 +208,10 @@ function appendLoadingDots() {
     chatBox.appendChild(ellipse);
 }
 
+function getStoryCitations(dialogue) {
+
+}
+
 async function handleStreamedResponse(reader) {
     const decoder = new TextDecoder();
     let partialData = '';
@@ -242,9 +248,9 @@ async function handleStreamedResponse(reader) {
                         const ellipse = document.getElementById('lds-ellipsis');
                         ellipse.remove();
                         // document.getElementById("thinking").style.display = "none"
-
+                        console.log(data.annotations)
                         // Update dialogue
-                        appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed, data.sources);
+                        appendMessage(data.wholeDialogue, 'Alex', null, data.input.allowed, data.annotations);
                         if (data.options) {
                             displayOptions(data.options)
                         }
@@ -340,7 +346,7 @@ async function handlePreRecordedResponse(data) {
             ellipse.remove();
         }
         // Update dialogue
-        appendMessage(data.dialogue, 'Alex',  null, data.input.allowed, data.sources);
+        appendMessage(data.dialogue, 'Alex',  null, data.input.allowed);
         if (data.options) {
             displayOptions(data.options)
         }

@@ -15,7 +15,7 @@
   
   .progress-moved .progress-bar2 {
     background-color: #f3c623;
-    animation: progress 4s forwards;
+    animation: progress 5s forwards;
   }
   
   @keyframes progress {

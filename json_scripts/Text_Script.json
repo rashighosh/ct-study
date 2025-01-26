@@ -108,20 +108,20 @@
         "options": [
             {
                 "optionText": "Okay, continue.",
-                "nextNode": 10,
+                "nextNode": 6,
                 "increment": true
             },
             {
                 "optionText": "Okay, I have more questions.",
                 "nextNode": 99,
-                "continueNode": 10,
+                "continueNode": 6,
                 "increment": false
             }
         ]
     },
     {
         "nodeId": 6,
-        "dialogue": "Okay, next question: would you be okay with a computer (instead of your doctor) deciding what treatment you get?",
+        "dialogue": "Okay, next question: would you be okay with a computer, instead of your doctor, deciding what treatment you get (also known as randomization)?",
         "input": {
             "allowed": false,
             "nextNode": 7
@@ -333,7 +333,7 @@
     },
     {
         "nodeId": 14,
-        "dialogue": "Okay, that's all the topics I wanted to talk about! Before ending our conversation, now that we've talked about clinical trials, would you like to browse a few clinical trials?",
+        "dialogue": "Okay, that's all the topics I wanted to talk about! Before ending our conversation, now that we've talked about clinical trials, would you like to browse a few sample clinical trials?",
         "input": {
             "allowed": false,
             "nextNode": 4
@@ -356,14 +356,14 @@
     },
     {
         "nodeId": 15,
-        "dialogue": "Okay, great! Please click the 'View Clinical Trials' button below to browse. When you're done, click the 'Continue' button to wrap up our conversation.",
+        "dialogue": "Okay, great! Please click the 'View Sample Clinical Trials' button below to browse. When you're done, click the 'Continue' button to wrap up our conversation.",
         "input": {
             "allowed": false,
             "nextNode": 4
         },
         "options": [
             {
-                "optionText": "View Clinical Trials.",
+                "optionText": "View Sample Clinical Trials.",
                 "increment": false
             },
             {

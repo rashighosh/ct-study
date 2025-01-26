@@ -78,8 +78,8 @@ try {
 app.get("/generate/prescripted", async (req, res) => {
     console.log("GENERATING PRESCRIPT")
   const audioMetadata = [];
-  const inputFile = path.join(jsonDir, 'Text_Script.json');
-  const outputFile = path.join(jsonDir, 'Text_Script_Audio.json');
+  const inputFile = path.join(jsonDir, 'Text_Script_Control.json');
+  const outputFile = path.join(jsonDir, 'Text_Script_Control_Audio.json');
 
   // Load the original JSON data
   let dialogueNodes;
@@ -194,13 +194,11 @@ async function generateAudio(text, voice) {
   }
 }
 
-async function processSentence(sentence, nodeData, req, isFirstChunk, agentGender) {
-    console.log("IN PROCESS SENTENCE, AB TO SEND TO FRONT END")
+async function processSentence(sentence, nodeData, req, isFirstChunk, agentGender, citations) {
     const chunkType = isFirstChunk ? "NEW AUDIO" : "CHUNK";
     const createdFiles = [];
     const tempDir = '/tmp'; // Directory for temporary files
     const gender = agentGender;
-
     try {
         // Ensure /tmp directory exists
         if (!fs.existsSync(tempDir)) {
@@ -254,7 +252,6 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
                 wdurations: transcriptionResponse.words.map(x => 1000 * (x.end - x.start)),
             }
             : { audioBase64 };
-            console.log("GOT AUDIO, SENDING TO FRONT END")
 
         return {
             userId: req.session?.params?.id || null,
@@ -267,7 +264,8 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
             progressInterview: nodeData.progressInterview || null,
             type: chunkType,
             wholeDialogue: nodeData.wholeDialogue,
-            sources: nodeData.sources
+            sources: nodeData.sources,
+            annotations: citations
         };
     } catch (error) {
         console.error("Error processing sentence:", error);
@@ -338,12 +336,11 @@ app.post('/interact/:nodeId', async (req, res, next) => {
               audio: audio,
               input: nodeData.input || null,
               options: nodeData.options || [],
-              sources: nodeData.sources || null
+              sources: nodeData.sources || null,
           };
           res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
           return res.json(responseData);
       } else {
-        console.log("MAKING CALL TO OPENAI")
         const thread = await rashi_openai.beta.threads.create();
         if (nodeData.response.alterDialogue === true) {
             message = "Construct a similar response based on the given 'Response' using your knowledge base, using any relevant information from 'userInfo':\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
@@ -360,35 +357,47 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
 
         while (runStatus.status !== 'completed') {
-          console.log("WAITING FOR RESPONSE ...")
           await new Promise(resolve => setTimeout(resolve, 1000));
           runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
         }
-        console.log("GOT RESPONSE")
         const messages = await rashi_openai.beta.threads.messages.list(thread.id);
         var generatedDialogue = messages.data[0].content[0].text.value;
 
-        // var messageContent = messages.data[0].content[0].text;
-        // const annotations = messageContent.annotations;
-        // let citations = [];
-        // console.log("MESSAGE:", messages.data[0].content[0].text)
+        const annotations = messages.data[0].content[0].text.annotations;
+        let citations = [];
         
+        const fileIds = annotations.map(annotation => annotation.file_citation.file_id);
+
+        const retrievedFiles = await Promise.all(fileIds.map(async fileId => {
+          return await rashi_openai.files.retrieve(fileId);
+        }));
+
+        console.log("JUST RETRIEVED FILES", retrievedFiles)
+        citations = retrievedFiles.map(file => file.filename);
+
+
         // // Iterate over the annotations and add footnotes
-        // annotations.forEach((annotation, index) => {
-        //   // Replace the text with a footnote
-        //   // messageContent.value = messageContent.value.replace(annotation.text, ` [${index + 1}]`);
-        //   console.log("ANNOTATION", annotation.file_citation.file_id)
-        //   // Gather citations based on annotation attributes
- 
-        //   rashi_openai.files.retrieve(annotation.file_citation.file_id)
-        //   .then(citedFile => {
-        //     console.log("CITED FILE", citedFile);
-        //     citations.push(citedFile.filename)
+        // const annotationPromises = annotations.map((annotation, index) => {          
+        //   // Return the promise from the file retrieval operation
+        //   await rashi_openai.files.retrieve(annotation.file_citation.file_id)
+        //     .then(citedFile => {
+        //       return citedFile.filename; // Return the filename to be collected in the citations array
+        //     })
+        //     .catch(error => {
+        //       console.error("Error retrieving file:", error);
+        //       return null; // Return null or handle the error as needed
+        //     });
+        // });
+
+        // // Wait for all promises to resolve
+        // Promise.all(annotationPromises)
+        //   .then(annotations => {
+        //     citations = annotations.filter(annotation => annotation !== null)
+        //     console.log("ALL PROMISES COMPLETE", citations); // Filter out any null values from errors
         //   })
         //   .catch(error => {
-        //     console.error("Error retrieving file:", error);
-        //   });       
-        // });
+        //     console.error("Error in retrieving files:", error);
+        //   });
 
         generatedDialogue = removeSpecialFormat(generatedDialogue)
 
@@ -400,9 +409,8 @@ app.post('/interact/:nodeId', async (req, res, next) => {
             entireDialogue = generatedDialogue
         }
 
-
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        
+        console.log("CITATIONS BEFORE SENDING STUFF", citations)
         var responseData = {
             nodeId: nodeId,
             dialogue: generatedDialogue,
@@ -411,7 +419,8 @@ app.post('/interact/:nodeId', async (req, res, next) => {
             options: nodeData.options || [],
             wholeDialogue: entireDialogue,
             type: "NEW AUDIO",
-            sources: nodeData.sources || null
+            sources: nodeData.sources || null,
+            annotations: citations
         };
 
         // Audio Chunk Streaming
@@ -419,13 +428,12 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         // console.log("Split dialogue into sentences:", sentences);
 
         // Process first chunk immediately
-        const firstChunk = await processSentence(sentences[0], responseData, req, true, gender);
-        console.log("BACK IN BACKEND CALL, SENDING TO FRONT END")
+        const firstChunk = await processSentence(sentences[0], responseData, req, true, gender, citations);
         res.write(JSON.stringify(firstChunk) + '\n');
 
         // Process remaining chunks concurrently
         const remainingChunksPromises = sentences.slice(1).map((sentence, index) =>
-            processSentence(sentence, responseData, req, false, gender)
+            processSentence(sentence, responseData, req, false, gender, citations)
         );
         try {
             const remainingChunks = await Promise.all(remainingChunksPromises);
