@@ -1,4 +1,4 @@
-import { characterAudio, characterAudioQueue, stopSpeaking } from './virtualcharacter.js';
+import { characterAudio, characterAudioQueue, stopSpeaking, rotateCharacter } from './virtualcharacter.js';
 
 var continueNode = null
 var progress = 0;
@@ -11,6 +11,8 @@ const textScript = "Text_Script_Audio.json"
 const textScriptControl = "Text_Script_Control_Audio.json"
 var script
 var incrementTotal
+
+
 
 function getCurrentDateTime() {
     var currentDate = new Date();
@@ -82,7 +84,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
     document.getElementById("finish-btn").addEventListener('click', () => {
-        window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+        // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+        console.log("CLICKED ASK")
+        document.getElementById("virtualcharacter").style.filter = "blur(2px)"
+        document.getElementById("virtualcharacter-1").style.filter = "blur(0px)"
+        rotateCharacter("towards");
+    });
+
+    document.getElementById("finish-btn1").addEventListener('click', () => {
+        // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+        console.log("CLICKED ASK")
+        document.getElementById("virtualcharacter").style.filter = "blur(0px)"
+        document.getElementById("virtualcharacter-1").style.filter = "blur(2px)"
+        rotateCharacter("away");
     });
 
     let loadBody = { transcript: script }
@@ -261,7 +275,7 @@ async function handleStreamedResponse(reader) {
                                 appendMessage('text', 'user', data.input.nextNode);
                                 const optionsArea = document.getElementById("options-area")
                                 optionsArea.innerHTML = ''
-                                inputArea.style.visibility = 'hidden'
+                                inputArea.style.visibility = 'visible'
                             };  
                             userInput.onkeydown = function(event) {
                                 if (event.key === 'Enter' && !event.shiftKey) {
@@ -269,13 +283,13 @@ async function handleStreamedResponse(reader) {
                                     appendMessage('text', 'user', data.input.nextNode, data.input.allowed);
                                     const optionsArea = document.getElementById("options-area")
                                     optionsArea.innerHTML = ''
-                                    inputArea.style.visibility = 'hidden'
+                                    inputArea.style.visibility = 'visible'
                                 }
                             };
                             
                         } else {
                             const inputArea = document.getElementById("input-area")
-                            inputArea.style.visibility = 'hidden'
+                            inputArea.style.visibility = 'visible'
                         }
                     }
                 } else {
@@ -354,7 +368,7 @@ async function handlePreRecordedResponse(data) {
             const inputArea = document.getElementById("input-area")
             const userInput = document.getElementById('user-input');
             document.getElementById('send-btn').onclick = function() {
-                inputArea.style.visibility = 'hidden'
+                inputArea.style.visibility = 'visible'
                 appendMessage('text', 'user', data.input.nextNode, data.input.allowed);
                 const optionsArea = document.getElementById("options-area")
                 optionsArea.innerHTML = ''
@@ -365,13 +379,13 @@ async function handlePreRecordedResponse(data) {
                     appendMessage('text', 'user', data.input.nextNode, data.input.allowed);
                     const optionsArea = document.getElementById("options-area")
                     optionsArea.innerHTML = ''
-                    inputArea.style.visibility = 'hidden'
+                    inputArea.style.visibility = 'visible'
                 }
             };
             
         } else {
             const inputArea = document.getElementById("input-area")
-            inputArea.style.visibility = 'hidden'
+            inputArea.style.visibility = 'visible'
         }
     }, timeout); // 1500 milliseconds = 1.5 seconds
 }

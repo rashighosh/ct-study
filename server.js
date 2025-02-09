@@ -66,10 +66,8 @@ app.get('/summary', function(req, res) {
 
 try {
   const scriptPath = path.join(jsonDir, "Text_Script_Audio.json");
-  const scriptPathControl = path.join(jsonDir, "Text_Script_Control_Audio.json");
   
   var scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
-  var scriptDataControl = JSON.parse(fs.readFileSync(scriptPathControl, 'utf8'));
 } catch (err) {
     console.error("Scripts do not exist.", err);
 }

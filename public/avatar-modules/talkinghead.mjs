@@ -981,6 +981,7 @@ class TalkingHead {
     opt = opt || {};
 
     const fov = this.camera.fov * ( Math.PI / 180 );
+    console.log("FOV IS",fov)
     let x = - (opt.cameraX || this.opt.cameraX) * Math.tan( fov / 2 );
     let y = ( 1 - (opt.cameraY || this.opt.cameraY)) * Math.tan( fov / 2 );
     let z = (opt.cameraDistance || this.opt.cameraDistance);
@@ -3235,6 +3236,39 @@ class TalkingHead {
     }
 
   }
+
+  smoothRotate(targetRotation) {
+    if (!this.armature) return;
+
+    let startRotation = this.armature.rotation.y;
+    let duration = 1000;
+    let startTime = performance.now();
+
+    const animate = (time) => {
+        let elapsedTime = time - startTime;
+        let progress = Math.min(elapsedTime / duration, 1);
+
+        this.armature.rotation.y = startRotation + (targetRotation - startRotation) * progress;
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+
+    requestAnimationFrame(animate);
+}
+
+
+  rotateCharacter(direction) {
+    console.log("IN ROTATE CHARACTER")
+    if (direction === "towards") {
+      this.smoothRotate(1.9); // Correct reference
+    } else {
+      this.smoothRotate(this.armature.rotation.y - 1.9);
+    }
+  }
+
+
 
   /**
   * Cyclic Coordinate Descent (CCD) Inverse Kinematic (IK) algorithm.
