@@ -1,42 +1,26 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hi! I'm Alex, a virtual assistant, here to help you talk through participating in cancer clinical trials. My goal is to help you understand what clinical trials could mean for your cancer journey by sharing real stories from people who have participated in clinical trials before. Ready to get started?",
+        "dialogue": "Hi! I'm Dr. Alex, a virtual doctor, here to help you talk through participating in cancer clinical research. My goal is to give you personalized information from the National Cancer Institute to help you understand what clinical research can mean for your cancer journey. Here with us is Skylar, a virtual caregiver who is here to support you. I'll let them introduce themselves.",
         "input": {
-            "allowed": false,
+            "allowed": true,
             "nextNode": 2
-        },
-        "options": [
-            {
-                "optionText": "Let's get started!",
-                "nextNode": 2,
-                "increment": true
-            }
-        ]
+        }
     },
     {
         "nodeId": 2,
-        "dialogue": "Alright, first, do you have health insurance (including Medicare or Medicaid)?",
+        "dialogue": "Alright, what would you like to talk about first? I can talk about topics such as safety, risks and benefits of clinical trials, and what randomization means.",
         "input": {
-            "allowed": false
+            "allowed": true
+        },
+        "response": {
+            "alterDialogue": true
         },
         "options": [
             {
-                "optionText": "Yes.",
-                "userInfo": "I have health insurance.",
-                "nextNode": 3,
-                "increment": true
-            },
-            {
-                "optionText": "No.",
-                "userInfo": "I do not have health insurance.",
-                "nextNode": 3,
-                "increment": true
-            },
-            {
-                "optionText": "Not sure.",
-                "userInfo": "Not sure if I have health insurance.",
-                "nextNode": 3,
+                "optionText": "Ask Skylar for guidance.",
+                "support": true,
+                "nextNode": 2,
                 "increment": true
             }
         ]

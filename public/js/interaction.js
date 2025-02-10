@@ -6,10 +6,10 @@ var userInfo = ""
 var informationTranscript = new Map()
 var id = ''
 var condition = ''
-var gender = "male"
+var gender = "female"
+var genderSupport = "male"
 const textScript = "Text_Script_Audio.json"
-const textScriptControl = "Text_Script_Control_Audio.json"
-var script
+const textScriptSupport = "Text_Script_Support_Audio.json"
 var incrementTotal
 
 
@@ -57,32 +57,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     id = urlParams.get('id')
     condition = parseInt(condition)
 
-    if (condition === 0 || condition === 2 || condition === 4) {
-        gender = "female"
-    } else if (condition === 1 || condition === 3 || condition === 5) {
-        gender = "male"
-    }
-
-    if (condition === 0 || condition === 1 || condition === 4 || condition === 5) {
-        script = textScript
-        incrementTotal = 15
-    } else if (condition === 2 || condition === 3) {
-        script = textScriptControl
-        incrementTotal = 9
-    } 
-
-    if (condition === 6) {
-        script = textScript
-        incrementTotal = 15
-        gender = "female"
-    }
-    if (condition === 7) {
-        script = textScriptControl
-        incrementTotal = 15
-        gender = "female"
-    }
-
-
     document.getElementById("finish-btn").addEventListener('click', () => {
         // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
         console.log("CLICKED ASK")
@@ -99,10 +73,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
         rotateCharacter("away");
     });
 
-    let loadBody = { transcript: script }
+    let loadBody = { transcript: textScript }
 
     showLoading();
 });
+
+function focusCharacter(agent) {
+    if (agent === "support") {
+        document.getElementById("virtualcharacter").style.filter = "blur(2px)"
+        document.getElementById("virtualcharacter-1").style.filter = "blur(0px)"
+        rotateCharacter("towards");
+    } else {
+        document.getElementById("virtualcharacter").style.filter = "blur(0px)"
+        document.getElementById("virtualcharacter-1").style.filter = "blur(2px)"
+        rotateCharacter("away");
+    }
+}
 
 function showLoading() {
     // document.getElementById('start').style.display = "none";
@@ -120,7 +106,7 @@ function showLoading() {
 
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
-        handleUserInput(1, { userInput: "Start Introduction" });
+        handleUserInput(1, { userInput: "Start Introduction", script: textScript, gender: "female" });
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
     };
@@ -162,7 +148,7 @@ function incrementProgress(double = false) {
     }, 50); // Adjust this value to change the speed of the progress
 }
 
-function appendMessage(message, speaker, nextNode = null, showInput, sources = null) {
+function appendMessage(message, speaker, nextNode = null, showInput, sources = null, passOn = null) {
     const chatBox = document.getElementById("chat-container")
     const labelText = document.createElement('div');
     const messageText = document.createElement('div');
@@ -191,7 +177,7 @@ function appendMessage(message, speaker, nextNode = null, showInput, sources = n
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
-        displaySubtitles(message, messageText, showInput, sources)
+        displaySubtitles(message, messageText, showInput, sources, passOn)
         informationTranscript.set("ALEX " + getCurrentDateTime(), message);
         updateTranscript()
     }
@@ -306,9 +292,9 @@ async function handleStreamedResponse(reader) {
 
 async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
-    body.characterGender = gender
-    body.script = script
-    console.log("ABOUT TO CALL BACKEND")
+    // body.characterGender = gender
+    // body.script = textScript
+    console.log("ABOUT TO CALL BACKEND", body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -321,13 +307,15 @@ async function handleUserInput(nodeId, body) {
     }
 
     const contentType = response.headers.get('Content-Type');
+    var agent = body.script === textScript ? "doctor" : "support"
+    console.log(agent)
 
     // Handle streamed response
     if (contentType && contentType.includes('prerecorded')) { // not expecting ANY streamed response
         // Handle pre-recorded response
         const data = await response.json(); // gives ENTIRE audio at once
         // process audio for front end
-        await handlePreRecordedResponse(data);
+        await handlePreRecordedResponse(data, agent);
     }
     else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
         const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
@@ -338,7 +326,7 @@ async function handleUserInput(nodeId, body) {
     }
 }
 
-async function handlePreRecordedResponse(data) {
+async function handlePreRecordedResponse(data, agent) {
     // Handle audio if present; parse it for being ready for front end
     var audioData
     if (data.audio && data.audio.audioBase64) {
@@ -353,14 +341,20 @@ async function handlePreRecordedResponse(data) {
         timeout = 5000
     }
     setTimeout(() => {
-        characterAudio(audioData, null);
+        characterAudio(audioData, null, agent);
         const ellipse = document.getElementById('lds-ellipsis');
         // document.getElementById("thinking").style.display = "none"
         if (ellipse) {
             ellipse.remove();
         }
         // Update dialogue
-        appendMessage(data.dialogue, 'Alex',  null, data.input.allowed);
+        console.log("DATA", data)
+        if (data.passOn) { 
+            console.log("HAS PASS ON")
+            appendMessage(data.dialogue, 'Alex',  null, data.input.allowed, null, true);
+        } else {
+            appendMessage(data.dialogue, 'Alex',  null, data.input.allowed);
+        } 
         if (data.options) {
             displayOptions(data.options)
         }
@@ -473,9 +467,10 @@ async function parseAudio(audio, emoji) {
     }
 }
 
-function displaySubtitles(dialogue, divItem, showInput, sources) {
+function displaySubtitles(dialogue, divItem, showInput, sources, passOn = null) {
     const dialogueSection = divItem;
     const chatBox = document.getElementById("chat-container")
+    console.log("PASS ON IN SUBTITLES IS", passOn)
 
     // Start with the current content to avoid overwriting
     let existingText = dialogueSection.innerText.trim();
@@ -500,6 +495,11 @@ function displaySubtitles(dialogue, divItem, showInput, sources) {
             setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
+            if (passOn) {
+                console.log("MOVING ON TO SKYLAR")
+                handleUserInput(1, { userInput: "Start Introduction", script: textScriptSupport, gender: "male" });
+                focusCharacter("support")
+            }
             if (sources !== null) {
                 for (var j = 0; j < sources.length; j++) {
                     const link = document.createElement('p');

@@ -66,8 +66,14 @@ app.get('/summary', function(req, res) {
 
 try {
   const scriptPath = path.join(jsonDir, "Text_Script_Audio.json");
-  
   var scriptData = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
+} catch (err) {
+    console.error("Scripts do not exist.", err);
+}
+
+try {
+  const scriptPathSupport = path.join(jsonDir, "Text_Script_Support_Audio.json");
+  var scriptDataSupport = JSON.parse(fs.readFileSync(scriptPathSupport, 'utf8'));
 } catch (err) {
     console.error("Scripts do not exist.", err);
 }
@@ -76,8 +82,8 @@ try {
 app.get("/generate/prescripted", async (req, res) => {
     console.log("GENERATING PRESCRIPT")
   const audioMetadata = [];
-  const inputFile = path.join(jsonDir, 'Text_Script_Control.json');
-  const outputFile = path.join(jsonDir, 'Text_Script_Control_Audio.json');
+  const inputFile = path.join(jsonDir, 'Text_Script_Support.json');
+  const outputFile = path.join(jsonDir, 'Text_Script_Support_Audio.json');
 
   // Load the original JSON data
   let dialogueNodes;
@@ -300,7 +306,7 @@ function removeSpecialFormat(text) {
 app.post('/interact/:nodeId', async (req, res, next) => {
   const nodeId = parseInt(req.params.nodeId);
   var message = req.body.userMessage || {};
-  var gender = req.body.characterGender
+  var gender = req.body.gender
   var script = req.body.script
   var openai_assistant = ''
 
@@ -311,8 +317,8 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         nodeData = scriptData.find(item => item.nodeId === nodeId);
         openai_assistant = "asst_fcNdxIROJV8pDLdeQpLLIvpm"
       }
-      if (script === "Text_Script_Control_Audio.json") {
-        nodeData = scriptDataControl.find(item => item.nodeId === nodeId);
+      if (script === "Text_Script_Support_Audio.json") {
+        nodeData = scriptDataSupport.find(item => item.nodeId === nodeId);
         openai_assistant = "asst_3bdqP1yDe38blhEGJNGS2qaT"
       } 
 
@@ -332,6 +338,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
               nodeId: nodeId,
               dialogue: nodeData.dialogue,
               audio: audio,
+              passOn: nodeData.passOn || null,
               input: nodeData.input || null,
               options: nodeData.options || [],
               sources: nodeData.sources || null,

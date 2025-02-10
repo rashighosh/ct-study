@@ -107,19 +107,23 @@ export async function rotateCharacter(direction) {
 }
 
 // start audio for first agent audio (interrupts/disrupts any current audio)
-export async function characterAudio(audio, emoji) {
+export async function characterAudio(audio, emoji, agent) {
   console.log("PLAYING ANIMATION AND DELIVERING AUDIO")
+  var agentHead = head
+  if (agent === "support") {
+    agentHead = head1
+  }
   try {
     // if first audio turn, wave
     // chris: hand gestures are good, face gestures weird   
     if (first) {
-      head.playGesture('👋');
+      agentHead.playGesture('👋');
       first = false;
     }
     else if (emoji) {
-      head.playGesture(emoji);
+      agentHead.playGesture(emoji);
     }
-    head.replaceAndSpeakNewAudio(audio);
+    agentHead.replaceAndSpeakNewAudio(audio);
 
   } catch (error) {
     console.error('Error during speech processing:', error);
