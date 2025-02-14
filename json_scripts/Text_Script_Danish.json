@@ -1,0 +1,10 @@
+[
+    {
+        "nodeId": 1,
+        "dialogue": "Hey! I'm a virtual avatar of Danish, a PhD student in the Virtual Experiences Research Group, or VERG Lab, at University of Florida. Nice to meet you!",
+        "input": {
+            "allowed": true,
+            "nextNode": 1
+        }
+    }
+]

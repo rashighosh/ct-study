@@ -2,6 +2,7 @@
   {
     "nodeId": 1,
     "dialogue": "Hello, I'm Skylar! I'm here to help you talk to Dr. Alex by helping you come up with topics and questions to discuss and clarify anything Dr. Alex says. You can talk to me at any point during your conversation with Dr. Alex.",
+    "agent": "support",
     "input": {
       "allowed": true,
       "nextNode": 2
@@ -286,6 +287,7 @@
   {
     "nodeId": 2,
     "dialogue": "Alright, first, do you have health insurance (including Medicare or Medicaid)?",
+    "agent": "support",
     "input": {
       "allowed": true
     },

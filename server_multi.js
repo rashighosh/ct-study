@@ -11,8 +11,12 @@ ffmpeg.setFfmpegPath(ffmpegPath); // Set the path explicitly
 const bodyParser = require('body-parser');
 var sql = require("mssql");
 var favicon = require('serve-favicon');
+const PDFDocument = require('pdfkit');
+const { marked } = require('marked');
+
 
 app.use(favicon(path.join(__dirname,'public','favicon.ico')));
+
 
 require('dotenv').config();
 const openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
@@ -20,6 +24,9 @@ const rashi_openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
 app.use(bodyParser.json());
 
 const jsonDir = path.resolve(__dirname, './json_scripts')
+
+
+// Preload data at the beginning
 
 const config = {
     user: 'VergAdmin',
@@ -38,7 +45,9 @@ const config = {
     }
 }
 
+
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // index page
 app.get('/', function(req, res) {
@@ -52,6 +61,7 @@ app.get('/interaction', function(req, res) {
 app.get('/intro', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'intro.html'));
 });
+
 
 app.get('/select', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'select.html'));
@@ -86,11 +96,10 @@ function checkScripts(filesToCheck) {
 }
 
 const filesToCheck = [
-  // "Text_Script_Rashi_Audio.json",
-  // "Text_Script_Chris_Audio.json",
-  // "Text_Script_Roshan_Audio.json",
-  // "Text_Script_Danish_Audio.json",
-  "Text_Script_Audio.json"
+  "Text_Script_Rashi_Audio.json",
+  "Text_Script_Chris_Audio.json",
+  "Text_Script_Roshan_Audio.json",
+  "Text_Script_Danish_Audio"
 ];
 
 
@@ -305,6 +314,7 @@ async function processSentence(sentence, nodeData, req, isFirstChunk, agentGende
     }
 }
 
+
 function splitTextIntoSentences(text) {
     // Modern approach using Intl.Segmenter
     if (typeof Intl !== 'undefined' && Intl.Segmenter) {
@@ -320,21 +330,26 @@ function removeSpecialFormat(text) {
     return text.replace(/【\d+:\d+†[^】]+】/g, '');
 }
 
+
 app.post('/interact/:nodeId', async (req, res, next) => {
   const nodeId = parseInt(req.params.nodeId);
   var message = req.body.userMessage || {};
   var gender = req.body.gender
   var script = req.body.script
   var openai_assistant = ''
-  console.log(script)
+  console.log(req.body)
 
   try {
       // Find node data in preloaded metadata
       var nodeData
-      var scriptData =  JSON.parse(fs.readFileSync(path.join(jsonDir, script), 'utf8'));
-
-      nodeData = scriptData.find(item => item.nodeId === nodeId);
-      openai_assistant = "asst_fcNdxIROJV8pDLdeQpLLIvpm"
+      if (script === "Text_Script_Audio.json") {
+        nodeData = scriptData.find(item => item.nodeId === nodeId);
+        openai_assistant = "asst_fcNdxIROJV8pDLdeQpLLIvpm"
+      }
+      if (script === "Text_Script_Support_Audio.json") {
+        nodeData = scriptDataSupport.find(item => item.nodeId === nodeId);
+        openai_assistant = "asst_3bdqP1yDe38blhEGJNGS2qaT"
+      } 
 
       if (!nodeData) {
           console.error(`Node with ID ${nodeId} not found.`);

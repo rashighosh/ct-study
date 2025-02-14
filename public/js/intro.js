@@ -1,4 +1,4 @@
-import { characterAudio, characterAudioQueue, stopSpeaking } from './virtualcharacter.js';
+import { characterAudio, characterAudioQueue, stopSpeaking } from './virtualcharacter1.js';
 
 var continueNode = null
 var progress = 0;
@@ -9,7 +9,6 @@ var condition = ''
 var textScript
 var incrementTotal
 var characterName
-var characterVoice
 
 function checkScript() {
     console.log(sessionStorage.getItem("character"))
@@ -17,27 +16,21 @@ function checkScript() {
         case "rashi.glb":
             textScript = "Text_Script_Rashi_Audio.json"
             characterName = "Rashi"
-            characterVoice = "female";
             break;
         case "chris.glb":
             textScript = "Text_Script_Chris_Audio.json"
             characterName = "Chris"
-            characterVoice = "male";
             break;
         case "roshan.glb":
             textScript = "Text_Script_Roshan_Audio.json"
             characterName = "Roshan"
-            characterVoice = "male";
             break;
         case "danish.glb":
             textScript = "Text_Script_Danish_Audio.json"
             characterName = "Danish"
-            characterVoice = "male";
             break;
         default:
-            textScript = "Text_Script_Audio.json"
-            characterName = "Alex"
-            characterVoice = "female";
+          textScript = "Text_Script_Rashi_Audio.json"
     }
 }
 
@@ -265,7 +258,7 @@ async function handleStreamedResponse(reader) {
 
 async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
-    body.gender = characterVoice
+    sessionStorage.getItem("body") === 'F' ? body.gender = "female" : body.gender = "male"
     body.script = textScript
     console.log("ABOUT TO CALL BACKEND", body)
     const response = await fetch(`/interact/${nodeId}`, {
@@ -457,14 +450,11 @@ function displaySubtitles(dialogue, divItem) {
     let typewriterRunning = true;
     let i = 0; // Character index
 
-    document.getElementById("alex-name").classList.add("pulsate-text")
-
     // Typewriter effect
     function typeWriter() {
         if (!typewriterRunning) {
             // If the effect is canceled, instantly show remaining text
             cancelTypewriterEffect(dialogueSection, dialogue, sources);
-            document.getElementById("alex-name").classList.remove("pulsate-text")
             return;
         }
         if (i < textToAdd.length) {

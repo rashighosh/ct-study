@@ -19,6 +19,7 @@ if (condition === 0 || condition === 2 || condition === 4 || condition === 6 || 
 }
 
 var first=true;
+var counter = 0;
 
 // Load and show the avatar
 document.addEventListener('DOMContentLoaded', async function (e) {
@@ -26,32 +27,30 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   head = new TalkingHead(nodeAvatar, {
     ttsEndpoint: "blah",
     lipsyncModules: ["en"], // language
-    cameraY: .2,
-    cameraView: "upper", // full, mid, upper, head
-    cameraDistance: -.5, // negative is zoom in from base, postitive zoom out (in meters)
+    cameraY: 0,
+    cameraRotateY: -.5,
+    cameraView: "mid", // full, mid, upper, head
+    cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
+    // interactions w 3d scene, usually disable
+    cameraRotateEnable: false,
+    cameraPanEnable: false,
+    cameraZoomEnable: false,
+  });
+  const nodeAvatar1 = document.getElementById('virtualcharacter1');
+  head1 = new TalkingHead(nodeAvatar1, {
+    ttsEndpoint: "blah",
+    lipsyncModules: ["en"], // language
+    cameraY: 0,
+    cameraRotateY: .5,
+    cameraView: "mid", // full, mid, upper, head
+    cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
     // interactions w 3d scene, usually disable
     cameraRotateEnable: false,
     cameraPanEnable: false,
     cameraZoomEnable: false,
   });
 
-  const nodeAvatar1 = document.getElementById('virtualcharacter-1');
-  head1 = new TalkingHead(nodeAvatar1, {
-    ttsEndpoint: "blah",
-    lipsyncModules: ["en"], // language
-    cameraY: -.1,
-    cameraView: "upper", // full, mid, upper, head
-    cameraDistance: -1, // negative is zoom in from base, postitive zoom out (in meters)
-    // interactions w 3d scene, usually disable
-    cameraRotateY: 1.9,
-    cameraRotateEnable: true,
-    cameraPanEnable: false,
-    cameraZoomEnable: false,
-    lightDirectIntensity: 15,
-  });
-
   // Load and show the avatar
-  const nodeLoading = document.getElementById('loading');
   try {
     // renders avatar on screen
     await head.showAvatar({
@@ -59,81 +58,82 @@ document.addEventListener('DOMContentLoaded', async function (e) {
       body: 'F', // either M or F, specified in charaterType
       avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
       lipsyncLang: 'en',
-    }, (ev) => { // loading animation for fun while character is loading
-    //   if (ev.lengthComputable) {
-    //     let val = Math.min(100, Math.round(ev.loaded / ev.total * 100));
-    //     nodeLoading.textContent = "Loading " + val + "%";
-    //   }
-    });
+    }, (ev) => { });
     await head1.showAvatar({
       url: "/character-models/male.glb",
       body: 'M', // either M or F, specified in charaterType
       avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
       lipsyncLang: 'en',
-    }, (ev) => { // loading animation for fun while character is loading
-    //   if (ev.lengthComputable) {
-    //     let val = Math.min(100, Math.round(ev.loaded / ev.total * 100));
-    //     nodeLoading.textContent = "Loading " + val + "%";
-    //   }
-    });
-    // display start once loading is done
-    // nodeLoading.style.display = 'none';
-    // startBtn.style.display = 'block';
+    }, (ev) => { });
   } catch (error) {
     console.log(error);
-    // nodeLoading.textContent = error.toString();
   }
 
 });
 
-export async function rotateCharacter(direction) {
-  console.log(head1)
-  head1.rotateCharacter(direction);
-  if (direction === "towards") {
+export async function focusCharacter(character) {
+  if (character === "doctor") {
       head.setLighting({
-        lightDirectIntensity: 15,   // Dim directional light
-      })
-      head1.setLighting({
         lightDirectIntensity: 30,   // Dim directional light
       })
+      head1.setLighting({
+        lightDirectIntensity: 15,   // Dim directional light
+      })
   } else {
-    head1.setLighting({
+    head.setLighting({
       lightDirectIntensity: 15,   // Dim directional light
     })
-    head.setLighting({
+    head1.setLighting({
       lightDirectIntensity: 30,   // Dim directional light
     })
   }
 }
 
 // start audio for first agent audio (interrupts/disrupts any current audio)
-export async function characterAudio(audio, emoji, agent) {
-  console.log("PLAYING ANIMATION AND DELIVERING AUDIO")
-  var agentHead = head
+export async function characterAudio(audio, emoji, agent, onSpeechEnd) {
+  var agentHead = head;
   if (agent === "support") {
-    agentHead = head1
+      agentHead = head1;
   }
   try {
-    // if first audio turn, wave
-    // chris: hand gestures are good, face gestures weird   
-    if (first) {
-      agentHead.playGesture('👋');
-      first = false;
-    }
-    else if (emoji) {
-      agentHead.playGesture(emoji);
-    }
-    agentHead.replaceAndSpeakNewAudio(audio);
+      // Handle first-time gestures
+      if (counter === 0) {
+          agentHead.playGesture('👋');
+          counter++;
+      }
+      if (counter === 1) {
+          agentHead.playGesture('🤚');
+          counter++;
+      } else if (emoji) {
+          agentHead.playGesture(emoji);
+      }
+
+      console.log("BEEP");
+      agentHead.replaceAndSpeakNewAudio(audio);
+
+      // Wait 3 seconds, then start checking for speaking status
+      setTimeout(() => {
+          const checkSpeakingStatus = setInterval(() => {
+              if (!agentHead.isAudioPlaying) {
+                  console.log("Character has finished speaking!");
+                  clearInterval(checkSpeakingStatus); // Stop checking
+
+                  // **Trigger the callback when speaking finishes**
+                  if (onSpeechEnd) {
+                      onSpeechEnd();
+                  }
+              }
+          }, 1000); // Check every 1s
+      }, 3000); // Delay check start by 3s
 
   } catch (error) {
-    console.error('Error during speech processing:', error);
+      console.error('Error during speech processing:', error);
   }
 }
 
 // for streaming audio, waits for current audio to finish
 export async function characterAudioQueue(audio, emoji) {
   try {
-    // console.log("Checking speaking: ", head.isSpeaking, head.speechQueue);      
     if (emoji) {
       head.playGesture(emoji);
     }

@@ -1,28 +1,88 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hi! I'm Dr. Alex, a virtual doctor, here to help you talk through participating in cancer clinical research. My goal is to give you personalized information from the National Cancer Institute to help you understand what clinical research can mean for your cancer journey. Here with us is Skylar, a virtual caregiver who is here to support you. I'll let them introduce themselves.",
+        "dialogue": "Hello, I'm Skylar! I'm a virtual patient navigator, here to support you in exploring if clinical trials are a good option for your cancer journey. In a few moments, you'll talk to Dr. Alex, a virtual oncologist about clinical trials, but first, let's prepare.",
         "input": {
             "allowed": true,
             "nextNode": 2
-        }
-    },
-    {
-        "nodeId": 2,
-        "dialogue": "Alright, what would you like to talk about first? I can talk about topics such as safety, risks and benefits of clinical trials, and what randomization means.",
-        "input": {
-            "allowed": true
-        },
-        "response": {
-            "alterDialogue": true
         },
         "options": [
             {
-                "optionText": "Ask Skylar for guidance.",
-                "support": true,
+                "optionText": "Let's begin.",
                 "nextNode": 2,
                 "increment": true
             }
         ]
+    },
+    {
+        "nodeId": 2,
+        "dialogue": "Alright, first, I want to learn more about your experiences. Can you tell me a bit about your relationship with your current oncologist or doctor? I've listed some prompts to help you think about this.",
+        "input": {
+            "allowed": true,
+            "nextNode": 3
+        },
+        "response": {
+            "alterDialogue": false
+        },
+        "prompts": [
+            "Do you feel like your oncologist/doctor cares about you as an individual?",
+            "Do you feel comfortable sharing your concerns with your oncologist/doctor?"
+        ]
+    },
+    {
+        "nodeId": 3,
+        "dialogue": " Moving on, what are your perspectives on the quality of treatment you might get in a clinical trial? I've listed some prompts to help you think about this.",
+        "input": {
+            "allowed": true,
+            "nextNode": 4
+        },
+        "response": {
+            "alterDialogue": false
+        },
+        "prompts": [
+            "Do you have any concerns about the care provided during clinical trials?",
+            "Do you think clinical trials offer the best possible treatment?"
+        ]
+    },
+    {
+        "nodeId": 4,
+        "dialogue": " Next, how do you feel about randomization? I've listed some prompts to help you think about this.",
+        "input": {
+            "allowed": true,
+            "nextNode": 5
+        },
+        "response": {
+            "alterDialogue": false
+        },
+        "prompts": [
+            "Are you comfortable with randomization?",
+            "Would you prefer your oncologist/doctor to choose your treatment?"
+        ]
+    },
+    {
+        "nodeId": 5,
+        "dialogue": " Finally, what are your thoughts on the possibility that by joining a clinical trial, you could help future patients with your cancer? I've listed some prompts to help you think about this.",
+        "input": {
+            "allowed": true,
+            "nextNode": 6
+        },
+        "response": {
+            "alterDialogue": false
+        },
+        "prompts": [
+            "Is helping others a priority for you?",
+            "Are you more focused on doing what's best for you?"
+        ]
+    },
+    {
+        "nodeId": 6,
+        "dialogue": " Thank you for sharing about yourself! Based on your responses, I've come up with a few questions and topics I think would be good to talk about with Dr. Alex.",
+        "input": {
+            "allowed": true,
+            "nextNode": 6
+        },
+        "response": {
+            "alterDialogue": false
+        }
     }
 ]
