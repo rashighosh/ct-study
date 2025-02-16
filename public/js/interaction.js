@@ -1,4 +1,4 @@
-import { characterAudio, characterAudioQueue, stopSpeaking } from './virtualcharacter.js';
+import { characterAudio, characterAudioQueue, stopSpeaking, focusCharacter } from './virtualcharacter.js';
 
 var continueNode = null
 var progress = 0;
@@ -6,42 +6,11 @@ var userInfo = ""
 var informationTranscript = new Map()
 var id = ''
 var condition = ''
-var textScript
+const textScript = "Text_Script_Audio.json"
+const textScriptSupport = "Text_Script_Support_Audio.json"
 var incrementTotal
-var characterName
-var characterVoice
 
-function checkScript() {
-    console.log(sessionStorage.getItem("character"))
-    switch (sessionStorage.getItem("character")) {
-        case "rashi.glb":
-            textScript = "Text_Script_Rashi_Audio.json"
-            characterName = "Rashi"
-            characterVoice = "female";
-            break;
-        case "chris.glb":
-            textScript = "Text_Script_Chris_Audio.json"
-            characterName = "Chris"
-            characterVoice = "male";
-            break;
-        case "roshan.glb":
-            textScript = "Text_Script_Roshan_Audio.json"
-            characterName = "Roshan"
-            characterVoice = "male";
-            break;
-        case "danish.glb":
-            textScript = "Text_Script_Danish_Audio.json"
-            characterName = "Danish"
-            characterVoice = "male";
-            break;
-        default:
-            textScript = "Text_Script_Audio.json"
-            characterName = "Alex"
-            characterVoice = "female";
-    }
-}
 
-checkScript()
 
 function getCurrentDateTime() {
     var currentDate = new Date();
@@ -53,6 +22,32 @@ function getCurrentDateTime() {
 
 
 document.addEventListener('DOMContentLoaded', (event) => {  
+    document.getElementById("study-button-1").onclick = function() {
+        document.getElementById("study1").style.display = 'block'
+        document.getElementById("study2").style.display = 'none'
+        document.getElementById("study3").style.display = 'none'
+        document.getElementById("study-button-1").classList.add('active')
+        document.getElementById("study-button-2").classList.remove('active')
+        document.getElementById("study-button-3").classList.remove('active')
+    }
+    
+    document.getElementById("study-button-2").onclick = function() {
+        document.getElementById("study2").style.display = 'block'
+        document.getElementById("study1").style.display = 'none'
+        document.getElementById("study3").style.display = 'none'
+        document.getElementById("study-button-2").classList.add('active')
+        document.getElementById("study-button-1").classList.remove('active')
+        document.getElementById("study-button-3").classList.remove('active')
+    }
+    
+    document.getElementById("study-button-3").onclick = function() {
+        document.getElementById("study3").style.display = 'block'
+        document.getElementById("study1").style.display = 'none'
+        document.getElementById("study2").style.display = 'none'
+        document.getElementById("study-button-3").classList.add('active')
+        document.getElementById("study-button-2").classList.remove('active')
+        document.getElementById("study-button-1").classList.remove('active')
+    }
 
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -60,10 +55,37 @@ document.addEventListener('DOMContentLoaded', (event) => {
     id = urlParams.get('id')
     condition = parseInt(condition)
 
+    document.getElementById("finish-btn").addEventListener('click', () => {
+        // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+        console.log("CLICKED ASK")
+        document.getElementById("virtualcharacter").style.filter = "blur(2px)"
+        document.getElementById("virtualcharacter-1").style.filter = "blur(0px)"
+        focusCharacter("support");
+    });
+
+    document.getElementById("finish-btn1").addEventListener('click', () => {
+        // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+        console.log("CLICKED ASK")
+        document.getElementById("virtualcharacter").style.filter = "blur(0px)"
+        document.getElementById("virtualcharacter-1").style.filter = "blur(2px)"
+        focusCharacter("doctor");
+    });
+
     let loadBody = { transcript: textScript }
 
     showLoading();
 });
+
+function currentSpeakingCharacter(agent) {
+    focusCharacter(agent);
+    if (agent === "support") {
+        // document.getElementById("virtualcharacter").style.filter = "blur(2px)"
+        // document.getElementById("virtualcharacter-1").style.filter = "blur(0px)"
+    } else {
+        // document.getElementById("virtualcharacter").style.filter = "blur(0px)"
+        // document.getElementById("virtualcharacter-1").style.filter = "blur(2px)"
+    }
+}
 
 function showLoading() {
     // document.getElementById('start').style.display = "none";
@@ -121,7 +143,7 @@ function incrementProgress(double = false) {
     }, 50); // Adjust this value to change the speed of the progress
 }
 
-function appendMessage(message, speaker, nextNode = null) {
+function appendMessage(message, speaker, agent, nextNode = null, passOn = null) {
     const chatBox = document.getElementById("chat-container")
     const labelText = document.createElement('div');
     const messageText = document.createElement('div');
@@ -132,7 +154,7 @@ function appendMessage(message, speaker, nextNode = null) {
     if (speaker === 'user') {
         labelText.innerText = `You`
     } else {
-        labelText.innerText = characterName
+        agent === 'doctor' ? labelText.innerText = `Alex` : labelText.innerText = `Skylar`;
     }
     speaker === 'user' ? messageText.className = "user-chatbot-message" : messageText.className = "alex-chatbot-message"
 
@@ -154,8 +176,8 @@ function appendMessage(message, speaker, nextNode = null) {
         messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
-        displaySubtitles(message, messageText)
-        informationTranscript.set(characterName + ": " + getCurrentDateTime(), message);
+        displaySubtitles(message, messageText, passOn)
+        informationTranscript.set("ALEX " + getCurrentDateTime(), message);
         updateTranscript()
     }
     if (speaker === 'user') {
@@ -223,7 +245,7 @@ async function handleStreamedResponse(reader) {
                         // document.getElementById("thinking").style.display = "none"
                         console.log(data.annotations)
                         // Update dialogue
-                        appendMessage(data.wholeDialogue, 'Alex');
+                        appendMessage(data.wholeDialogue, 'Alex', data.agent);
                         if (data.options) {
                             displayOptions(data.options)
                         }
@@ -231,7 +253,7 @@ async function handleStreamedResponse(reader) {
                             const inputArea = document.getElementById("input-area")
                             const userInput = document.getElementById('user-input');
                             document.getElementById('send-btn').onclick = function() {
-                                appendMessage('text', 'user', null, data.input.nextNode);
+                                appendMessage('text', 'user', null, data.input.nextNode, null);
                                 const optionsArea = document.getElementById("options-area")
                                 optionsArea.innerHTML = ''
                                 inputArea.style.visibility = 'visible'
@@ -239,7 +261,7 @@ async function handleStreamedResponse(reader) {
                             userInput.onkeydown = function(event) {
                                 if (event.key === 'Enter' && !event.shiftKey) {
                                     event.preventDefault();
-                                    appendMessage('text', 'user', null, data.input.nextNode);
+                                    appendMessage('text', 'user', null, data.input.nextNode, null);
                                     const optionsArea = document.getElementById("options-area")
                                     optionsArea.innerHTML = ''
                                     inputArea.style.visibility = 'visible'
@@ -265,8 +287,8 @@ async function handleStreamedResponse(reader) {
 
 async function handleUserInput(nodeId, body) {
     body.userInfo = userInfo
-    body.gender = characterVoice
-    body.script = textScript
+    // body.characterGender = gender
+    // body.script = textScript
     console.log("ABOUT TO CALL BACKEND", body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
@@ -280,15 +302,13 @@ async function handleUserInput(nodeId, body) {
     }
 
     const contentType = response.headers.get('Content-Type');
-    var agent = body.script === textScript ? "doctor" : "support"
-    console.log(agent)
 
     // Handle streamed response
     if (contentType && contentType.includes('prerecorded')) { // not expecting ANY streamed response
         // Handle pre-recorded response
         const data = await response.json(); // gives ENTIRE audio at once
         // process audio for front end
-        await handlePreRecordedResponse(data, agent);
+        await handlePreRecordedResponse(data, data.agent);
     }
     else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
         const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
@@ -319,8 +339,7 @@ async function handlePreRecordedResponse(data, agent) {
             console.log("✅ Interaction.js notified: Speech has ended!");
             if (data.passOn) {
                 console.log("MOVING ON TO SKYLAR")
-                handleUserInput(1, { userInput: "Start Introduction", script: textScriptSupport, gender: "male" });
-                currentSpeakingCharacter("support")
+                handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" });
             }
         });
         
@@ -331,9 +350,12 @@ async function handlePreRecordedResponse(data, agent) {
         }
         // Update dialogue
         console.log("DATA", data)
-   
-        appendMessage(data.dialogue, characterName, null);
-
+        if (data.passOn) { 
+            console.log("HAS PASS ON")
+            appendMessage(data.dialogue, 'Alex',  data.agent, null, data.passOn);
+        } else {
+            appendMessage(data.dialogue, 'Alex',  data.agent);
+        } 
         if (data.options) {
             displayOptions(data.options)
         }
@@ -343,14 +365,14 @@ async function handlePreRecordedResponse(data, agent) {
             inputArea.style.visibility = 'visible'
             document.getElementById('send-btn').onclick = function() {
                 inputArea.style.visibility = 'visible'
-                appendMessage('text', 'user', data.input.nextNode);
+                appendMessage('text', 'user', null, data.input.nextNode, null);
                 const optionsArea = document.getElementById("options-area")
                 optionsArea.innerHTML = ''
             };  
             userInput.onkeydown = function(event) {
                 if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();
-                    appendMessage('text', 'user', data.input.nextNode);
+                    appendMessage('text', 'user', null, data.input.nextNode, null);
                     const optionsArea = document.getElementById("options-area")
                     optionsArea.innerHTML = ''
                     inputArea.style.visibility = 'visible'
@@ -387,7 +409,7 @@ function displayOptions(options) {
         } else {
             button.addEventListener('click', () => {
                 optionsArea.innerHTML = ''
-                appendMessage(userText, 'user', null)
+                appendMessage(userText, 'user', null, null, null)
                 let messageBody = { userMessage: option.optionText }
                 if (option.nextNode) {
                     if (option.increment === true) {
@@ -447,9 +469,10 @@ async function parseAudio(audio, emoji) {
     }
 }
 
-function displaySubtitles(dialogue, divItem) {
+function displaySubtitles(dialogue, divItem, passOn = null) {
     const dialogueSection = divItem;
     const chatBox = document.getElementById("chat-container")
+    console.log("PASS ON IN SUBTITLES IS", passOn)
 
     // Start with the current content to avoid overwriting
     let existingText = dialogueSection.innerText.trim();
@@ -457,14 +480,11 @@ function displaySubtitles(dialogue, divItem) {
     let typewriterRunning = true;
     let i = 0; // Character index
 
-    document.getElementById("alex-name").classList.add("pulsate-text")
-
     // Typewriter effect
     function typeWriter() {
         if (!typewriterRunning) {
             // If the effect is canceled, instantly show remaining text
             cancelTypewriterEffect(dialogueSection, dialogue, sources);
-            document.getElementById("alex-name").classList.remove("pulsate-text")
             return;
         }
         if (i < textToAdd.length) {
@@ -571,6 +591,23 @@ helpBtn.onclick = function() {
     var currentURLelement = document.getElementById("current-link-help")
     const currentURL = window.location.href;
     currentURLelement.innerHTML = currentURL
+}
+
+// Get the modal
+var moreInfoModal = document.getElementById("more-info-modal");
+var closeMoreInfoModal = document.getElementById("close-more-info-modal");
+closeMoreInfoModal.onclick = function() {
+    moreInfoModal.style.display = "none";
+}
+
+var ctModal = document.getElementById("studies-modal");
+document.getElementById("close-ct-modal").onclick = function() {
+    ctModal.style.display = "none";
+}
+
+var closePDFModal = document.getElementById("close-pdf-modal");
+closePDFModal.onclick = function() {
+    document.getElementById("pdfModal").style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it

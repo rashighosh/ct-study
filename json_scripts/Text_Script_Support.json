@@ -1,7 +1,7 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hello, I'm Skylar! I'm here to help you talk to Dr. Alex by helping you come up with topics and questions to discuss and clarify anything Dr. Alex says. You can talk to me at any point during your conversation with Dr. Alex.",
+        "dialogue": "And I'm Skylar, a virtual caregiver. I'm here to support you in talking to Dr. Alex about clinical trials based on your knowledge and feelings you shared in the pre-survey. You'll lead the conversation with Dr. Alex, and will let you know if I have something to add.",
         "agent": "support",
         "input": {
             "allowed": true,

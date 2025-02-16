@@ -1,85 +1,40 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hello, I'm Skylar! I'm a virtual patient navigator, here to support you in exploring if clinical trials are a good option for your cancer journey. In a few moments, you'll talk to Dr. Alex, a virtual oncologist about clinical trials, but first, let's prepare.",
+        "dialogue": "Hello, I'm Dr. Alex! I'm a virtual oncologist here to talk to you about participating in clinical trials. My knowledge is based on information from the National Cancer Institute.",
+        "agent": "doctor",
+        "passOn": true,
         "input": {
-            "allowed": true,
+            "allowed": false,
             "nextNode": 2
-        },
-        "options": [
-            {
-                "optionText": "Let's begin.",
-                "nextNode": 2,
-                "increment": true
-            }
-        ]
+        }
     },
     {
         "nodeId": 2,
-        "dialogue": "Alright, first, I want to learn more about your experiences. Can you tell me a bit about your relationship with your current oncologist or doctor? I've listed some prompts to help you think about this.",
+        "dialogue": "And I'm Skylar, a virtual caregiver. I'm here to support you in talking to Dr. Alex about clinical trials based on your knowledge and feelings you shared in the pre-survey. You'll lead the conversation with Dr. Alex, and will let you know if I have something to add.",
+        "agent": "support",
+        "passOn": true,
         "input": {
-            "allowed": true,
+            "allowed": false,
             "nextNode": 3
-        },
-        "response": {
-            "alterDialogue": false
-        },
-        "prompts": [
-            "Do you feel like your oncologist/doctor cares about you as an individual?",
-            "Do you feel comfortable sharing your concerns with your oncologist/doctor?"
-        ]
+        }
     },
     {
         "nodeId": 3,
-        "dialogue": " Moving on, what are your perspectives on the quality of treatment you might get in a clinical trial? I've listed some prompts to help you think about this.",
+        "dialogue": "Alright, what would you like to talk about first?",
+        "agent": "doctor",
         "input": {
             "allowed": true,
             "nextNode": 4
-        },
-        "response": {
-            "alterDialogue": false
-        },
-        "prompts": [
-            "Do you have any concerns about the care provided during clinical trials?",
-            "Do you think clinical trials offer the best possible treatment?"
-        ]
+        }
     },
     {
         "nodeId": 4,
-        "dialogue": " Next, how do you feel about randomization? I've listed some prompts to help you think about this.",
+        "dialogue": "ChatGPT Response",
+        "agent": "doctor",
         "input": {
             "allowed": true,
-            "nextNode": 5
-        },
-        "response": {
-            "alterDialogue": false
-        },
-        "prompts": [
-            "Are you comfortable with randomization?",
-            "Would you prefer your oncologist/doctor to choose your treatment?"
-        ]
-    },
-    {
-        "nodeId": 5,
-        "dialogue": " Finally, what are your thoughts on the possibility that by joining a clinical trial, you could help future patients with your cancer? I've listed some prompts to help you think about this.",
-        "input": {
-            "allowed": true,
-            "nextNode": 6
-        },
-        "response": {
-            "alterDialogue": false
-        },
-        "prompts": [
-            "Is helping others a priority for you?",
-            "Are you more focused on doing what's best for you?"
-        ]
-    },
-    {
-        "nodeId": 6,
-        "dialogue": " Thank you for sharing about yourself! Based on your responses, I've come up with a few questions and topics I think would be good to talk about with Dr. Alex.",
-        "input": {
-            "allowed": true,
-            "nextNode": 6
+            "nextNode": 4
         },
         "response": {
             "alterDialogue": false

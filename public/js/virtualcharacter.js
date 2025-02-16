@@ -71,6 +71,16 @@ document.addEventListener('DOMContentLoaded', async function (e) {
 
 });
 
+export async function thinkingPose() {
+  // head.playGesture('thinking', 60);
+  // head.playGesture('👀', 60);
+}
+
+export async function stopThinking() {
+  // console.log("STOP THINKING")
+  // head.stopGesture();
+}
+
 export async function focusCharacter(character) {
   if (character === "doctor") {
       head.setLighting({
@@ -92,30 +102,28 @@ export async function focusCharacter(character) {
 // start audio for first agent audio (interrupts/disrupts any current audio)
 export async function characterAudio(audio, emoji, agent, onSpeechEnd) {
   var agentHead = head;
+  var direction = -.5
+  console.log("AGENT IS:", agent)
   if (agent === "support") {
       agentHead = head1;
+      direction = .5
   }
+  console.log(direction)
   try {
       // Handle first-time gestures
       if (counter === 0) {
-          agentHead.playGesture('👋');
-          counter++;
-      }
-      if (counter === 1) {
           agentHead.playGesture('🤚');
           counter++;
-      } else if (emoji) {
-          agentHead.playGesture(emoji);
       }
-
-      console.log("BEEP");
       agentHead.replaceAndSpeakNewAudio(audio);
+      // agentHead.rotateCharacter(direction)
 
       // Wait 3 seconds, then start checking for speaking status
       setTimeout(() => {
           const checkSpeakingStatus = setInterval(() => {
               if (!agentHead.isAudioPlaying) {
                   console.log("Character has finished speaking!");
+                  // agentHead.rotateCharacter(1 - direction)
                   clearInterval(checkSpeakingStatus); // Stop checking
 
                   // **Trigger the callback when speaking finishes**

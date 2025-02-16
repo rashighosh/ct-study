@@ -343,11 +343,8 @@ app.post('/interact/:nodeId', async (req, res, next) => {
 
       if (nodeData.dialogue && nodeData.response == null) {
           var audio
-          if (gender === "male") {
-            audio = nodeData.audioM;
-          } else {
-            audio = nodeData.audioF;
-          }
+          console.log("NODE DATA IS", nodeData.agent)
+          nodeData.agent === "doctor" ? audio = nodeData.audioF : audio = nodeData.audioM
           const responseData = {
               nodeId: nodeId,
               dialogue: nodeData.dialogue,
@@ -358,6 +355,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
               options: nodeData.options || [],
               sources: nodeData.sources || null,
           };
+          console.log("RETURNING THE FOLLOWING", responseData)
           res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
           return res.json(responseData);
       } else {

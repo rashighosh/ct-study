@@ -429,22 +429,22 @@ class TalkingHead {
           { name: 'pose',
             idle: {
               alt: [
-                { p: 0.6, delay: [5000,30000], vs: { pose: ['side'] } },
-                { p: 0.2, delay: [5000,30000], vs: { pose: ['hip'] },
-                  'M': { delay: [5000,30000], vs: { pose: ['side'] } }
-                },
+                // { p: 0.6, delay: [5000,30000], vs: { pose: ['side'] } },
+                // { p: 0.2, delay: [5000,30000], vs: { pose: ['hip'] },
+                //   'M': { delay: [5000,30000], vs: { pose: ['side'] } }
+                // },
                 { p: 0.1, delay: [5000,30000], vs: { pose: ['straight'] } },
-                { delay: [5000,10000], vs: { pose: ['wide'] } },
-                { delay: [1000,3000], vs: { pose: ['turn'] } },
+                // { delay: [5000,10000], vs: { pose: ['wide'] } },
+                // { delay: [1000,3000], vs: { pose: ['turn'] } },
               ]
             },
             speaking: {
               alt: [
-                { p: 0.4, delay: [5000,30000], vs: { pose: ['side'] } },
+                // { p: 0.4, delay: [5000,30000], vs: { pose: ['side'] } },
                 { p: 0.4, delay: [5000,30000], vs: { pose: ['straight'] } },
-                { delay: [5000,20000], vs: { pose: ['hip'] },
-                  'M': { delay: [5000,30000], vs: { pose: ['wide'] } }
-                },
+                // { delay: [5000,20000], vs: { pose: ['hip'] },
+                //   'M': { delay: [5000,30000], vs: { pose: ['wide'] } }
+                // },
               ]
             }
           },
@@ -4015,6 +4015,28 @@ class TalkingHead {
     this.lookAtCamera(10000);
     // Speak the new audio
     this.speakAudio(newAudio, options, onSubtitles);
+  }
+
+  smoothRotate(targetRotation) {
+    if (!this.armature) return;
+    let startRotation = this.armature.rotation.y;
+    let duration = 1000;
+    let startTime = performance.now();
+    const animate = (time) => {
+        let elapsedTime = time - startTime;
+        let progress = Math.min(elapsedTime / duration, 1);
+        this.armature.rotation.y = startRotation + (targetRotation - startRotation) * progress;
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+    requestAnimationFrame(animate);
+}
+  rotateCharacter(direction) {
+    console.log("IN ROTATE CHARACTER", direction)
+
+    this.smoothRotate(direction); // Correct reference
+
   }
   
 
