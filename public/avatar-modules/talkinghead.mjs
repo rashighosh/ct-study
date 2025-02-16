@@ -161,7 +161,7 @@ class TalkingHead {
       avatarMute: false,
       avatarIdleEyeContact: 0.2,
       avatarIdleHeadMove: 0.5,
-      avatarSpeakingEyeContact: 0.5,
+      avatarSpeakingEyeContact: 1,
       avatarSpeakingHeadMove: 0.5,
       avatarIgnoreCamera: false,
       listeningSilenceThresholdLevel: 40,
@@ -2804,6 +2804,7 @@ class TalkingHead {
   * @param {subtitlesfn} [onsubtitles=null] Callback when a subtitle is written
   */
   speakAudio(r, opt = null, onsubtitles = null ) {
+    console.log("SUBTITLES", onsubtitles)
     opt = opt || {};
     const lipsyncLang = opt.lipsyncLang || this.avatar.lipsyncLang || this.opt.lipsyncLang;
     const o = {};
@@ -4017,7 +4018,8 @@ class TalkingHead {
     this.speakAudio(newAudio, options, onSubtitles);
   }
 
-  smoothRotate(targetRotation) {
+  rotateCharacter(targetRotation) {
+    console.log("IN ROTATE CHARACTER", targetRotation)
     if (!this.armature) return;
     let startRotation = this.armature.rotation.y;
     let duration = 1000;
@@ -4031,12 +4033,6 @@ class TalkingHead {
         }
     };
     requestAnimationFrame(animate);
-}
-  rotateCharacter(direction) {
-    console.log("IN ROTATE CHARACTER", direction)
-
-    this.smoothRotate(direction); // Correct reference
-
   }
   
 

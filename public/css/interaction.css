@@ -98,8 +98,29 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 30%;
-    padding: 25px;
+    padding: 0 25px 15px 25px;
+}
+
+#interaction-area {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#filter {
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  background-color: black;
+  z-index: 9;
+  opacity: .5;
+  display: none;
+}
+
+.convo-history-title {
+  text-align: center;
+  font-weight: 500;
+  font-size: 25px;
 }
 
 #ask {
@@ -109,6 +130,7 @@ body {
 .room {
   display: flex;
   justify-content: space-evenly;
+  height: 90%;
 }
 
 canvas {
@@ -124,9 +146,16 @@ canvas {
   overflow: visible !important
 }
 
+#history {
+  display: flex;
+  text-align: left;
+  width: 95%;
+  padding: 5px;
+}
+
 #virtualcharacter {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     filter: blur(0px);
     display: flex;
     flex-direction: column;
@@ -135,9 +164,31 @@ canvas {
     overflow: hidden !important
 }
 
+#chatbox-doctor {
+  width: 50%; /* or any specific width */
+  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  text-align: left;
+  bottom: 15px;
+}
+
+#chatbox-support {
+  width: 50%; /* or any specific width */
+  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  text-align: left;
+  bottom: 15px;
+}
+
 #virtualcharacter1 {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   filter: blur(0px);
   display: flex;
   flex-direction: column;
@@ -190,16 +241,21 @@ canvas {
 }
 
 #chat-container {
-  height: 65vh;
-  width: 95% !important;
+  width: 50%; /* or any specific width */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999999;
+  text-align: left;
   padding: 15px;
   border: 0px;
   border-radius: 21px;
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow-y: scroll; /* Always show the vertical scrollbar */
   scrollbar-gutter: stable;
-  background-color: rgba(255, 255, 255, 0.51);
+  background-color: rgba(255, 255, 255, 1);
   margin-bottom: 15px;
 }
 
@@ -220,7 +276,7 @@ canvas {
 #input-area {
   visibility: visible;
   width: 95%;
-  height: 200px;
+  height: 95px;
   justify-content: center;
   display: flex;
   flex-direction: column;
@@ -245,9 +301,9 @@ button.option-btn {
     justify-content: center;
     border-radius: 50%;
     background-image: var(--small-gradient) !important;
-    width: 45px !important;
-    height: 45px !important;
-    padding: 11px;
+    width: 35px !important;
+    height: 35px !important;
+    padding: 7px;
     margin: 5px;
   }
 
@@ -269,7 +325,6 @@ button.option-btn {
 
   .user-input {
     width: 95%;
-    height: 155px;
     font-family: "Poppins", sans-serif;
     font-weight: 400;
     font-size: 19px;
@@ -340,22 +395,31 @@ a {
 }
 
 .alex-chatbot-message {
-    background-color: rgba(255, 255, 255, 0.55);
+    background-color: rgba(0, 0, 0, 0.456);
+    color: white;
     border-radius: 25px 25px 25px 0px;
     padding: 15px;
-    position: relative;
+    position: absolute;
+    bottom: 0px;
 }
 
-.alex-chatbot-message::before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: var(--gradient-light);
-    border-radius: 27px 27px 27px 0px;
-    z-index: -1;
+.history-alex-chatbot-message {
+  background-color: rgba(255, 255, 255, 0.55);
+  border-radius: 25px 25px 25px 0px;
+  padding: 15px;
+  position: relative;
+}
+
+.history-alex-chatbot-message::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--gradient-light);
+  border-radius: 27px 27px 27px 0px;
+  z-index: -1;
 }
 
 .user-chatbot-message {
@@ -731,6 +795,20 @@ p.info.help a {
 }
 
 #help-icon {
+  background-color: var(--blue);
+  border: none;
+  border-radius: 50%;
+  font-size: 15px;
+  cursor: pointer;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  height: 25px;
+  width: 25px;
+  z-index: 9999999;
+}
+
+#close-chat-history-icon {
   background-color: var(--blue);
   border: none;
   border-radius: 50%;

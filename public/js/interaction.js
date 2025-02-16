@@ -71,6 +71,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
         focusCharacter("doctor");
     });
 
+    document.getElementById("history").addEventListener('click', () => {
+        console.log("CLICKED CONVO HISTORY")
+        document.getElementById("chat-container").style.display = 'flex'
+        document.getElementById("filter").style.display = 'block'
+    });
+
+    document.getElementById("close-chat-history-icon").addEventListener('click', () => {
+        document.getElementById("chat-container").style.display = 'none'
+        document.getElementById("filter").style.display = 'none'
+    });
+
+
     let loadBody = { transcript: textScript }
 
     showLoading();
@@ -144,10 +156,15 @@ function incrementProgress(double = false) {
 }
 
 function appendMessage(message, speaker, agent, nextNode = null, passOn = null) {
-    const chatBox = document.getElementById("chat-container")
+    var chatBox
+    agent === 'doctor' ? chatBox = document.getElementById("chatbox-doctor") : chatBox = document.getElementById("chatbox-support")
     const labelText = document.createElement('div');
     const messageText = document.createElement('div');
     const messageItem = document.createElement('div');
+
+    const messageTextHistory = document.createElement('div');
+    const messageItemHistory = document.createElement('div');
+
 
     labelText.className = "label-text";
 
@@ -157,6 +174,8 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         agent === 'doctor' ? labelText.innerText = `Alex` : labelText.innerText = `Skylar`;
     }
     speaker === 'user' ? messageText.className = "user-chatbot-message" : messageText.className = "alex-chatbot-message"
+    speaker === 'user' ? messageTextHistory.className = "user-chatbot-message" : messageTextHistory.className = "history-alex-chatbot-message"
+
 
     if (speaker === 'user') {
         if (message === 'text') {
@@ -173,9 +192,15 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         updateTranscript()
     } else {
         messageItem.className = "message-item"
-        messageItem.appendChild(labelText);
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
+
+        messageItemHistory.className = "message-item"
+        messageTextHistory.innerText = message
+        messageItemHistory.appendChild(labelText);
+        messageItemHistory.appendChild(messageTextHistory);
+        document.getElementById("chat-container").appendChild(messageItemHistory)
+
         displaySubtitles(message, messageText, passOn)
         informationTranscript.set("ALEX " + getCurrentDateTime(), message);
         updateTranscript()
@@ -185,7 +210,7 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         appendLoadingDots();
     }
 
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+    // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
 }
 
 function appendLoadingDots() {
@@ -285,7 +310,12 @@ async function handleStreamedResponse(reader) {
     }
 }
 
-async function handleUserInput(nodeId, body) {
+async function handleUserInput(nodeId, body, prevAgent = null) {
+    if (prevAgent === "doctor") {
+        document.getElementById("chatbox-doctor").innerHTML = ''
+    } else {
+        document.getElementById("chatbox-support").innerHTML = ''
+    }
     body.userInfo = userInfo
     // body.characterGender = gender
     // body.script = textScript
@@ -338,8 +368,7 @@ async function handlePreRecordedResponse(data, agent) {
         characterAudio(audioData, null, agent, () => {
             console.log("✅ Interaction.js notified: Speech has ended!");
             if (data.passOn) {
-                console.log("MOVING ON TO SKYLAR")
-                handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" });
+                handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, agent);
             }
         });
         
@@ -500,7 +529,7 @@ function displaySubtitles(dialogue, divItem, passOn = null) {
             const optionsArea = document.getElementById("options-area")
             optionsArea.style.visibility = "visible"
         }
-        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+        // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
     }
 
     typeWriter(); // Start typing animation
