@@ -1,0 +1,73 @@
+[
+  {
+    "nodeId": 1,
+    "dialogue": "Hello, I'm Skylar, your virtual caregiver for this intervention. My goal is to support you in deciding if being in a clinical trial is right for you by taking into account your knowledge and feelings. To interact with me, you can either type your own message, or click one of the buttons that pop up. Now first, what should I call you? You can either type your name or click the button to remain anonymous.",
+    "agent": "support",
+    "passOn": false,
+    "input": {
+      "allowed": true,
+      "nextNode": 2
+    },
+    "options": [
+      {
+        "optionText": "I'd like to remain anonymous.",
+        "nextNode": 2
+      }
+    ]
+  },
+  {
+    "nodeId": 2,
+    "dialogue": " I'm also here to make sure you receive information in a way that is understandable. Throughout the intervention, you'll notice a slider you can use to make the information presented more or less technical. At any point, please use this slider to let me know if I should present the information differently.",
+    "agent": "support",
+    "passOn": true,
+    "response": {
+      "useAi": {
+        "prependAiDialogue": true
+      }
+    },
+    "input": {
+      "allowed": true,
+      "nextNode": 3
+    }
+  },
+  {
+    "nodeId": 3,
+    "dialogue": "Let's give it a quick try now. Use the slider to let me know how well you understand the information next to me, and I'll rephrase it accordingly! When you're done, let me know or click Continue button below.",
+    "agent": "support",
+    "passOn": false,
+    "showQuestions": {
+      "example": {
+         "Cancer clinical trials are an opportunity to get help and contribute to research, but misunderstandings about what it means to join a study could steer people away." : true
+      }
+    },
+    "input": {
+      "allowed": true,
+      "nextNode": 4
+    },
+    "options": [
+      {
+        "optionText": "Continue",
+        "nextNode": 4
+      }
+    ]
+  },
+  {
+    "nodeId": 4,
+    "dialogue": "Alright, great! Now, I've brought in Doctor Alex who will help answer your questions about clinical trials.",
+    "agent": "support",
+    "passOn": true,
+    "input": {
+      "allowed": false,
+      "nextNode": 5
+    }
+  },
+  {
+    "nodeId": 5,
+    "dialogue": "Hello there! I'm Doctor Alex, a virtual oncologist whose knowledge is based on information from the National Cancer Institute.",
+    "agent": "doctor",
+    "input": {
+      "allowed": false,
+      "nextNode": 5
+    }
+  }
+]

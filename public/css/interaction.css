@@ -141,11 +141,6 @@ canvas {
   width: 100%;
 }
 
-#HL {
-  position: fixed;
-}
-
-
 .characters {
   display: flex;
   justify-content: center;
@@ -180,17 +175,25 @@ canvas {
     overflow: hidden !important
 }
 
+#question-item-text {
+  font-weight: 400px;
+  padding: 5px;
+  border-radius: 5px;
+  transition: .2s ease-in-out;
+}
+
 #questions {
   width: 100%;
   height: 100%;
   display: none;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 #question-box {
   background-color: white;
-  padding: 15px;
+  padding: 5px 10px;
   border-radius: 15px;
 }
 
@@ -270,6 +273,16 @@ canvas {
   top: 9%;
 }
 
+#chat-container-bg {
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  background-color: black;
+  opacity: .5;
+  display: none;
+  z-index: 999999;
+}
+
 #chat-container {
   width: 50%; /* or any specific width */
   position: absolute;
@@ -287,6 +300,7 @@ canvas {
   scrollbar-gutter: stable;
   background-color: rgba(255, 255, 255, 1);
   margin-bottom: 15px;
+  height: 65vh;
 }
 
 #chat-container::-webkit-scrollbar {

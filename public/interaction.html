@@ -13,6 +13,7 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="/css/interaction.css">
     <link rel="stylesheet" href="/css/loading.css">
+    <link rel="stylesheet" href="/css/slider.css">
     <!-- Importmap for loading Three.js and other dependencies -->
     <script type="importmap">
         {
@@ -504,11 +505,11 @@
                 </div>
             </div>
         </div>
+        <div id="chat-container-bg"></div>
         <div id="chat-container">
             <button id="close-chat-history-icon">X</button>
             <p class="convo-history-title">Conversation History</p>
         </div>
-        <button id="HL">Lower Health Literacy</button>
         <div id="interaction-area">
         <div class="room">
             <div class="characters">
@@ -524,11 +525,19 @@
                         <p class="title">Virtual Caregiver</p>
                         <p id="skylar-name" class="name">Skylar</p>
                     </div>
+                    <div id="slidecontainer">
+                        <p>Let me know how well you understand this information!</p>
+                        <input type="range" min="0" max="100" value="50" step="25" class="slider" id="myRange">
+                        <div id="sliderValue" class="slider-value"></div>
+                        <button id="slider-submit">Submit</button>
+                    </div>
                     <div id="chatbox-support"></div>
                 </div>
                 <div id="questions">
-                    <form id="question-box">
-                    </form>
+                    <div id="question-box">
+                        <p id="question-item-text"></p>
+                    </div>
+                    <br/>
                 </div>
                 
             </div>

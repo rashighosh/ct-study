@@ -7,10 +7,107 @@ var informationTranscript = new Map()
 var id = ''
 var condition = ''
 // const textScript = "Text_Script_Audio.json"
-const textScript = "Text_Script_Support_Audio.json"
+const textScript = "Text_Script_Intro.json"
 var incrementTotal
 
+const slider = document.getElementById("myRange");
+const sliderValue = document.getElementById("sliderValue");
 
+// slider.addEventListener("input", function() {
+//   const value = this.value;
+//   var infoText
+//   if (this.value === '50') {
+//     infoText = "I kind of understand."
+//   } else if (this.value === '100') {
+//     infoText = "I completely understand."
+//   } else if (this.value === '0') {
+//     infoText = "I don't understand at all."
+//   } else if (this.value === '25') {
+//     infoText = "I don't really understand."
+//   } else if (this.value === '75') {
+//     infoText = "I mostly understand."
+//   }
+
+//   console.log("infoText")
+//   sliderValue.textContent = infoText;
+  
+//   // Position the value box
+//   const percent = (value - this.min) / (this.max - this.min);
+//   const leftPosition = percent * (this.offsetWidth - 25) + 12.5;
+//   sliderValue.style.left = `${leftPosition}px`;
+  
+//   // Show the value box
+//   sliderValue.style.display = "block";
+// });
+
+slider.addEventListener("mousedown", function() {
+    sliderValue.style.display = "block";
+    const value = this.value;
+    var infoText
+    if (this.value === '50') {
+        infoText = "I kind of understand."
+    } else if (this.value === '100') {
+        infoText = "I completely understand."
+    } else if (this.value === '0') {
+        infoText = "I don't understand at all."
+    } else if (this.value === '25') {
+        infoText = "I don't really understand."
+    } else if (this.value === '75') {
+        infoText = "I mostly understand."
+    }
+
+    sliderValue.textContent = infoText;
+    slider.addEventListener("input", function() {
+        const value = this.value;
+        var infoText
+        if (this.value === '50') {
+          infoText = "I kind of understand."
+        } else if (this.value === '100') {
+          infoText = "I completely understand."
+        } else if (this.value === '0') {
+          infoText = "I don't understand at all."
+        } else if (this.value === '25') {
+          infoText = "I don't really understand."
+        } else if (this.value === '75') {
+          infoText = "I mostly understand."
+        }
+      
+        console.log("infoText")
+        sliderValue.textContent = infoText;
+        
+        // Position the value box
+        const percent = (value - this.min) / (this.max - this.min);
+        const leftPosition = percent * (this.offsetWidth - 25) + 12.5;
+        sliderValue.style.left = `${leftPosition}px`;
+        
+        // Show the value box
+        sliderValue.style.display = "block";
+      });
+
+});
+
+slider.addEventListener("mouseup", function() {
+  sliderValue.style.display = "none";
+});
+
+
+document.getElementById("slider-submit").onclick = function() {
+    var sliderValue = document.getElementById("myRange").value;
+    console.log(sliderValue)
+    var text = document.getElementById("question-item-text").innerText
+    console.log(text)
+    if (sliderValue !== '100') {
+        document.getElementById("question-item-text").style.opacity = '0';
+        translateHealthLiteracy(text, sliderValue).then(translatedMessage => {
+            console.log("Translated message:", translatedMessage);
+            document.getElementById("question-item-text").innerText = translatedMessage
+            document.getElementById("question-item-text").style.opacity = '1';
+        })
+        .catch(error => {
+            console.error("Error in translation:", error);
+        });
+    }
+}
 
 function getCurrentDateTime() {
     var currentDate = new Date();
@@ -54,26 +151,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.getElementById("study-button-1").classList.remove('active')
     }
 
-    var questionBox = document.getElementById("question-box")
-    Object.entries(topics).slice(0, 5).forEach(([key, value]) => {
-        const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-
-        checkbox.type = "checkbox";
-        checkbox.name = "topics";
-        checkbox.value = key;
-
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(` ${key}`));
-
-        questionBox.appendChild(label);
-        questionBox.appendChild(document.createElement("br"));
-        // const item = document.createElement('p');
-        // item.innerHTML = key;
-        // questionBox.appendChild(item)
-        // console.log(key + ": " + value["justification"]);
-    });
-
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     condition = urlParams.get('c')
@@ -96,10 +173,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     document.getElementById("history").addEventListener('click', () => {
         document.getElementById("chat-container").style.display = 'flex'
+        document.getElementById("chat-container-bg").style.display = 'flex'
     });
 
     document.getElementById("close-chat-history-icon").addEventListener('click', () => {
         document.getElementById("chat-container").style.display = 'none'
+        document.getElementById("chat-container-bg").style.display = 'none'
     });
 
 
@@ -117,6 +196,16 @@ function currentSpeakingCharacter(agent) {
         // document.getElementById("virtualcharacter").style.filter = "blur(0px)"
         // document.getElementById("virtualcharacter-1").style.filter = "blur(2px)"
     }
+}
+
+function showInfoQuestion(item = topics) {
+    console.log(item)
+    var questionItem = document.getElementById("question-item-text")
+    questionItem.innerHTML = ''
+    const [[key, value]] = Object.entries(item);
+    delete item[key];
+
+    questionItem.innerText = key;
 }
 
 function showLoading() {
@@ -200,7 +289,8 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
     if (speaker === 'user') {
         if (message === 'text') {
             message = document.getElementById('user-input').value;
-            let messageBody = { userInput: message, gender: "male", script: textScript }
+            console.log("SENDING USER MESSAGE", message)
+            let messageBody = { userMessage: message, gender: "male", script: textScript }
             handleUserInput(nextNode, messageBody)
         }
         messageTextHistory.innerHTML = `${message}`;
@@ -328,8 +418,8 @@ async function handleStreamedResponse(reader) {
     }
 }
 
-async function translateHealthLiteracy(message) {
-    var body = {message: message}
+async function translateHealthLiteracy(message, adjustment) {
+    var body = {message: message, adjustment: adjustment}
     const response = await fetch(`/adjustHealthLiteracy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -340,8 +430,10 @@ async function translateHealthLiteracy(message) {
         return;
     }
     const data = await response.json(); // gives ENTIRE audio at once
-    const chatbotMessage = document.querySelector(".alex-chatbot-message");
-    chatbotMessage.innerText = data.message
+    console.log("GOT TRANSLATION")
+    return data.message
+    // const chatbotMessage = document.querySelector(".alex-chatbot-message");
+    // chatbotMessage.innerText = data.message
 }
 
 async function handleUserInput(nodeId, body, prevAgent = null) {
@@ -350,10 +442,11 @@ async function handleUserInput(nodeId, body, prevAgent = null) {
     } else {
         document.getElementById("chatbox-support").innerHTML = ''
     }
+    body.script = textScript
     body.userInfo = userInfo
+    console.log("AB TO CALL SERVER, BODY IS", body)
     // body.characterGender = gender
     // body.script = textScript
-    console.log(body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -365,30 +458,50 @@ async function handleUserInput(nodeId, body, prevAgent = null) {
     }
 
     const data = await response.json(); // gives ENTIRE audio at once
-    console.log("DATA FROM SERVER", data)
-    document.getElementById("user-input").disabled = true; // Disable user input
-    document.getElementById("send-btn").disabled = true; // Disable user input
-    document.getElementById("input-area").classList.add("disabled"); // Disable user input
+    console.log("RESPONSE FROM SERVER", data)
+
+    if (data.nodeId === 4) {
+        document.getElementById("virtualcharacter").style.display = "flex";
+    }
+
+    // document.getElementById("user-input").disabled = true; // Enable user input
+    document.getElementById("send-btn").disabled = true; // Enable user input
+    document.getElementById("input-area").classList.add("disabled"); // Enable user input
 
     characterAudio(data.dialogue, null, data.agent, () => {
         document.getElementById("user-input").disabled = false; // Enable user input
         document.getElementById("send-btn").disabled = false; // Disable user input
         document.getElementById("input-area").classList.remove("disabled"); // Disable user input
         if (data.passOn) {
+            console.log("PASS ON")
             handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, data.agent);
         }
     });
 
+    if (data.showQuestions) {
+        if (data.showQuestions.example) {
+            showInfoQuestion(data.showQuestions.example)
+        } else {
+            showInfoQuestion()
+        }
+    }
     if (data.passOn) { 
         appendMessage(data.dialogue, 'Alex',  data.agent, null, data.passOn);
     } else {
         appendMessage(data.dialogue, 'Alex',  data.agent);
     } 
-    if (data.showQuestions === true) { document.getElementById("questions").style.display = "flex" }
+    if (data.showQuestions) { 
+        document.getElementById("questions").style.display = "flex" 
+        document.getElementById("slidecontainer").style.display = "block" 
+    } else {
+        document.getElementById("questions").style.display = "none" 
+        document.getElementById("slidecontainer").style.display = "none" 
+    }
     if (data.options) {
         displayOptions(data.options, data.agent)
     }
     if (data.input.allowed === true) {
+        console.log("IN INPUT AREA")
         const inputArea = document.getElementById("input-area")
         const userInput = document.getElementById('user-input');
         inputArea.style.visibility = 'visible'
@@ -412,92 +525,9 @@ async function handleUserInput(nodeId, body, prevAgent = null) {
         const inputArea = document.getElementById("input-area")
         inputArea.style.visibility = 'visible'
     }
-
-    // const contentType = response.headers.get('Content-Type');
-
-    // // Handle streamed response
-    // if (contentType && contentType.includes('prerecorded')) { // not expecting ANY streamed response
-    //     // Handle pre-recorded response
-    //     const data = await response.json(); // gives ENTIRE audio at once
-    //     // process audio for front end
-    //     await handlePreRecordedResponse(data, data.agent);
-    // }
-    // else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
-    //     const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
-    //     await handleStreamedResponse(reader);
-    // }
-    // else {
-    //     console.error("Unknown response type. Unable to process.");
-    // }
-}
-
-async function handlePreRecordedResponse(data, agent) {
-    // Handle audio if present; parse it for being ready for front end
-    var audioData
-    if (data.audio && data.audio.audioBase64) {
-        audioData = await parseAudio(data.audio, null);
-    }
-    stopSpeaking();
-    var timeout;
-    // DISPLAYING STUFF TO FRONT END; small wait to show ellipses
-    if (condition === 0 || condition === 1 || condition === 4 || condition === 5) {
-        timeout = 1500
-    } else {
-        timeout = 5000
-    }
-    setTimeout(() => {
-        // characterAudio(audioData, null, agent);
-        characterAudio(audioData, null, agent, () => {
-            console.log("✅ Interaction.js notified: Speech has ended!");
-            if (data.passOn) {
-                handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript}, agent);
-            }
-        });
-        
-        const ellipse = document.getElementById('lds-ellipsis');
-        // document.getElementById("thinking").style.display = "none"
-        if (ellipse) {
-            ellipse.remove();
-        }
-        // Update dialogue
-        if (data.passOn) { 
-            appendMessage(data.dialogue, 'Alex',  data.agent, null, data.passOn);
-        } else {
-            appendMessage(data.dialogue, 'Alex',  data.agent);
-        } 
-        if (data.showQuestions === true) {document.getElementById("questions").style.display = "flex" }
-        if (data.options) {
-            displayOptions(data.options)
-        }
-        if (data.input.allowed === true) {
-            const inputArea = document.getElementById("input-area")
-            const userInput = document.getElementById('user-input');
-            inputArea.style.visibility = 'visible'
-            document.getElementById('send-btn').onclick = function() {
-                inputArea.style.visibility = 'visible'
-                appendMessage('text', 'user', null, data.input.nextNode, null);
-                const optionsArea = document.getElementById("options-area")
-                optionsArea.innerHTML = ''
-            };  
-            userInput.onkeydown = function(event) {
-                if (event.key === 'Enter' && !event.shiftKey) {
-                    event.preventDefault();
-                    appendMessage('text', 'user', null, data.input.nextNode, null);
-                    const optionsArea = document.getElementById("options-area")
-                    optionsArea.innerHTML = ''
-                    inputArea.style.visibility = 'visible'
-                }
-            };
-            
-        } else {
-            const inputArea = document.getElementById("input-area")
-            inputArea.style.visibility = 'visible'
-        }
-    }, timeout); // 1500 milliseconds = 1.5 seconds
 }
 
 function displayOptions(options, agent) {
-    console.log("WE GOT OPTIONS")
     options.forEach(option => {
         const optionsArea = document.getElementById("options-area")
         
@@ -523,7 +553,7 @@ function displayOptions(options, agent) {
             button.addEventListener('click', () => {
                 optionsArea.innerHTML = ''
                 appendMessage(userText, 'user', null, null, null)
-                let messageBody = { userInput: option.optionText, script: textScript }
+                let messageBody = { userMessage: option.optionText, script: textScript }
                 if (option.nextNode) {
                     if (option.increment === true) {
                         if (option.userInfo) {
@@ -612,10 +642,6 @@ function displaySubtitles(dialogue, divItem, passOn = null) {
             setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
-            document.getElementById("HL").onclick = function() {
-                const chatbotMessage = document.querySelector(".alex-chatbot-message");
-                translateHealthLiteracy(chatbotMessage.innerText)
-            }
             // const optionsArea = document.getElementById("options-area")
             // optionsArea.style.display = "flex"
         }

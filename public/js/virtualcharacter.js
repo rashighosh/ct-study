@@ -23,20 +23,20 @@ var counter = 0;
 
 // Load and show the avatar
 document.addEventListener('DOMContentLoaded', async function (e) {
-  // const nodeAvatar = document.getElementById('virtualcharacter');
-  // head = new TalkingHead(nodeAvatar, {
-  //   ttsEndpoint: "blah",
-  //   ttsVoice: "en-US-News-L",
-  //   lipsyncModules: ["en"], // language
-  //   cameraY: 0,
-  //   cameraRotateY: -.5,
-  //   cameraView: "mid", // full, mid, upper, head
-  //   cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
-  //   // interactions w 3d scene, usually disable
-  //   cameraRotateEnable: false,
-  //   cameraPanEnable: false,
-  //   cameraZoomEnable: false,
-  // });
+  const nodeAvatar = document.getElementById('virtualcharacter');
+  head = new TalkingHead(nodeAvatar, {
+    ttsEndpoint: "blah",
+    ttsVoice: "en-US-News-L",
+    lipsyncModules: ["en"], // language
+    cameraY: 0,
+    cameraRotateY: 0,
+    cameraView: "mid", // full, mid, upper, head
+    cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
+    // interactions w 3d scene, usually disable
+    cameraRotateEnable: false,
+    cameraPanEnable: false,
+    cameraZoomEnable: false,
+  });
   const nodeAvatar1 = document.getElementById('virtualcharacter1');
   head1 = new TalkingHead(nodeAvatar1, {
     ttsEndpoint: "blah",
@@ -55,12 +55,12 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   // Load and show the avatar
   try {
     // renders avatar on screen
-    // await head.showAvatar({
-    //   url: "/character-models/female.glb",
-    //   body: 'F', // either M or F, specified in charaterType
-    //   avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
-    //   lipsyncLang: 'en',
-    // }, (ev) => { });
+    await head.showAvatar({
+      url: "/character-models/female.glb",
+      body: 'F', // either M or F, specified in charaterType
+      avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
+      lipsyncLang: 'en',
+    }, (ev) => { });
     await head1.showAvatar({
       url: "/character-models/male.glb",
       body: 'M', // either M or F, specified in charaterType

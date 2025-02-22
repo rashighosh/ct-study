@@ -58,275 +58,24 @@ app.get('/select', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'select.html'));
 });
 
-function checkScripts(filesToCheck) {
-  const existingFiles = [];
-  const missingFiles = [];
-  
-  filesToCheck.forEach(file => {
-    const filePath = path.join(jsonDir, file);
-    if (fs.existsSync(filePath)) {
-      existingFiles.push(file);
-    } else {
-      missingFiles.push(file);
-    }
-  });
-  
-  if (missingFiles.length > 0) {
-    console.error("The following files do not exist:", missingFiles);
-  } else {
-    try {
-      const scriptData = existingFiles.map(file => {
-        const filePath = path.join(jsonDir, file);
-        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      });
-      // Process scriptData as needed
-    } catch (err) {
-      console.error("Error reading or parsing files:", err);
-    }
-  }
-}
-
-const filesToCheck = [
-  // "Text_Script_Rashi_Audio.json",
-  // "Text_Script_Chris_Audio.json",
-  // "Text_Script_Roshan_Audio.json",
-  // "Text_Script_Danish_Audio.json",
-  "Text_Script_Audio.json",
-  "Text_Script_Support_Audio.json"
-];
-
-
-checkScripts(filesToCheck);
-
-// Route to generate audio for all dialogue nodes and save as JSON
-app.get("/generate/prescripted", async (req, res) => {
-  console.log("GENERATING PRESCRIPT")
-  console.log(req.body)
-  const audioMetadata = [];
-  const inputFile = path.join(jsonDir, req.body.script + '.json');
-  const outputFile = path.join(jsonDir, req.body.script + '_Audio.json');
-
-  // Load the original JSON data
-  let dialogueNodes;
-  try {
-      dialogueNodes = JSON.parse(fs.readFileSync(inputFile, 'utf-8'));
-      console.log(`Number of items in dialogueNodes: ${dialogueNodes.length}`);
-      console.log("Success loading in Text JSON")
-  } catch (error) {
-      console.error("Error reading input JSON file:", error);
-      //return res.status(500).json({ error: 'Failed to read input JSON file.' });
-  }
-
-  // Process each node
-  console.log("Processing each node ...")
-  for (const node of dialogueNodes) {
-      try {
-        console.log("Processing node " + node.nodeId)
-          let audioDataF = null;
-          let audioDataM = null;
-
-          // Process nodes with dialogue
-          if (node.dialogue && (node.response == null || node.response.alterDialogue === false)) {
-            console.log("This node either has a pregenerated response, or will append a pregenerated script to ChatGPT generated response.")
-              const textToConvert = node.dialogue;
-
-              // Generate audio for Female voice
-              audioDataF = await generateAudio(textToConvert, 'nova');
-
-            //   Generate audio for Male voice
-              audioDataM = await generateAudio(textToConvert, 'onyx');
-          }
-
-          // Add audioM and audioF fields to the node
-          const updatedNode = {
-              ...node,
-              audioM: audioDataM,
-              audioF: audioDataF,
-          };
-
-          audioMetadata.push(updatedNode);
-      } catch (error) {
-          console.error(`Error processing node ${node.nodeId}:`, error);
-      }
-  }
-
-  // Save the updated JSON
-  try {
-      await fs.promises.writeFile(outputFile, JSON.stringify(audioMetadata, null, 2));
-      console.log(`Updated JSON with audio metadata saved to ${outputFile}`);
-  } catch (error) {
-      console.error("Error writing updated JSON to file:", error);
-      return res.status(500).json({ error: 'Failed to write updated JSON file.' });
-  }
-
-  res.json({ message: 'Audio generation complete', outputFile });
-});
-
-// Function to generate audio and transcriptions
-async function generateAudio(text, voice) {
-  try {
-      // Generate speech
-      const mp3 = await openai.audio.speech.create({
-          model: "tts-1",
-          voice: voice,
-          input: text,
-          response_format: "wav",
-      });
-
-      const buffer = Buffer.from(await mp3.arrayBuffer());
-      const uniqueFilename = `speech_${uuidv4()}.wav`;
-      const speechFile = path.resolve(jsonDir, `./audio/${uniqueFilename}`);
-
-      await fs.promises.writeFile(speechFile, buffer);
-
-      // Adjust audio speed
-      const spedUpFilename = `spedup_${uniqueFilename}`;
-      const spedUpFilePath = path.resolve(jsonDir, `./audio/${spedUpFilename}`);
-
-      await new Promise((resolve, reject) => {
-          ffmpeg(speechFile)
-              .audioFilters('atempo=1.1') // Speed up the audio
-              .save(spedUpFilePath)
-              .on('end', resolve)
-              .on('error', reject);
-      });
-
-      // Convert to Base64
-      const spedUpBuffer = await fs.promises.readFile(spedUpFilePath);
-      const audioBase64 = spedUpBuffer.toString('base64');
-
-      // Transcribe audio
-      const transcriptionResponse = await openai.audio.transcriptions.create({
-          file: fs.createReadStream(spedUpFilePath),
-          model: "whisper-1",
-          response_format: "verbose_json",
-          timestamp_granularities: ["word", "segment"],
-      });
-
-      if (transcriptionResponse && transcriptionResponse.words) {
-          return {
-              audioBase64: audioBase64,
-              words: transcriptionResponse.words.map(x => x.word),
-              wtimes: transcriptionResponse.words.map(x => 1000 * x.start - 150),
-              wdurations: transcriptionResponse.words.map(x => 1000 * (x.end - x.start)),
-          };
-      }
-
-      return null;
-  } catch (error) {
-      console.error("Error generating audio:", error);
-      return null;
-  }
-}
-
-async function processSentence(sentence, nodeData, req, isFirstChunk, agentGender, citations) {
-    const chunkType = isFirstChunk ? "NEW AUDIO" : "CHUNK";
-    const createdFiles = [];
-    const tempDir = '/tmp'; // Directory for temporary files
-    const gender = agentGender;
-    try {
-        // Ensure /tmp directory exists
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
-        const voice = gender === "male" ? 'onyx' : 'nova';
-
-        // Generate audio
-        const mp3 = await openai.audio.speech.create({
-            model: "tts-1",
-            voice: voice,
-            input: sentence,
-            response_format: "wav",
-        });
-
-        const buffer = Buffer.from(await mp3.arrayBuffer());
-        const uniqueFilename = `speech_${uuidv4()}.wav`;
-        const speechFile = path.join(tempDir, uniqueFilename);
-        await fs.promises.writeFile(speechFile, buffer);
-        createdFiles.push(speechFile);
-
-        // Speed up audio
-        const spedUpFilename = `spedup_${uniqueFilename}`;
-        const spedUpFilePath = path.join(tempDir, spedUpFilename);
-        await new Promise((resolve, reject) => {
-            ffmpeg(speechFile)
-                .audioFilters('atempo=1.1')
-                .save(spedUpFilePath)
-                .on('end', resolve)
-                .on('error', reject);
-        });
-        createdFiles.push(spedUpFilePath);
-
-        // Convert to Base64
-        const spedUpBuffer = await fs.promises.readFile(spedUpFilePath);
-        const audioBase64 = spedUpBuffer.toString('base64');
-
-        // Transcription
-        const transcriptionResponse = await openai.audio.transcriptions.create({
-            file: fs.createReadStream(spedUpFilePath),
-            model: "whisper-1",
-            response_format: "verbose_json",
-            timestamp_granularities: ["word", "segment"],
-        });
-
-        const sentenceAudio = transcriptionResponse?.words
-            ? {
-                audioBase64,
-                words: transcriptionResponse.words.map(x => x.word),
-                wtimes: transcriptionResponse.words.map(x => 1000 * x.start - 150),
-                wdurations: transcriptionResponse.words.map(x => 1000 * (x.end - x.start)),
-            }
-            : { audioBase64 };
-
-        return {
-            userId: req.session?.params?.id || null,
-            nodeId: nodeData.nodeId,
-            dialogue: sentence,
-            audio: sentenceAudio,
-            input: nodeData.input || null,
-            options: nodeData.options || [],
-            url: nodeData.url || null,
-            progressInterview: nodeData.progressInterview || null,
-            type: chunkType,
-            wholeDialogue: nodeData.wholeDialogue,
-            sources: nodeData.sources,
-            annotations: citations
-        };
-    } catch (error) {
-        console.error("Error processing sentence:", error);
-        return { error: `Failed to process sentence: ${sentence}` };
-    } finally {
-        // Cleanup: Delete all created audio files
-        for (const filePath of createdFiles) {
-            try {
-                await fs.promises.unlink(filePath);
-            } catch (cleanupError) {
-                console.error(`Failed to delete file: ${filePath}`, cleanupError);
-            }
-        }
-    }
-}
-
-function splitTextIntoSentences(text) {
-    // Modern approach using Intl.Segmenter
-    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
-        const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
-        return Array.from(segmenter.segment(text), segment => segment.segment);
-    }
-
-    // Fallback for environments without Intl.Segmenter
-    return text.match(/[^.!?]+[.!?]+/g) || [text];
-}
-
 function removeSpecialFormat(text) {
     return text.replace(/【\d+:\d+†[^】]+】/g, '');
 }
 
 app.post('/adjustHealthLiteracy', async (req, res, next) => {
   console.log(req.body)
+  var message = `MESSAGE: ${req.body.message}; ADJUSTMENT: ${req.body.adjustment}`
+  console.log(message)
   const completion = await openai.chat.completions.create({
-    messages: [{ role: "developer", content: "You are a helpful assistant whose goal is to lower the health literacy of the user's message. Keep the message content the same, but use less medical jargon, less technical terms, and less complex sentence structure." }, { role: "user", content: req.body.message }],
     model: "gpt-4o",
+    messages: [{ 
+      role: "developer", 
+      content: "You are a helpful assistant whose goal is to lower the health literacy of the user's MESSAGE based on ADJUSTMENT, which is how well they understand from 0 (I don't understand this at all) to 100 (I understand this completely). Keep the message content the same, but the lower the health literacy based on ADJUSTMENT: use less medical jargon, less technical terms, and less complex sentence structure, and explain any terms or phrases that are specific to healthcare. Use these websitse to help guide you: https://www.cms.gov/training-education/learn/find-tools-to-help-you-help-others/guidelines-for-effective-writing, https://multco.us/file/plain_language_word_list/download, https://www.plainlanguage.gov/resources/checklists/checklist/. Return only the adjusted text." 
+    }, 
+    { 
+      role: "user", 
+      content: message 
+    }],
     store: true,
   });
 
@@ -403,8 +152,27 @@ app.post('/interact/:nodeId', async (req, res, next) => {
           return res.status(404).json({ error: `Node with ID ${nodeId} not found` });
       }
 
+      var agentDialogue = nodeData.dialogue
+
+      if (nodeData.response) {
+        if (nodeData.response.useAi.prependAiDialogue) {
+          console.log("need to prepend AI dialogue")
+          console.log(message)
+          const completion = await openai.chat.completions.create({
+            messages: [{ role: "developer", content: "Greet the user briefly based on the name they provide (Example: `Hello, [name]! Nice to meet you.`). If they prefer to remain anonymous, briefly acknolwedge that (Example: `No problem! It's great to have you here.`)." }, { role: "user", content: message }],
+            model: "gpt-4o",
+            store: true,
+          });
+        
+          console.log(completion)
+          console.log(completion.choices[0].message.content);
+          agentDialogue = completion.choices[0].message.content + nodeData.dialogue
+        }
+      }
+
       const responseData = { 
-        dialogue: nodeData.dialogue, 
+        dialogue: agentDialogue, 
+        nodeId: nodeData.nodeId, 
         agent: nodeData.agent, 
         input: nodeData.input || null, 
         passOn: nodeData.passOn || null,
@@ -412,126 +180,6 @@ app.post('/interact/:nodeId', async (req, res, next) => {
         options: nodeData.options || []
       }
       return res.json(responseData);
-
-      // if (nodeData.dialogue && nodeData.response == null) {
-      //     var audio
-      //     nodeData.agent === "doctor" ? audio = nodeData.audioF : audio = nodeData.audioM
-      //     // const responseData = {
-      //     //     nodeId: nodeId,
-      //     //     dialogue: nodeData.dialogue,
-      //     //     agent: nodeData.agent,
-      //     //     audio: audio,
-      //     //     passOn: nodeData.passOn || null,
-      //     //     showQuestions: nodeData.showQuestions || null,
-      //     //     input: nodeData.input || null,
-      //     //     options: nodeData.options || [],
-      //     //     sources: nodeData.sources || null,
-      //     // };
-      //     const responseData = { dialogue: nodeData.dialogue }
-      //     res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
-      //     return res.json(responseData);
-      // } else {
-      //   const completion = await openai.chat.completions.create({
-      //     messages: [{ role: "developer", content: "You are a helpful assistant who is helping people learn about the VERG Lab at the University of Florida. Use this website to provide responses: https://verg.cise.ufl.edu/." }, { role: "user", content: message }],
-      //     model: "gpt-4o",
-      //     store: true,
-      //   });
-
-      //   console.log(completion.choices[0]);
-      //   generatedDialogue = completion.choices[0].message.content;
-      //   const thread = await rashi_openai.beta.threads.create();
-      //   if (nodeData.response.alterDialogue === true) {
-      //       message = "Construct a similar response based on the given 'Response' using your knowledge base, using any relevant information from 'userInfo':\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
-      //   } else {
-      //       message = "Respond to the following Message optionally using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
-      //   }
-      //   await rashi_openai.beta.threads.messages.create(thread.id, {
-      //       role: 'user',
-      //       content: message
-      //     });
-      //     const run = await rashi_openai.beta.threads.runs.create(thread.id, {
-      //       assistant_id: openai_assistant
-      //     });
-      //   let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
-
-      //   while (runStatus.status !== 'completed') {
-      //     await new Promise(resolve => setTimeout(resolve, 1000));
-      //     runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
-      //   }
-      //   const messages = await rashi_openai.beta.threads.messages.list(thread.id);
-      //   var generatedDialogue = messages.data[0].content[0].text.value;
-
-      //   const annotations = messages.data[0].content[0].text.annotations;
-      //   let citations = [];
-        
-      //   const fileIds = annotations.map(annotation => annotation.file_citation.file_id);
-
-      //   const retrievedFiles = await Promise.all(fileIds.map(async fileId => {
-      //     return await rashi_openai.files.retrieve(fileId);
-      //   }));
-
-      //   generatedDialogue = removeSpecialFormat(generatedDialogue)
-
-      //   let entireDialogue
-
-      //   if (nodeData.response.alterDialogue === false) {
-      //       entireDialogue = generatedDialogue + nodeData.dialogue
-      //   } else {
-      //       entireDialogue = generatedDialogue
-      //   }
-
-      //   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      //   // console.log("CITATIONS BEFORE SENDING STUFF", citations)
-
-      //   var responseData = {
-      //       nodeId: nodeId,
-      //       dialogue: generatedDialogue,
-      //       audio: null,
-      //       input: nodeData.input || null,
-      //       options: nodeData.options || [],
-      //       wholeDialogue: entireDialogue,
-      //       type: "NEW AUDIO",
-      //       sources: nodeData.sources || null,
-      //       annotations: citations
-      //   };
-
-      //   // Audio Chunk Streaming
-      //   const sentences = splitTextIntoSentences(generatedDialogue);
-      //   // console.log("Split dialogue into sentences:", sentences);
-
-      //   // Process first chunk immediately
-      //   const firstChunk = await processSentence(sentences[0], responseData, req, true, gender, citations);
-      //   res.write(JSON.stringify(firstChunk) + '\n');
-
-      //   // Process remaining chunks concurrently
-      //   const remainingChunksPromises = sentences.slice(1).map((sentence, index) =>
-      //       processSentence(sentence, responseData, req, false, gender, citations)
-      //   );
-      //   try {
-      //       const remainingChunks = await Promise.all(remainingChunksPromises);
-
-      //       // Stream remaining chunks as they finish
-      //       remainingChunks.forEach(chunk => {
-      //           res.write(JSON.stringify(chunk) + '\n');
-      //       });
-
-      //       // Only execute this AFTER all remaining chunks are done
-      //       if (nodeData.response != null) {
-      //           // console.log("Sending pre-generated sentence:", nodeData.dialogue);
-      //           const audio = gender === "female" ? nodeData.audioF : nodeData.audioM;
-      //           responseData.dialogue = nodeData.dialogue;
-      //           responseData.audio = audio;
-      //           responseData.type = "END CHUNK";
-      //           res.write(JSON.stringify(responseData) + '\n');
-      //       }
-
-      //       console.log("Finished processing all sentences. Ending response stream.");
-      //       res.end();
-      //   } catch (err) {
-      //       console.error('Error processing remaining chunks:', err);
-      //       res.end();
-      //   }
-      // } 
   } catch (err) {
       console.error('Error during request processing:', err);
       return res.status(500).json({ error: 'Failed to process request' });
