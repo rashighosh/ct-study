@@ -17,6 +17,7 @@ app.use(favicon(path.join(__dirname,'public','favicon.ico')));
 require('dotenv').config();
 const openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
 const rashi_openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
+const GOOGLE_API_KEY = process.env.GOOGLE_TTS_API_KEY
 app.use(bodyParser.json());
 
 const jsonDir = path.resolve(__dirname, './json_scripts')
@@ -90,7 +91,8 @@ const filesToCheck = [
   // "Text_Script_Chris_Audio.json",
   // "Text_Script_Roshan_Audio.json",
   // "Text_Script_Danish_Audio.json",
-  "Text_Script_Audio.json"
+  "Text_Script_Audio.json",
+  "Text_Script_Support_Audio.json"
 ];
 
 
@@ -320,6 +322,66 @@ function removeSpecialFormat(text) {
     return text.replace(/【\d+:\d+†[^】]+】/g, '');
 }
 
+app.post('/adjustHealthLiteracy', async (req, res, next) => {
+  console.log(req.body)
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "developer", content: "You are a helpful assistant whose goal is to lower the health literacy of the user's message. Keep the message content the same, but use less medical jargon, less technical terms, and less complex sentence structure." }, { role: "user", content: req.body.message }],
+    model: "gpt-4o",
+    store: true,
+  });
+
+  console.log(completion.choices[0].message.content);
+  return res.json({ message: completion.choices[0].message.content });
+})
+
+async function generateGoogleTTS(ssml, voice = null) {
+  // voice = "en-US-News-L"
+  // voice = "en-US-Neural2-J"
+  console.log(voice)
+
+  // Convert text to SSML
+  const o = {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({
+          "input": {
+              "ssml": ssml
+          },
+          "voice": {
+              "languageCode": "en-US",
+              "name": voice
+          },
+          "audioConfig": {
+              "audioEncoding": "OGG-OPUS",
+          },
+          "enableTimePointing": ["SSML_MARK"]
+      })
+  };
+
+  const ttsEndpoint = `https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=${GOOGLE_API_KEY}`;
+  const res = await fetch(ttsEndpoint, o);
+  const data = await res.json();
+  if (!res.ok) {
+      console.error("Google TTS API Error:", data); // Log detailed error message
+  }
+  if (res.status == 200 && data && data.audioContent) {
+      return data; // ✅ Return `data` directly, no wrapping
+  }
+
+}
+
+app.post('/generateSSML', async (req, res) => {
+  const { ssml, voice } = req.body;
+  // const ssml = "Test sentence for testing purposes at test dot com"
+  if (!ssml) {
+      return res.status(400).json({ error: 'Missing ssml object' });
+  }
+  const audioResponse = await generateGoogleTTS(ssml, voice)
+  res.json({ audioResponse });
+})
+
 app.post('/interact/:nodeId', async (req, res, next) => {
   const nodeId = parseInt(req.params.nodeId);
   var message = req.body.userMessage || {};
@@ -341,116 +403,135 @@ app.post('/interact/:nodeId', async (req, res, next) => {
           return res.status(404).json({ error: `Node with ID ${nodeId} not found` });
       }
 
-      if (nodeData.dialogue && nodeData.response == null) {
-          var audio
-          console.log("NODE DATA IS", nodeData.agent)
-          nodeData.agent === "doctor" ? audio = nodeData.audioF : audio = nodeData.audioM
-          const responseData = {
-              nodeId: nodeId,
-              dialogue: nodeData.dialogue,
-              agent: nodeData.agent,
-              audio: audio,
-              passOn: nodeData.passOn || null,
-              input: nodeData.input || null,
-              options: nodeData.options || [],
-              sources: nodeData.sources || null,
-          };
-          console.log("RETURNING THE FOLLOWING", responseData)
-          res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
-          return res.json(responseData);
-      } else {
-        const thread = await rashi_openai.beta.threads.create();
-        if (nodeData.response.alterDialogue === true) {
-            message = "Construct a similar response based on the given 'Response' using your knowledge base, using any relevant information from 'userInfo':\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
-        } else {
-            message = "Respond to the following Message optionally using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
-        }
-        await rashi_openai.beta.threads.messages.create(thread.id, {
-            role: 'user',
-            content: message
-          });
-          const run = await rashi_openai.beta.threads.runs.create(thread.id, {
-            assistant_id: openai_assistant
-          });
-        let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
+      const responseData = { 
+        dialogue: nodeData.dialogue, 
+        agent: nodeData.agent, 
+        input: nodeData.input || null, 
+        passOn: nodeData.passOn || null,
+        showQuestions: nodeData.showQuestions || null,
+        options: nodeData.options || []
+      }
+      return res.json(responseData);
 
-        while (runStatus.status !== 'completed') {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
-        }
-        const messages = await rashi_openai.beta.threads.messages.list(thread.id);
-        var generatedDialogue = messages.data[0].content[0].text.value;
+      // if (nodeData.dialogue && nodeData.response == null) {
+      //     var audio
+      //     nodeData.agent === "doctor" ? audio = nodeData.audioF : audio = nodeData.audioM
+      //     // const responseData = {
+      //     //     nodeId: nodeId,
+      //     //     dialogue: nodeData.dialogue,
+      //     //     agent: nodeData.agent,
+      //     //     audio: audio,
+      //     //     passOn: nodeData.passOn || null,
+      //     //     showQuestions: nodeData.showQuestions || null,
+      //     //     input: nodeData.input || null,
+      //     //     options: nodeData.options || [],
+      //     //     sources: nodeData.sources || null,
+      //     // };
+      //     const responseData = { dialogue: nodeData.dialogue }
+      //     res.setHeader('Content-Type', 'application/json; type=prerecorded'); // set type=precorded for front end otherwise no type
+      //     return res.json(responseData);
+      // } else {
+      //   const completion = await openai.chat.completions.create({
+      //     messages: [{ role: "developer", content: "You are a helpful assistant who is helping people learn about the VERG Lab at the University of Florida. Use this website to provide responses: https://verg.cise.ufl.edu/." }, { role: "user", content: message }],
+      //     model: "gpt-4o",
+      //     store: true,
+      //   });
 
-        const annotations = messages.data[0].content[0].text.annotations;
-        let citations = [];
+      //   console.log(completion.choices[0]);
+      //   generatedDialogue = completion.choices[0].message.content;
+      //   const thread = await rashi_openai.beta.threads.create();
+      //   if (nodeData.response.alterDialogue === true) {
+      //       message = "Construct a similar response based on the given 'Response' using your knowledge base, using any relevant information from 'userInfo':\n Response: " + nodeData.dialogue + "\n userInfo: " + req.body.userInfo
+      //   } else {
+      //       message = "Respond to the following Message optionally using any relevant information from userInfo. Focus on addressing the Message:\n Message: " + req.body.userMessage + "\n userInfo: " + req.body.userInfo
+      //   }
+      //   await rashi_openai.beta.threads.messages.create(thread.id, {
+      //       role: 'user',
+      //       content: message
+      //     });
+      //     const run = await rashi_openai.beta.threads.runs.create(thread.id, {
+      //       assistant_id: openai_assistant
+      //     });
+      //   let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
+
+      //   while (runStatus.status !== 'completed') {
+      //     await new Promise(resolve => setTimeout(resolve, 1000));
+      //     runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
+      //   }
+      //   const messages = await rashi_openai.beta.threads.messages.list(thread.id);
+      //   var generatedDialogue = messages.data[0].content[0].text.value;
+
+      //   const annotations = messages.data[0].content[0].text.annotations;
+      //   let citations = [];
         
-        const fileIds = annotations.map(annotation => annotation.file_citation.file_id);
+      //   const fileIds = annotations.map(annotation => annotation.file_citation.file_id);
 
-        const retrievedFiles = await Promise.all(fileIds.map(async fileId => {
-          return await rashi_openai.files.retrieve(fileId);
-        }));
+      //   const retrievedFiles = await Promise.all(fileIds.map(async fileId => {
+      //     return await rashi_openai.files.retrieve(fileId);
+      //   }));
 
-        generatedDialogue = removeSpecialFormat(generatedDialogue)
+      //   generatedDialogue = removeSpecialFormat(generatedDialogue)
 
-        let entireDialogue
+      //   let entireDialogue
 
-        if (nodeData.response.alterDialogue === false) {
-            entireDialogue = generatedDialogue + nodeData.dialogue
-        } else {
-            entireDialogue = generatedDialogue
-        }
+      //   if (nodeData.response.alterDialogue === false) {
+      //       entireDialogue = generatedDialogue + nodeData.dialogue
+      //   } else {
+      //       entireDialogue = generatedDialogue
+      //   }
 
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        console.log("CITATIONS BEFORE SENDING STUFF", citations)
-        var responseData = {
-            nodeId: nodeId,
-            dialogue: generatedDialogue,
-            audio: null,
-            input: nodeData.input || null,
-            options: nodeData.options || [],
-            wholeDialogue: entireDialogue,
-            type: "NEW AUDIO",
-            sources: nodeData.sources || null,
-            annotations: citations
-        };
+      //   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      //   // console.log("CITATIONS BEFORE SENDING STUFF", citations)
 
-        // Audio Chunk Streaming
-        const sentences = splitTextIntoSentences(generatedDialogue);
-        // console.log("Split dialogue into sentences:", sentences);
+      //   var responseData = {
+      //       nodeId: nodeId,
+      //       dialogue: generatedDialogue,
+      //       audio: null,
+      //       input: nodeData.input || null,
+      //       options: nodeData.options || [],
+      //       wholeDialogue: entireDialogue,
+      //       type: "NEW AUDIO",
+      //       sources: nodeData.sources || null,
+      //       annotations: citations
+      //   };
 
-        // Process first chunk immediately
-        const firstChunk = await processSentence(sentences[0], responseData, req, true, gender, citations);
-        res.write(JSON.stringify(firstChunk) + '\n');
+      //   // Audio Chunk Streaming
+      //   const sentences = splitTextIntoSentences(generatedDialogue);
+      //   // console.log("Split dialogue into sentences:", sentences);
 
-        // Process remaining chunks concurrently
-        const remainingChunksPromises = sentences.slice(1).map((sentence, index) =>
-            processSentence(sentence, responseData, req, false, gender, citations)
-        );
-        try {
-            const remainingChunks = await Promise.all(remainingChunksPromises);
+      //   // Process first chunk immediately
+      //   const firstChunk = await processSentence(sentences[0], responseData, req, true, gender, citations);
+      //   res.write(JSON.stringify(firstChunk) + '\n');
 
-            // Stream remaining chunks as they finish
-            remainingChunks.forEach(chunk => {
-                res.write(JSON.stringify(chunk) + '\n');
-            });
+      //   // Process remaining chunks concurrently
+      //   const remainingChunksPromises = sentences.slice(1).map((sentence, index) =>
+      //       processSentence(sentence, responseData, req, false, gender, citations)
+      //   );
+      //   try {
+      //       const remainingChunks = await Promise.all(remainingChunksPromises);
 
-            // Only execute this AFTER all remaining chunks are done
-            if (nodeData.response != null) {
-                // console.log("Sending pre-generated sentence:", nodeData.dialogue);
-                const audio = gender === "female" ? nodeData.audioF : nodeData.audioM;
-                responseData.dialogue = nodeData.dialogue;
-                responseData.audio = audio;
-                responseData.type = "END CHUNK";
-                res.write(JSON.stringify(responseData) + '\n');
-            }
+      //       // Stream remaining chunks as they finish
+      //       remainingChunks.forEach(chunk => {
+      //           res.write(JSON.stringify(chunk) + '\n');
+      //       });
 
-            console.log("Finished processing all sentences. Ending response stream.");
-            res.end();
-        } catch (err) {
-            console.error('Error processing remaining chunks:', err);
-            res.end();
-        }
-      } 
+      //       // Only execute this AFTER all remaining chunks are done
+      //       if (nodeData.response != null) {
+      //           // console.log("Sending pre-generated sentence:", nodeData.dialogue);
+      //           const audio = gender === "female" ? nodeData.audioF : nodeData.audioM;
+      //           responseData.dialogue = nodeData.dialogue;
+      //           responseData.audio = audio;
+      //           responseData.type = "END CHUNK";
+      //           res.write(JSON.stringify(responseData) + '\n');
+      //       }
+
+      //       console.log("Finished processing all sentences. Ending response stream.");
+      //       res.end();
+      //   } catch (err) {
+      //       console.error('Error processing remaining chunks:', err);
+      //       res.end();
+      //   }
+      // } 
   } catch (err) {
       console.error('Error during request processing:', err);
       return res.status(500).json({ error: 'Failed to process request' });
@@ -668,6 +749,8 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // Optionally handle cleanup or decide to shut down gracefully
 });
+
+app.use('/qualtrics', require('./routes/qualtrics')); // Authentication routes
 
 // Start the server
 const PORT = process.env.PORT || 3000;

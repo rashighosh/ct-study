@@ -27,7 +27,7 @@ function checkScript() {
             break;
         case "danish.glb":
             textScript = "Text_Script_Danish_Audio.json"
-            characterName = "Danish"
+            characterName = "YOU" // CHANGE
             break;
         default:
           textScript = "Text_Script_Rashi_Audio.json"
@@ -35,6 +35,8 @@ function checkScript() {
 }
 
 checkScript()
+
+textScript = "Text_Script_Avaturn_Audio.json"
 
 function getCurrentDateTime() {
     var currentDate = new Date();

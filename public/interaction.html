@@ -508,7 +508,7 @@
             <button id="close-chat-history-icon">X</button>
             <p class="convo-history-title">Conversation History</p>
         </div>
-        <div id="filter"></div>
+        <button id="HL">Lower Health Literacy</button>
         <div id="interaction-area">
         <div class="room">
             <div class="characters">
@@ -526,9 +526,15 @@
                     </div>
                     <div id="chatbox-support"></div>
                 </div>
+                <div id="questions">
+                    <form id="question-box">
+                    </form>
+                </div>
+                
             </div>
         </div>
         <div class="interaction">
+            <p id="history">💬 Conversation History</p>
             <div class="input-area" id="input-area">
                 <textarea id="user-input" class="user-input" placeholder="Type your message. Press Enter or the send button to send your message."></textarea>
                 <button id="send-btn">
@@ -543,9 +549,7 @@
                     </svg>  
                 </button>
             </div>
-            <div id="history">💬 Conversation History</div>
-            <div id="options-area">
-            </div>
+            <div id="options-area"></div>
         </div>
     </div>
     

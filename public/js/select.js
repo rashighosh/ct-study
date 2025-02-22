@@ -15,8 +15,8 @@ function getButtons() {
       window.location.href = "/intro";
     };  
     document.getElementById("danish").onclick = function() {
-      sessionStorage.setItem("character", "danish.glb")
-      sessionStorage.setItem("body", "M")
+      sessionStorage.setItem("character", "demo.glb") //CHANGE
+      sessionStorage.setItem("body", "F") //CHANGE
       window.location.href = "/intro";
     };  
   }

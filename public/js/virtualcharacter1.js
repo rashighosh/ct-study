@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
     ttsEndpoint: "blah",
     lipsyncModules: ["en"], // language
     cameraY: 0,
-    cameraView: "full", // full, mid, upper, head
+    cameraView: "mid", // full, mid, upper, head
     cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
     // interactions w 3d scene, usually disable
     cameraRotateEnable: false,

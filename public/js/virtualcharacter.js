@@ -23,25 +23,27 @@ var counter = 0;
 
 // Load and show the avatar
 document.addEventListener('DOMContentLoaded', async function (e) {
-  const nodeAvatar = document.getElementById('virtualcharacter');
-  head = new TalkingHead(nodeAvatar, {
-    ttsEndpoint: "blah",
-    lipsyncModules: ["en"], // language
-    cameraY: 0,
-    cameraRotateY: -.5,
-    cameraView: "mid", // full, mid, upper, head
-    cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
-    // interactions w 3d scene, usually disable
-    cameraRotateEnable: false,
-    cameraPanEnable: false,
-    cameraZoomEnable: false,
-  });
+  // const nodeAvatar = document.getElementById('virtualcharacter');
+  // head = new TalkingHead(nodeAvatar, {
+  //   ttsEndpoint: "blah",
+  //   ttsVoice: "en-US-News-L",
+  //   lipsyncModules: ["en"], // language
+  //   cameraY: 0,
+  //   cameraRotateY: -.5,
+  //   cameraView: "mid", // full, mid, upper, head
+  //   cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
+  //   // interactions w 3d scene, usually disable
+  //   cameraRotateEnable: false,
+  //   cameraPanEnable: false,
+  //   cameraZoomEnable: false,
+  // });
   const nodeAvatar1 = document.getElementById('virtualcharacter1');
   head1 = new TalkingHead(nodeAvatar1, {
     ttsEndpoint: "blah",
+    ttsVoice: "en-US-Neural2-J",
     lipsyncModules: ["en"], // language
     cameraY: 0,
-    cameraRotateY: .5,
+    cameraRotateY: 0,
     cameraView: "mid", // full, mid, upper, head
     cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
     // interactions w 3d scene, usually disable
@@ -53,12 +55,12 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   // Load and show the avatar
   try {
     // renders avatar on screen
-    await head.showAvatar({
-      url: "/character-models/female.glb",
-      body: 'F', // either M or F, specified in charaterType
-      avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
-      lipsyncLang: 'en',
-    }, (ev) => { });
+    // await head.showAvatar({
+    //   url: "/character-models/female.glb",
+    //   body: 'F', // either M or F, specified in charaterType
+    //   avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
+    //   lipsyncLang: 'en',
+    // }, (ev) => { });
     await head1.showAvatar({
       url: "/character-models/male.glb",
       body: 'M', // either M or F, specified in charaterType
@@ -103,25 +105,25 @@ export async function focusCharacter(character) {
 export async function characterAudio(audio, emoji, agent, onSpeechEnd) {
   var agentHead = head;
   var direction = -.5
-  console.log("AGENT IS:", agent)
   if (agent === "support") {
       agentHead = head1;
       direction = .5
   }
-  console.log(direction)
   try {
       // Handle first-time gestures
       if (counter === 0) {
           agentHead.playGesture('🤚');
           counter++;
       }
-      agentHead.replaceAndSpeakNewAudio(audio);
+      agentHead.speakText(audio)
+
+      // agentHead.replaceAndSpeakNewAudio(audio);
       // agentHead.rotateCharacter(direction)
 
       // Wait 3 seconds, then start checking for speaking status
       setTimeout(() => {
           const checkSpeakingStatus = setInterval(() => {
-              if (!agentHead.isAudioPlaying) {
+              if (!agentHead.isSpeaking) {
                   console.log("Character has finished speaking!");
                   // agentHead.rotateCharacter(1 - direction)
                   clearInterval(checkSpeakingStatus); // Stop checking
@@ -147,7 +149,9 @@ export async function characterAudioQueue(audio, emoji) {
     }
 
     // can have subtitles! and other stuff. hve to look more into if u want it
-    head.speakAudio(audio, null, null);
+    // head.speakAudio(audio, null, null);
+    head.speakText(audio, null, null);
+    // do speak text, send in text message
 
   } catch (error) {
     console.error('Error during speech processing:', error);

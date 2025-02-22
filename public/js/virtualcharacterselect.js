@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', async function (e) {
       }, (ev) => { });
       // renders avatar on screen
     await headdanish.showAvatar({
-        url: '/character-models/danish.glb',
-        body: 'M', // either M or F, specified in charaterType
+        url: '/character-models/demo.glb', //CHANGE
+        body: 'F', //CHANGE
         avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
         lipsyncLang: 'en',
       }, (ev) => { });

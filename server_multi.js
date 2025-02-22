@@ -23,7 +23,7 @@ const openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
 const rashi_openai = new OpenAI(api_key = process.env.OPENAI_API_KEY);
 app.use(bodyParser.json());
 
-const jsonDir = path.resolve(__dirname, './json_scripts')
+const jsonDir = path.resolve(__dirname, './json_scripts/people_scripts')
 
 
 // Preload data at the beginning
@@ -70,7 +70,7 @@ app.get('/select', function(req, res) {
 function checkScripts(filesToCheck) {
   const existingFiles = [];
   const missingFiles = [];
-  
+  console.log(jsonDir)
   filesToCheck.forEach(file => {
     const filePath = path.join(jsonDir, file);
     if (fs.existsSync(filePath)) {
@@ -99,7 +99,7 @@ const filesToCheck = [
   "Text_Script_Rashi_Audio.json",
   "Text_Script_Chris_Audio.json",
   "Text_Script_Roshan_Audio.json",
-  "Text_Script_Danish_Audio"
+  "Text_Script_Danish_Audio.json"
 ];
 
 

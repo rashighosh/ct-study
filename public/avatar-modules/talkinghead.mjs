@@ -2554,6 +2554,11 @@ class TalkingHead {
   * @param {number[][]} [excludes=null] Array of [start, end] index arrays to not speak
   */
   speakText(s, opt = null, onsubtitles = null, excludes = null ) {
+    // Stop current speech and clear queues
+    this.stopSpeaking();
+  
+    // Reset lips to stop ongoing viseme animations
+    this.resetLips();
     opt = opt || {};
 
     // Classifiers
@@ -2678,13 +2683,13 @@ class TalkingHead {
           }
         }
 
-        this.speechQueue.push( { break: 100 } );
+        this.speechQueue.push( { break: 0 } );
 
       }
 
     }
 
-    this.speechQueue.push( { break: 1000 } );
+    this.speechQueue.push( { break: 0 } );
 
     // Start speaking (if not already)
     this.startSpeaking();
@@ -2804,7 +2809,6 @@ class TalkingHead {
   * @param {subtitlesfn} [onsubtitles=null] Callback when a subtitle is written
   */
   speakAudio(r, opt = null, onsubtitles = null ) {
-    console.log("SUBTITLES", onsubtitles)
     opt = opt || {};
     const lipsyncLang = opt.lipsyncLang || this.avatar.lipsyncLang || this.opt.lipsyncLang;
     const o = {};
@@ -3045,38 +3049,27 @@ class TalkingHead {
           });
           ssml += "</speak>";
 
-
-          const o = {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json; charset=utf-8"
-            },
-            body: JSON.stringify({
-              "input": {
-                "ssml": ssml
-              },
-              "voice": {
-                "languageCode": line.lang || this.avatar.ttsLang || this.opt.ttsLang,
-                "name": line.voice || this.avatar.ttsVoice || this.opt.ttsVoice
-              },
-              "audioConfig": {
-                "audioEncoding": this.ttsAudioEncoding,
-                "speakingRate": (line.rate || this.avatar.ttsRate || this.opt.ttsRate) + this.mood.speech.deltaRate,
-                "pitch": (line.pitch || this.avatar.ttsPitch || this.opt.ttsPitch) + this.mood.speech.deltaPitch,
-                "volumeGainDb": (line.volume || this.avatar.ttsVolume || this.opt.ttsVolume) + this.mood.speech.deltaVolume
-              },
-              "enableTimePointing": [ 1 ] // Timepoint information for mark tags
-            })
-          };
+          const apiUrl = "http://localhost:3000/generateSSML";
 
           // JSON Web Token
-          if ( this.opt.jwtGet && typeof this.opt.jwtGet === "function" ) {
-            o.headers["Authorization"] = "Bearer " + await this.opt.jwtGet();
-          }
+          // if (this.opt.jwtGet && typeof this.opt.jwtGet === "function") {
+          //   o.headers["Authorization"] = "Bearer " + await this.opt.jwtGet();
+          // }
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              ssml: ssml,
+              voice: this.opt.ttsVoice
+            })
+          });
 
-          const res = await fetch( this.opt.ttsEndpoint + (this.opt.ttsApikey ? "?key=" + this.opt.ttsApikey : ''), o);
-          const data = await res.json();
-
+          const audioResponse = await res.json();
+          
+          // console.log("TTS DATA:", data);
+          const data = audioResponse.audioResponse;
           if ( res.status === 200 && data && data.audioContent ) {
 
             // Audio data
@@ -4019,7 +4012,6 @@ class TalkingHead {
   }
 
   rotateCharacter(targetRotation) {
-    console.log("IN ROTATE CHARACTER", targetRotation)
     if (!this.armature) return;
     let startRotation = this.armature.rotation.y;
     let duration = 1000;

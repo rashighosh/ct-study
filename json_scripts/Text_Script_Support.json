@@ -1,29 +1,38 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "And I'm Skylar, a virtual caregiver. I'm here to support you in talking to Dr. Alex about clinical trials based on your knowledge and feelings you shared in the pre-survey. You'll lead the conversation with Dr. Alex, and will let you know if I have something to add.",
+        "dialogue": "Hello, Skylar, your virtual patient navigator for this intervention. My goal is to support you in deciding if being in a clinical trial is right for you by making sure your knowledge and feelings are taken into account. First, what should I call you?",
         "agent": "support",
+        "passOn": false,
         "input": {
             "allowed": true,
             "nextNode": 2
-        }
-    },
-    {
-        "nodeId": 2,
-        "dialogue": "Alright, first, do you have health insurance (including Medicare or Medicaid)?",
-        "agent": "support",
-        "input": {
-            "allowed": true
-        },
-        "response": {
-            "alterDialogue": true
         },
         "options": [
             {
-                "optionText": "Thanks, return to conversation with Dr. Alex.",
-                "nextNode": 2,
-                "increment": true
+                "optionText": "I'd like to remain anonymous.",
+                "nextNode": 2
             }
         ]
+    },
+    {
+        "nodeId": 2,
+        "dialogue": "Alright, great to meet you! Now, I looked over your knowledge and attitudes towards clinical trials from the pre-survey. I have a few suggested questions you can ask the virtual doctor, but I want to make sure they align with your needs before moving on.",
+        "agent": "support",
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 3
+        }
+    },
+    {
+        "nodeId": 3,
+        "dialogue": "I've pulled up 5 questions next to me. Can you let me know which questions resonate with you by selecting them? You can also ask me questions about them if you have any.",
+        "agent": "support",
+        "showQuestions": true,
+        "input": {
+            "allowed": true,
+            "nextNode": 3
+        }
     }
 ]

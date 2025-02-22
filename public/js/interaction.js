@@ -6,8 +6,8 @@ var userInfo = ""
 var informationTranscript = new Map()
 var id = ''
 var condition = ''
-const textScript = "Text_Script_Audio.json"
-const textScriptSupport = "Text_Script_Support_Audio.json"
+// const textScript = "Text_Script_Audio.json"
+const textScript = "Text_Script_Support_Audio.json"
 var incrementTotal
 
 
@@ -20,6 +20,11 @@ function getCurrentDateTime() {
     return localDateTime
 }
 
+var topics = JSON.parse(sessionStorage.getItem("topics"))
+topics = topics["Topics"]
+// Object.entries(topics).forEach(([key, value]) => {
+//     console.log(key + ": " + value["justification"]);
+//   });
 
 document.addEventListener('DOMContentLoaded', (event) => {  
     document.getElementById("study-button-1").onclick = function() {
@@ -49,6 +54,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.getElementById("study-button-1").classList.remove('active')
     }
 
+    var questionBox = document.getElementById("question-box")
+    Object.entries(topics).slice(0, 5).forEach(([key, value]) => {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+
+        checkbox.type = "checkbox";
+        checkbox.name = "topics";
+        checkbox.value = key;
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(` ${key}`));
+
+        questionBox.appendChild(label);
+        questionBox.appendChild(document.createElement("br"));
+        // const item = document.createElement('p');
+        // item.innerHTML = key;
+        // questionBox.appendChild(item)
+        // console.log(key + ": " + value["justification"]);
+    });
+
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     condition = urlParams.get('c')
@@ -57,7 +82,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     document.getElementById("finish-btn").addEventListener('click', () => {
         // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
-        console.log("CLICKED ASK")
         document.getElementById("virtualcharacter").style.filter = "blur(2px)"
         document.getElementById("virtualcharacter-1").style.filter = "blur(0px)"
         focusCharacter("support");
@@ -65,21 +89,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     document.getElementById("finish-btn1").addEventListener('click', () => {
         // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
-        console.log("CLICKED ASK")
         document.getElementById("virtualcharacter").style.filter = "blur(0px)"
         document.getElementById("virtualcharacter-1").style.filter = "blur(2px)"
         focusCharacter("doctor");
     });
 
     document.getElementById("history").addEventListener('click', () => {
-        console.log("CLICKED CONVO HISTORY")
         document.getElementById("chat-container").style.display = 'flex'
-        document.getElementById("filter").style.display = 'block'
     });
 
     document.getElementById("close-chat-history-icon").addEventListener('click', () => {
         document.getElementById("chat-container").style.display = 'none'
-        document.getElementById("filter").style.display = 'none'
     });
 
 
@@ -113,7 +133,7 @@ function showLoading() {
 
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
-        handleUserInput(1, { userInput: "Start Introduction", script: textScript, gender: "female" });
+        handleUserInput(1, { userInput: "Start Introduction", script: textScript, gender: "male" });
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
     };
@@ -174,20 +194,20 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         agent === 'doctor' ? labelText.innerText = `Alex` : labelText.innerText = `Skylar`;
     }
     speaker === 'user' ? messageText.className = "user-chatbot-message" : messageText.className = "alex-chatbot-message"
-    speaker === 'user' ? messageTextHistory.className = "user-chatbot-message" : messageTextHistory.className = "history-alex-chatbot-message"
+    speaker === 'user' ? messageTextHistory.className = "history-user-chatbot-message" : messageTextHistory.className = "history-alex-chatbot-message"
 
 
     if (speaker === 'user') {
         if (message === 'text') {
             message = document.getElementById('user-input').value;
-            let messageBody = { userMessage: message }
+            let messageBody = { userInput: message, gender: "male", script: textScript }
             handleUserInput(nextNode, messageBody)
         }
-        messageText.innerHTML = `${message}`;
-        messageItem.className = "message-item"
-        messageItem.appendChild(labelText);
-        messageItem.appendChild(messageText);
-        chatBox.appendChild(messageItem);
+        messageTextHistory.innerHTML = `${message}`;
+        messageItemHistory.className = "message-item"
+        messageItemHistory.appendChild(labelText);
+        messageItemHistory.appendChild(messageTextHistory);
+        document.getElementById("chat-container").appendChild(messageItemHistory)
         informationTranscript.set("USER " + getCurrentDateTime(), message);
         updateTranscript()
     } else {
@@ -207,7 +227,6 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
     }
     if (speaker === 'user') {
         document.getElementById('user-input').value = '';
-        appendLoadingDots();
     }
 
     // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
@@ -268,7 +287,6 @@ async function handleStreamedResponse(reader) {
                         const ellipse = document.getElementById('lds-ellipsis');
                         ellipse.remove();
                         // document.getElementById("thinking").style.display = "none"
-                        console.log(data.annotations)
                         // Update dialogue
                         appendMessage(data.wholeDialogue, 'Alex', data.agent);
                         if (data.options) {
@@ -310,6 +328,22 @@ async function handleStreamedResponse(reader) {
     }
 }
 
+async function translateHealthLiteracy(message) {
+    var body = {message: message}
+    const response = await fetch(`/adjustHealthLiteracy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+        console.error('Failed to fetch response:', response.statusText);
+        return;
+    }
+    const data = await response.json(); // gives ENTIRE audio at once
+    const chatbotMessage = document.querySelector(".alex-chatbot-message");
+    chatbotMessage.innerText = data.message
+}
+
 async function handleUserInput(nodeId, body, prevAgent = null) {
     if (prevAgent === "doctor") {
         document.getElementById("chatbox-doctor").innerHTML = ''
@@ -319,34 +353,82 @@ async function handleUserInput(nodeId, body, prevAgent = null) {
     body.userInfo = userInfo
     // body.characterGender = gender
     // body.script = textScript
-    console.log("ABOUT TO CALL BACKEND", body)
+    console.log(body)
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     });
-    console.log("GOT RESPONSE FROM BACKEND")
     if (!response.ok) {
         console.error('Failed to fetch response:', response.statusText);
         return;
     }
 
-    const contentType = response.headers.get('Content-Type');
+    const data = await response.json(); // gives ENTIRE audio at once
+    console.log("DATA FROM SERVER", data)
+    document.getElementById("user-input").disabled = true; // Disable user input
+    document.getElementById("send-btn").disabled = true; // Disable user input
+    document.getElementById("input-area").classList.add("disabled"); // Disable user input
 
-    // Handle streamed response
-    if (contentType && contentType.includes('prerecorded')) { // not expecting ANY streamed response
-        // Handle pre-recorded response
-        const data = await response.json(); // gives ENTIRE audio at once
-        // process audio for front end
-        await handlePreRecordedResponse(data, data.agent);
+    characterAudio(data.dialogue, null, data.agent, () => {
+        document.getElementById("user-input").disabled = false; // Enable user input
+        document.getElementById("send-btn").disabled = false; // Disable user input
+        document.getElementById("input-area").classList.remove("disabled"); // Disable user input
+        if (data.passOn) {
+            handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, data.agent);
+        }
+    });
+
+    if (data.passOn) { 
+        appendMessage(data.dialogue, 'Alex',  data.agent, null, data.passOn);
+    } else {
+        appendMessage(data.dialogue, 'Alex',  data.agent);
+    } 
+    if (data.showQuestions === true) { document.getElementById("questions").style.display = "flex" }
+    if (data.options) {
+        displayOptions(data.options, data.agent)
     }
-    else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
-        const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
-        await handleStreamedResponse(reader);
+    if (data.input.allowed === true) {
+        const inputArea = document.getElementById("input-area")
+        const userInput = document.getElementById('user-input');
+        inputArea.style.visibility = 'visible'
+        document.getElementById('send-btn').onclick = function() {
+            inputArea.style.visibility = 'visible'
+            appendMessage('text', 'user', null, data.input.nextNode, null);
+            const optionsArea = document.getElementById("options-area")
+            optionsArea.innerHTML = ''
+        };  
+        userInput.onkeydown = function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                appendMessage('text', 'user', null, data.input.nextNode, null);
+                const optionsArea = document.getElementById("options-area")
+                optionsArea.innerHTML = ''
+                inputArea.style.visibility = 'visible'
+            }
+        };
+        
+    } else {
+        const inputArea = document.getElementById("input-area")
+        inputArea.style.visibility = 'visible'
     }
-    else {
-        console.error("Unknown response type. Unable to process.");
-    }
+
+    // const contentType = response.headers.get('Content-Type');
+
+    // // Handle streamed response
+    // if (contentType && contentType.includes('prerecorded')) { // not expecting ANY streamed response
+    //     // Handle pre-recorded response
+    //     const data = await response.json(); // gives ENTIRE audio at once
+    //     // process audio for front end
+    //     await handlePreRecordedResponse(data, data.agent);
+    // }
+    // else if (contentType && contentType.includes('application/json; charset=utf-8')) { // has some sort of ChatGPT element to it (streamed)
+    //     const reader = response.body.getReader(); // getReader bc backend is writing stream by stream, not all at once, don't to close connection immedietely
+    //     await handleStreamedResponse(reader);
+    // }
+    // else {
+    //     console.error("Unknown response type. Unable to process.");
+    // }
 }
 
 async function handlePreRecordedResponse(data, agent) {
@@ -368,7 +450,7 @@ async function handlePreRecordedResponse(data, agent) {
         characterAudio(audioData, null, agent, () => {
             console.log("✅ Interaction.js notified: Speech has ended!");
             if (data.passOn) {
-                handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, agent);
+                handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript}, agent);
             }
         });
         
@@ -378,13 +460,12 @@ async function handlePreRecordedResponse(data, agent) {
             ellipse.remove();
         }
         // Update dialogue
-        console.log("DATA", data)
         if (data.passOn) { 
-            console.log("HAS PASS ON")
             appendMessage(data.dialogue, 'Alex',  data.agent, null, data.passOn);
         } else {
             appendMessage(data.dialogue, 'Alex',  data.agent);
         } 
+        if (data.showQuestions === true) {document.getElementById("questions").style.display = "flex" }
         if (data.options) {
             displayOptions(data.options)
         }
@@ -415,10 +496,13 @@ async function handlePreRecordedResponse(data, agent) {
     }, timeout); // 1500 milliseconds = 1.5 seconds
 }
 
-function displayOptions(options) {
+function displayOptions(options, agent) {
+    console.log("WE GOT OPTIONS")
     options.forEach(option => {
         const optionsArea = document.getElementById("options-area")
-        optionsArea.style.visibility = "hidden"
+        
+        optionsArea.style.visibility = 'visible';
+
         const button = document.createElement('button');
         const userText = option.optionText
         button.textContent = userText;
@@ -439,7 +523,7 @@ function displayOptions(options) {
             button.addEventListener('click', () => {
                 optionsArea.innerHTML = ''
                 appendMessage(userText, 'user', null, null, null)
-                let messageBody = { userMessage: option.optionText }
+                let messageBody = { userInput: option.optionText, script: textScript }
                 if (option.nextNode) {
                     if (option.increment === true) {
                         if (option.userInfo) {
@@ -454,7 +538,7 @@ function displayOptions(options) {
                             incrementProgress(true);
                         }
                     }
-                    handleUserInput(option.nextNode, messageBody)
+                    handleUserInput(option.nextNode, messageBody, agent)
                 } else {
                     incrementProgress();
                     handleUserInput(continueNode, messageBody)
@@ -465,6 +549,9 @@ function displayOptions(options) {
         }
         
         optionsArea.appendChild(button);
+        setTimeout(() => {
+            button.classList.add('move-up');
+        }, 10);
     });
 }
 
@@ -501,7 +588,6 @@ async function parseAudio(audio, emoji) {
 function displaySubtitles(dialogue, divItem, passOn = null) {
     const dialogueSection = divItem;
     const chatBox = document.getElementById("chat-container")
-    console.log("PASS ON IN SUBTITLES IS", passOn)
 
     // Start with the current content to avoid overwriting
     let existingText = dialogueSection.innerText.trim();
@@ -526,8 +612,12 @@ function displaySubtitles(dialogue, divItem, passOn = null) {
             setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
-            const optionsArea = document.getElementById("options-area")
-            optionsArea.style.visibility = "visible"
+            document.getElementById("HL").onclick = function() {
+                const chatbotMessage = document.querySelector(".alex-chatbot-message");
+                translateHealthLiteracy(chatbotMessage.innerText)
+            }
+            // const optionsArea = document.getElementById("options-area")
+            // optionsArea.style.display = "flex"
         }
         // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
     }

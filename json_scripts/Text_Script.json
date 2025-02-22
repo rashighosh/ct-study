@@ -1,7 +1,7 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hello, I'm Dr. Alex! I'm a virtual oncologist here to talk to you about participating in clinical trials. My knowledge is based on information from the National Cancer Institute.",
+        "dialogue": "Hello, I'm Dr. Alex! I'm a virtual oncologist here to talk to you about participating in clinical trials. My knowledge is based on information from the National Cancer Institute. ",
         "agent": "doctor",
         "passOn": true,
         "input": {
