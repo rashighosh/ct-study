@@ -2,24 +2,24 @@
     {
         "question": "What is a clinical trial?",
         "explanations": {
-          "original": "A clinical trial is a type of research study that tests how well new medical approaches work in people.",
           "plain": "A clinical trial is a kind of research study that checks how well new treatments work for people.",
-          "highhealth": "A clinical trial is a specific category of research study designed to evaluate the efficacy of novel medical interventions in human subjects."
+          "original": "A clinical trial is a type of research study that tests how well new medical approaches work in people.",
+          "highhealth": "A clinical trial is a category of research study designed to evaluate the efficacy of novel medical interventions in people."
         }
     },
     {
     "question": "What is informed consent?",
     "explanations": {
-        "original": "Informed consent is a process in which patients are given important information, including possible risks and benefits, for a clinical trial.",
         "plain": "Informed consent is where doctors share key details with patients about the dangers or good things that might happen if they join a clinical trial.",
-        "highhealth": "Informed consent refers to a comprehensive process in which patients receive crucial information, including potential adverse effects and therapeutic advantages, related to participation in a clinical trial."
+        "original": "Informed consent is a process in which patients are given important information, including possible risks and benefits, for a clinical trial.",
+        "highhealth": "Informed consent is a comprehensive process in which patients receive crucial information, including potential adverse effects and therapeutic advantages, for a clinical trial."
         }
     },
     {
     "question": "What is an IRB?",
     "explanations": {
-        "original": "An IRB, or Institutional Review Board, is a group of scientists, doctors, clergy, and patient advocates that reviews and approves the detailed plan for a clinical trial.",
         "plain": "An IRB, which stands for Institutional Review Board, is a team of experts like scientists, doctors, community leaders, and people who support patients. They look over and approve the careful plan for a clinical trial.",
+        "original": "An IRB, or Institutional Review Board, is a group of scientists, doctors, clergy, and patient advocates that reviews and approves the detailed plan for a clinical trial.",
         "highhealth": "An IRB, or Institutional Review Board, is a committee consisting of scientific experts, medical professionals, ethicists, and advocates for patients that meticulously evaluates and approves the protocol for a clinical trial."
         }
     }

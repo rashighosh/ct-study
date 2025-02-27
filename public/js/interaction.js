@@ -12,11 +12,11 @@ var incrementTotal
 var finishCounter = 0
 const slider = document.getElementById("myRange");
 var explanations = {}
-var explanationPreference = []
+var explanationPreference = [1]
 var introQuestionsJSON = []
 var questionsJSON = []
-var prevPreference = '50'
-var prevQuestion = '50'
+var prevPreference = -1
+var prevQuestion = 'What is a placebo?'
 
 var prependItems = [
     "Good question. ",
@@ -185,7 +185,7 @@ function findMostFrequentSmallestNumber(arr) {
         }
     }
 
-    return String(smallestMostFrequent); // Convert back to string if needed
+    return smallestMostFrequent; // Convert back to string if needed
 }
 
 
@@ -207,7 +207,7 @@ function showLoading() {
     const animatedElement = document.getElementById("loader-animation");
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
-        handleUserInput(5, { userInput: "Start Introduction", script: textScript, gender: "male" });
+        handleUserInput(1, { userInput: "Start Introduction", script: textScript, gender: "male" });
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
     };
@@ -246,6 +246,21 @@ function incrementProgress(double = false) {
     }, 50); // Adjust this value to change the speed of the progress
 }
 
+function moveChatBox() {
+    const historyHeight = document.getElementById('history').offsetHeight;
+
+    const interactionHeight = document.getElementById('interaction').offsetHeight;
+    
+    // Get the chatbox-support element
+    document.getElementById('chatbox-support').style.bottom = `${interactionHeight + historyHeight + 45}px`;
+    document.getElementById('chatbox-doctor').style.bottom = `${interactionHeight + historyHeight + 45}px`;
+}
+
+function resetChatBoxPosition() {
+    document.getElementById('chatbox-support').style.bottom = `5%`;
+    document.getElementById('chatbox-doctor').style.bottom = `5%`;
+}
+
 function appendMessage(message, speaker, agent, nextNode = null, passOn = null) {
     var chatBox
     agent === 'doctor' ? chatBox = document.getElementById("chatbox-doctor") : chatBox = document.getElementById("chatbox-support")
@@ -277,7 +292,6 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         }
     }
 
-
     if (speaker === 'user') {
         if (message === 'text') {
             message = document.getElementById('user-input').value;
@@ -306,11 +320,9 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         informationTranscript.set(agentSpeaker + " " + getCurrentDateTime(), message);
         updateTranscript()
     }
-    if (speaker === 'user') {
-        document.getElementById('user-input').value = '';
-    }
-
-    // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+    // if (speaker === 'user') {
+    //     document.getElementById('user-input').value = '';
+    // }
 }
 
 function appendLoadingDots() {
@@ -332,6 +344,15 @@ function appendLoadingDots() {
     chatBox.appendChild(ellipse);
 }
 
+function enableButtons(tag) {
+    const buttons = document.getElementsByClassName(tag);
+    for (let button of buttons) {
+        if (button.tagName.toLowerCase() === "button") {
+            button.disabled = false;
+        }
+    }
+}
+
 async function translateHealthLiteracy(message, adjustment) {
     var body = {message: message, adjustment: adjustment}
     const response = await fetch(`/adjustHealthLiteracy`, {
@@ -347,13 +368,17 @@ async function translateHealthLiteracy(message, adjustment) {
     return data.message
 }
 
+const toggleFunction = function() {
+    document.querySelector(".toggle").classList.toggle("active-toggle");
+};
+
 async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue = null) {
-    if (nodeId === 13) {
-        let tempDiv1 = document.getElementById("myRange")
-        tempDiv1.id = "inactiveRange"
-        let tempDiv = document.getElementById("myRange1")
-        tempDiv.id = "myRange"
-    }
+    document.getElementById("user-rating-area-mini").style.display = "none";
+    var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
+    supportCharacter.style.pointerEvents = "none"
+    supportCharacter.removeEventListener("click", toggleFunction);
+
+
     if (prevAgent === "doctor") {
         document.getElementById("chatbox-doctor").innerHTML = ''
     } else {
@@ -386,6 +411,10 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
 
     focusCharacter(data.agent)
 
+    if (data.options) {
+        displayOptions(data.options, data.agent)
+    }
+
     var characterDialogue = data.dialogue
     if (data.showQuestions && data.showQuestions.questionList) { 
         var jsonList
@@ -409,24 +438,77 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
             }
         } else if (data.showQuestions.questionList.questionJSON === "questionsJSON") {
             jsonList = questionsJSON
+            console.log("EXPLANATION PREFERENCES", explanationPreference)
+            console.log(prevQuestion)
             var userQuestionItem = jsonList.find(obj => obj.question === prevQuestion);
+            console.log(userQuestionItem)
 
             var explanationType = findMostFrequentSmallestNumber(explanationPreference)
             var responseType
-            if (explanationType === '0') { responseType = userQuestionItem.explanations.plain }
-            if (explanationType === '50') { responseType = userQuestionItem.explanations.original }
-            if (explanationType === '100') { responseType = userQuestionItem.explanations.highhealth }
+            if (explanationType === 1) { responseType = userQuestionItem.explanations.plain }
+            if (explanationType === 50) { responseType = userQuestionItem.explanations.original }
+            if (explanationType === 100) { responseType = userQuestionItem.explanations.highhealth }
 
             characterDialogue += getPrependPhrase() + responseType
-            showInfoQuestion(responseType)  
             explanations = userQuestionItem.explanations
         }
         
     }
-    // if (data.showQuestions && data.showQuestions.explanations) {
-    //     document.getElementById("user-input").style.display = "block"
-    //     explanations = introQuestionsJSON[data.showQuestions.explanations.item].explanations
-    // }
+    
+    if (data.nodeId >= 13) {
+        if (data.showQuestions && data.showQuestions.questionAdjustment) {
+            var explanationType = findMostFrequentSmallestNumber(explanationPreference)
+            console.log(explanationType)
+            if (explanationType === 1) { 
+                document.getElementById("1").classList.add("highlight") 
+                document.getElementById("2").classList.remove("highlight")
+                document.getElementById("3").classList.remove("highlight")
+            }
+            if (explanationType === 50) { 
+                document.getElementById("2").classList.add("highlight") 
+                document.getElementById("1").classList.remove("highlight")
+                document.getElementById("3").classList.remove("highlight")
+            }
+            if (explanationType === 100) { 
+                document.getElementById("3").classList.add("highlight") 
+                document.getElementById("2").classList.remove("highlight")
+                document.getElementById("1").classList.remove("highlight")
+            }
+
+            jsonList = questionsJSON
+            var userQuestionItem = jsonList.find(obj => obj.question === prevQuestion);
+            userQuestionItem.explanations.plain
+            document.getElementById("1").onclick = function() {
+                console.log("LOW HL")
+                document.getElementById("user-rating-area").style.opacity = 0;
+                document.getElementById("user-rating-area").style.pointerEvents = "none";
+                document.getElementById("options-area").innerHTML = ''
+                explanationPreference.push(1)
+                resetChatBoxPosition();
+                handleUserInput(13, { userMessage: userQuestionItem.explanations.plain, script: textScript }, data.agent, userQuestionItem.explanations.plain)
+            };
+            document.getElementById("2").onclick = function() {
+                console.log("DEFAULT HL")
+                document.getElementById("user-rating-area").style.opacity = 0;
+                document.getElementById("user-rating-area").style.pointerEvents = "none";
+                document.getElementById("options-area").innerHTML = ''
+                explanationPreference.push(50)
+                resetChatBoxPosition();
+                handleUserInput(13, { userMessage: userQuestionItem.explanations.original, script: textScript }, data.agent, userQuestionItem.explanations.original)
+            };
+            document.getElementById("3").onclick = function() {
+                console.log("HIGH HL")
+                document.getElementById("user-rating-area").style.opacity = 0;
+                document.getElementById("user-rating-area").style.pointerEvents = "none";
+                document.getElementById("options-area").innerHTML = ''
+                explanationPreference.push(100)
+                resetChatBoxPosition();
+                handleUserInput(13, { userMessage: userQuestionItem.explanations.highhealth, script: textScript }, data.agent, userQuestionItem.explanations.highhealth)
+            };
+        }
+    }
+
+    if (specificDialogue) { characterDialogue = specificDialogue }
 
     characterAudio(characterDialogue, null, data.agent, () => {
         if (data.passOn) {
@@ -434,33 +516,25 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
         } else {
             focusCharacter("neither")
         }
-        if (data.enableInput) {
-            const buttons = document.getElementsByClassName("preference-option-button");
-            for (let button of buttons) {
-                if (button.tagName.toLowerCase() === "button") {
-                    button.disabled = false;
-                }
-            }
-        }
         if (data.nodeId >= 13) {
             if (data.showQuestions && data.showQuestions.questionAdjustment) {
-                var explanationType = findMostFrequentSmallestNumber(explanationPreference)
                 document.getElementById("user-rating-area-mini").style.display = "block";
-                var newSlider = document.getElementById("myRange")
-                newSlider.value = explanationType
-                newSlider.addEventListener("input", function() {
-                    var value = this.value;
-                    // Do something with the slider value
-                    // Add your custom logic here
-                    if (value === "0"){
-                        document.getElementById("question-item-text").innerText = explanations.plain 
-                    } else if (value === "100"){
-                        document.getElementById("question-item-text").innerText = explanations.highhealth
-                    } else if (value === "50"){
-                        document.getElementById("question-item-text").innerText = explanations.original
-                    }
-                })
+                var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
+                supportCharacter.style.pointerEvents = "all"
+                supportCharacter.addEventListener("click", toggleFunction);
             }
+        }
+
+        if (data.options && data.options.generate && data.options.generate !== false || data.options.generate === undefined || data.options.questionList) {
+            setTimeout(() => {
+                document.getElementById("user-rating-area").style.opacity = 1;
+                document.getElementById("user-rating-area").style.pointerEvents = "all";
+                enableButtons("option-btn")
+                moveChatBox();
+            }, 10);
+        }
+        if (data.options.questionList) {
+            enableButtons("preference-option-btn")
         }
         
         // if (data.showQuestions) { 
@@ -478,11 +552,6 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
         // } else {
         //     document.getElementById("ask-preference-area").classList.remove('show')
         // }
-        if (data.options) {
-            if (data.options.generate && data.options.generate !== false || data.options.generate === undefined) {
-                displayOptions(data.options, data.agent)
-            }
-        }
     });
 
     if (data.passOn) { 
@@ -495,6 +564,46 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
 function checkAndRemoveTopic(item) {
     if (item in topics) {
         delete topics[item]
+    }
+}
+
+function getOptionText(key, value) {
+    switch(key) {
+        case 'original':
+            return '<strong>Default:</strong><br/>';
+        case 'plain':
+            return '<strong>Less Technical:</strong><br/>';
+        case 'highhealth':
+            return '<strong>More Technical:</strong><br/>';
+        default:
+            return value; // fallback to the value if key is not recognized
+    }
+}
+
+function getOptionValue(key, value) {
+    switch(key) {
+        case 'original':
+            return 50;
+        case 'plain':
+            return 1;
+        case 'highhealth':
+            return 100;
+        default:
+            return value; // fallback to the value if key is not recognized
+    }
+}
+
+function checkPreference(key, value) {
+    console.log("IN CHECK PREF, PREV PREF WAS", prevPreference)
+    switch(key) {
+        case 'original':
+            if (prevPreference === 50) {return true}
+        case 'plain':
+            if (prevPreference === 1) {return true}
+        case 'highhealth':
+            if (prevPreference === 100) {return true}
+        default:
+            return false; // fallback to the value if key is not recognized
     }
 }
 
@@ -513,23 +622,34 @@ function displayOptions(options, agent) {
         // prevAgent = "doctor"
     }
     if (options.questionList) {
+        console.log("CREATING OPTIONS FROM QUESTION LIST")
         var tutorialOptionsTopics = Object.entries(introQuestionsJSON[options.item].explanations)
         .map(([key, value]) => ({
-            optionText: value,
+            optionText: getOptionText(key) + value,
+            optionDialogue: value,
             nextNode: options.nextNode,
-            getPreference: true
+            getPreference: true,
+            preference: getOptionValue(key),
         }));
         optionsArray = tutorialOptionsTopics
     }
+    console.log(optionsArray)
     optionsArray.forEach(option => {
         const optionsArea = document.getElementById("options-area")
         
         const button = document.createElement('button');
         const userText = option.optionText
-        button.textContent = userText;
+        button.innerHTML = userText;
+        if (option.preference && option.preference === prevPreference) {
+            console.log("THIS WAS THE PREV PREF")
+            // button.classList.add("highlight-option-btn")
+            const highlightDiv = document.createElement("p");
+            highlightDiv.innerHTML = "Skylar Recommends"
+            highlightDiv.classList.add("highlight-div")
+            button.appendChild(highlightDiv)
+        }
         if (options.questionList) {
             button.classList.add("preference-option-btn")
-            button.disabled = true
         } else {
             button.classList.add("option-btn")
         }
@@ -549,20 +669,24 @@ function displayOptions(options, agent) {
             button.addEventListener('click', () => {
                 document.getElementById("chatbox-doctor").innerHTML = ''
                 document.getElementById("chatbox-support").innerHTML = ''
-                if (option.getPreference) {
-                    prevPreference = slider.value
-                    var text = document.getElementById("question-item-text").innerText
+                if (option.getPreference && option.preference) {
+                    prevPreference = option.preference
                     prevQuestion = option.optionText
-
-                    document.getElementById("user-rating-area-mini").style.display = "none";
-
-                    explanationPreference.push(slider.value)
+                    // document.getElementById("user-rating-area-mini").style.display = "none";
+                    explanationPreference.push(option.preference)
+                    console.log("EXPLANATION PREF:", explanationPreference)
                 }
-                optionsArea.innerHTML = ''
+                if (option.getPreference) {
+                    prevPreference = option.preference
+                    prevQuestion = option.optionText
+                }
+                console.log("CLICKED BUTTON")
                 document.getElementById('questions').classList.remove('show');
                 document.getElementById("ask-preference-area").classList.remove('show')
-                document.getElementById('user-input').style.display = "none";
-                document.getElementById("user-rating-area").style.display = "none";
+                document.getElementById("user-rating-area").style.opacity = 0;
+                document.getElementById("user-rating-area").style.pointerEvents = "none";
+                optionsArea.innerHTML = ''
+                resetChatBoxPosition();
                 appendMessage(userText, 'user', null, null, null)
                 let messageBody = { userMessage: option.optionText, script: textScript }
                 checkAndRemoveTopic(option.optionText)
@@ -570,7 +694,7 @@ function displayOptions(options, agent) {
                     if (option.increment === true) {
                         if (option.userInfo) {
                             userInfo = option.userInfo
-                            // document.getElementById("thinking").style.display = "flex"
+                            document.getElementById("thinking").style.display = "flex"
                         }
                         if (option.value === 0 || option.value ===1) {
                             logItem("browseChoice", option.value)
@@ -580,7 +704,11 @@ function displayOptions(options, agent) {
                             incrementProgress(true);
                         }
                     }
-                    handleUserInput(option.nextNode, messageBody, prevAgent)
+                    if (options.questionList) {
+                        handleUserInput(option.nextNode, messageBody, prevAgent, option.optionDialogue)
+                    } else {
+                        handleUserInput(option.nextNode, messageBody, prevAgent)
+                    }
                 } else {
                     incrementProgress();
                     handleUserInput(continueNode, messageBody, prevAgent)
@@ -591,10 +719,6 @@ function displayOptions(options, agent) {
         }
         
         optionsArea.appendChild(button);
-        setTimeout(() => {
-            document.getElementById("user-rating-area").style.display = "block";
-            button.style.opacity = 1
-        }, 10);
     });
     
 }
