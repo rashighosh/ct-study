@@ -3051,10 +3051,6 @@ class TalkingHead {
 
           const apiUrl = "http://localhost:3000/generateSSML";
 
-          // JSON Web Token
-          // if (this.opt.jwtGet && typeof this.opt.jwtGet === "function") {
-          //   o.headers["Authorization"] = "Bearer " + await this.opt.jwtGet();
-          // }
           const res = await fetch(apiUrl, {
             method: "POST",
             headers: {
@@ -3062,13 +3058,13 @@ class TalkingHead {
             },
             body: JSON.stringify({
               ssml: ssml,
-              voice: this.opt.ttsVoice
+              voice: this.opt.ttsVoice,
+              pitch: this.opt.ttsPitch
             })
           });
 
           const audioResponse = await res.json();
           
-          // console.log("TTS DATA:", data);
           const data = audioResponse.audioResponse;
           if ( res.status === 200 && data && data.audioContent ) {
 

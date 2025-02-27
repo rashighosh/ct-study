@@ -56,23 +56,6 @@
             src="../sources/ObservationalStudies.pdf#toolbar=0&navpanes=0"></iframe>
         </div>
       </div>
-      
-    <div id="help-modal" class="help-modal">
-        <div class="help-modal-content">
-          <div class="help-row">
-            <div class="help-col">
-              <p class="info-title help">About This Intervention</p>
-              <p class="info help">The information provided by ALEX was originally published by the National Cancer Institute from <a href="https://www.cancer.gov/research/participate/about-cancer-clinical-research">Participate in Cancer Research</a>.</p>
-              <hr/>
-              <p class="info-title help">🫤 Having issues?</p>
-              <p class="info help">We apologies for the inconvenience! Please <b>copy the URL for this webpage below</b> and <b>reach out to the researcher on Prolific</b> to help resolve the issue.</p>
-              <p class="info help" id="current-link-help">Please copy the URL for this webpage and reach out to the researcher on Prolific, providing the URL.</p>
-              <hr/>
-            </div>
-          </div>
-          <button id="help-close">Close</button>
-        </div>
-      </div>
       <div id="more-info-modal" class="more-info-modal">
         <div class="more-info-modal-content" id="more-info-modal-content">
           <button id="close-more-info-modal">ⓧ Close</button>
@@ -382,13 +365,10 @@
           </div>
         </div>
       </div>
-        <button id="help-icon">&#63;</button>
         <div class="header">
-            <span><h1>Alex&nbsp;</h1><h2>| Virtual Health Assistant</h2></span>
-                <div id="progress-animation" class="progress3 progress3-moved">
-                    <div class="progress-bar3"></div>
-                </div>
-                <div class="progress-description" style="--n: 1; --f: 0;"><b>Learn About Clinical Trials&nbsp;</b>| Progress:&nbsp<span id="progress-percent">0</span>%</div>
+            <div id="progress-animation" class="progress3 progress3-moved">
+                <div class="progress-bar3"></div>
+            </div>
         </div>
         <div id="studies-modal">
             <div class="studies">
@@ -505,11 +485,34 @@
                 </div>
             </div>
         </div>
+        <!-- Help Icon & Modal Area Start -->
+        <button id="help-icon">&#63;</button>
+        <div id="help-modal" class="help-modal">
+            <div class="help-modal-content">
+                <div class="help-row">
+                    <div class="help-col">
+                    <p class="info-title help">About This Intervention</p>
+                    <p class="info help">The information provided by ALEX was originally published by the National Cancer Institute from <a href="https://www.cancer.gov/research/participate/about-cancer-clinical-research">Participate in Cancer Research</a>.</p>
+                    <hr/>
+                    <p class="info-title help">🫤 Having issues?</p>
+                    <p class="info help">We apologies for the inconvenience! Please <b>copy the URL for this webpage below</b> and <b>reach out to the researcher on Prolific</b> to help resolve the issue.</p>
+                    <p class="info help" id="current-link-help">Please copy the URL for this webpage and reach out to the researcher on Prolific, providing the URL.</p>
+                    <hr/>
+                    </div>
+                </div>
+                <button id="help-close">Close</button>
+            </div>
+        </div>
+        <!-- Help Icon & Modal Area End -->
+
+        <!-- Chat History & Modal Area Start -->
         <div id="chat-container-bg"></div>
         <div id="chat-container">
-            <button id="close-chat-history-icon">X</button>
+            <button id="close-chat-history-icon">ⓧ Close</button>
             <p class="convo-history-title">Conversation History</p>
         </div>
+        <!-- Chat History & Modal Area End -->
+
         <div id="interaction-area">
         <div class="room">
             <div class="characters">
@@ -520,50 +523,68 @@
                     </div>
                     <div id="chatbox-doctor"></div>
                 </div>
+                <div id="info-area">
+                    <div id="questions">
+                        <div id="question-box">
+                            <p id="question-item-text">Cancer clinical trials are an opportunity to get help and contribute to research.</p>
+                        </div>
+                        <br/>
+                    </div>
+                    <div id="ask-preference-area">
+                        <p>How do you prefer this explanation?</p>
+                    </div>
+                </div>
+                
                 <div id="virtualcharacter1">
                     <div class="name-tag skylar">
                         <p class="title">Virtual Caregiver</p>
                         <p id="skylar-name" class="name">Skylar</p>
                     </div>
-                    <div id="slidecontainer">
-                        <p>Let me know how well you understand this information!</p>
-                        <input type="range" min="0" max="100" value="50" step="25" class="slider" id="myRange">
-                        <div id="sliderValue" class="slider-value"></div>
-                        <button id="slider-submit">Submit</button>
+                    <div id="user-rating-area-mini">
+                        <p class="title toggle">Click here to let me know if you want this explained differently!</p>
+                        <div class="toggle-content">
+                            <p class="toggle-description">The explanation we used is based on your past preferences. However, feel free to adjust it below if we didn't get it right!</p>
+                            <div id="rating">
+                                <p id="1">Less technical</p>
+                                <p id="2"></p>
+                                <p id="3">More Technical</p>
+                            </div>
+                            <div class="slider-area">
+                                <input type="range" min="0" max="100" value="50" step="50" class="slider" id="myRange1">
+                                <span class="slider-middle"></span> <!-- Middle dot -->
+                            </div>
+                            <div id="sliderValue" class="slider-value"></div>
+                        </div> 
                     </div>
                     <div id="chatbox-support"></div>
-                </div>
-                <div id="questions">
-                    <div id="question-box">
-                        <p id="question-item-text"></p>
-                    </div>
-                    <br/>
                 </div>
                 
             </div>
         </div>
-        <div class="interaction">
-            <p id="history">💬 Conversation History</p>
-            <div class="input-area" id="input-area">
-                <textarea id="user-input" class="user-input" placeholder="Type your message. Press Enter or the send button to send your message."></textarea>
-                <button id="send-btn">
-                    <svg id="send-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <defs>
-                        <linearGradient id="sendGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#ffffff" />
-                            <stop offset="100%" style="stop-color:#ffffff" />
-                        </linearGradient>
-                        </defs>
-                        <path d="m20.447 11.105-16-8A1 1 0 0 0 3.152 4.53L7.82 12l-4.668 7.47a1 1 0 0 0 1.3 1.425l16-8a1 1 0 0 0 0-1.79zM6.731 17.517 9.554 13H12a1 1 0 0 0 0-2H9.554L6.731 6.483 17.764 12z" style="fill:url(#sendGradient)"/>
-                    </svg>  
-                </button>
+        <div class="interaction" id="interaction">
+            <div id="user-rating-area">
+                <p class="title">Your Response:</p>
+                <div id="user-input">
+                    <p class="title">Your Preference:</p>
+                    <div id="rating">
+                        <p id="1">Less technical</p>
+                        <p id="2"></p>
+                        <p id="3">More Technical</p>
+                    </div>
+                    <div class="slider-area">
+                        <input type="range" min="0" max="100" value="50" step="50" class="slider" id="myRange">
+                        <span class="slider-middle"></span> <!-- Middle dot -->
+                    </div>
+                    <div id="sliderValue" class="slider-value"></div>
+                </div> 
+                <div id="options-area"></div>
             </div>
-            <div id="options-area"></div>
         </div>
+
     </div>
-    
-        <button id="finish-btn">Rotate Towards</button>
-        <button id="finish-btn1">Rotate Away</button>
+    <p id="history">💬 Conversation History</p>
+    <button id="finish-btn">End Conversation</button>
+
 
         <script type="module" src="/js/interaction.js"></script>
 

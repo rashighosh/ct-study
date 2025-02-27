@@ -58,19 +58,18 @@ app.get('/select', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'select.html'));
 });
 
+
 function removeSpecialFormat(text) {
     return text.replace(/【\d+:\d+†[^】]+】/g, '');
 }
 
 app.post('/adjustHealthLiteracy', async (req, res, next) => {
-  console.log(req.body)
   var message = `MESSAGE: ${req.body.message}; ADJUSTMENT: ${req.body.adjustment}`
-  console.log(message)
   const completion = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [{ 
       role: "developer", 
-      content: "You are a helpful assistant whose goal is to lower the health literacy of the user's MESSAGE based on ADJUSTMENT, which is how well they understand from 0 (I don't understand this at all) to 100 (I understand this completely). Keep the message content the same, but the lower the health literacy based on ADJUSTMENT: use less medical jargon, less technical terms, and less complex sentence structure, and explain any terms or phrases that are specific to healthcare. Use these websitse to help guide you: https://www.cms.gov/training-education/learn/find-tools-to-help-you-help-others/guidelines-for-effective-writing, https://multco.us/file/plain_language_word_list/download, https://www.plainlanguage.gov/resources/checklists/checklist/. Return only the adjusted text." 
+      content: "You are a helpful assistant whose goal is to lower the health literacy of the user's MESSAGE based on ADJUSTMENT, which is how they want the information presented, either 0 (low health iteracy) or 100 (high health literacy). Keep the message content the same, but the lower the health literacy based on ADJUSTMENT: if 100, use more medical jargon and more technical terms. if 0, use less medical jargon, less technical terms, and less complex sentence structure, and explain any terms or phrases that are specific to healthcare. Use these websites to help guide you for 0: https://www.cms.gov/training-education/learn/find-tools-to-help-you-help-others/guidelines-for-effective-writing, https://multco.us/file/plain_language_word_list/download, https://www.plainlanguage.gov/resources/checklists/checklist/. Return only the adjusted text." 
     }, 
     { 
       role: "user", 
@@ -79,15 +78,20 @@ app.post('/adjustHealthLiteracy', async (req, res, next) => {
     store: true,
   });
 
-  console.log(completion.choices[0].message.content);
   return res.json({ message: completion.choices[0].message.content });
 })
 
-async function generateGoogleTTS(ssml, voice = null) {
-  // voice = "en-US-News-L"
-  // voice = "en-US-Neural2-J"
-  console.log(voice)
+app.get('/getQuestionsJSON', (req, res, next) => {
+  var questionsJSON = JSON.parse(fs.readFileSync(path.join(jsonDir, "Questions.json")), 'utf8')
+  return res.json({ questions: questionsJSON });
+})
 
+app.get('/getIntroQuestionsJSON', (req, res, next) => {
+  var introQuestionsJSON = JSON.parse(fs.readFileSync(path.join(jsonDir, "Intro_Questions.json")), 'utf8')
+  return res.json({ introQuestions: introQuestionsJSON });
+})
+
+async function generateGoogleTTS(ssml, voice = null, pitch = null) {
   // Convert text to SSML
   const o = {
       method: "POST",
@@ -104,6 +108,8 @@ async function generateGoogleTTS(ssml, voice = null) {
           },
           "audioConfig": {
               "audioEncoding": "OGG-OPUS",
+              "speakingRate": 1.15,
+              "pitch": pitch
           },
           "enableTimePointing": ["SSML_MARK"]
       })
@@ -122,12 +128,12 @@ async function generateGoogleTTS(ssml, voice = null) {
 }
 
 app.post('/generateSSML', async (req, res) => {
-  const { ssml, voice } = req.body;
+  const { ssml, voice, pitch } = req.body;
   // const ssml = "Test sentence for testing purposes at test dot com"
   if (!ssml) {
       return res.status(400).json({ error: 'Missing ssml object' });
   }
-  const audioResponse = await generateGoogleTTS(ssml, voice)
+  const audioResponse = await generateGoogleTTS(ssml, voice, pitch)
   res.json({ audioResponse });
 })
 
@@ -137,7 +143,6 @@ app.post('/interact/:nodeId', async (req, res, next) => {
   var gender = req.body.gender
   var script = req.body.script
   var openai_assistant = ''
-  console.log(script)
 
   try {
       // Find node data in preloaded metadata
@@ -159,7 +164,7 @@ app.post('/interact/:nodeId', async (req, res, next) => {
           console.log("need to prepend AI dialogue")
           console.log(message)
           const completion = await openai.chat.completions.create({
-            messages: [{ role: "developer", content: "Greet the user briefly based on the name they provide (Example: `Hello, [name]! Nice to meet you.`). If they prefer to remain anonymous, briefly acknolwedge that (Example: `No problem! It's great to have you here.`)." }, { role: "user", content: message }],
+            messages: [{ role: "developer", content: nodeData.response.useAi.prompt }, { role: "user", content: message }],
             model: "gpt-4o",
             store: true,
           });
@@ -167,6 +172,32 @@ app.post('/interact/:nodeId', async (req, res, next) => {
           console.log(completion)
           console.log(completion.choices[0].message.content);
           agentDialogue = completion.choices[0].message.content + nodeData.dialogue
+        }
+        if (nodeData.response.useAi.modifyDialogue) {
+          console.log("MAKING CALL TO OPENAI")
+          console.log(message)
+          const openAiAssistant = 'asst_NkwHAFS69vs6Yde0IU24czgD'
+          console.log(openAiAssistant)
+          const thread = await rashi_openai.beta.threads.create();
+          await rashi_openai.beta.threads.messages.create(thread.id, {
+              role: 'user',
+              content: message
+            });
+            const run = await rashi_openai.beta.threads.runs.create(thread.id, {
+              assistant_id: openAiAssistant
+            });
+          let runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
+
+          while (runStatus.status !== 'completed') {
+            console.log("WAITING FOR RESPONSE ...")
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            runStatus = await rashi_openai.beta.threads.runs.retrieve(thread.id, run.id);
+          }
+          console.log("GOT RESPONSE")
+          const messages = await rashi_openai.beta.threads.messages.list(thread.id);
+          var generatedDialogue = messages.data[0].content[0].text.value;
+          agentDialogue = removeSpecialFormat(generatedDialogue)
+          console.log(agentDialogue)
         }
       }
 

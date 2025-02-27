@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   const nodeAvatar = document.getElementById('virtualcharacter');
   head = new TalkingHead(nodeAvatar, {
     ttsEndpoint: "blah",
-    ttsVoice: "en-US-News-L",
+    ttsVoice: "en-US-Neural2-C",
+    ttsPitch: 3,
     lipsyncModules: ["en"], // language
     cameraY: 0,
     cameraRotateY: 0,
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
   head1 = new TalkingHead(nodeAvatar1, {
     ttsEndpoint: "blah",
     ttsVoice: "en-US-Neural2-J",
+    ttsPitch: -5,
     lipsyncModules: ["en"], // language
     cameraY: 0,
     cameraRotateY: 0,
@@ -86,18 +88,33 @@ export async function stopThinking() {
 export async function focusCharacter(character) {
   if (character === "doctor") {
       head.setLighting({
-        lightDirectIntensity: 30,   // Dim directional light
+        lightDirectIntensity: 45,   // Dim directional light,
+        lightSpotIntensity: 45,
       })
       head1.setLighting({
-        lightDirectIntensity: 15,   // Dim directional light
+        lightDirectIntensity: 0,   // Dim directional light
       })
-  } else {
+      document.querySelector("#virtualcharacter > canvas").classList.remove("dim")
+      document.querySelector("#virtualcharacter1 > canvas").classList.add("dim")
+  } else if (character==="support") {
     head.setLighting({
-      lightDirectIntensity: 15,   // Dim directional light
+      lightDirectIntensity: 0,   // Dim directional light
     })
     head1.setLighting({
-      lightDirectIntensity: 30,   // Dim directional light
+      lightDirectIntensity: 45,   // Dim directional light
+      lightSpotIntensity: 45,
     })
+    document.querySelector("#virtualcharacter1 > canvas").classList.remove("dim")
+    document.querySelector("#virtualcharacter > canvas").classList.add("dim")
+  } else {
+    head.setLighting({
+      lightDirectIntensity: 0,   // Dim directional light
+    })
+    head1.setLighting({
+      lightDirectIntensity: 0,   // Dim directional light
+    })
+    document.querySelector("#virtualcharacter > canvas").classList.add("dim")
+    document.querySelector("#virtualcharacter1 > canvas").classList.add("dim")
   }
 }
 

@@ -1,43 +1,244 @@
 [
     {
         "nodeId": 1,
-        "dialogue": "Hello, I'm Dr. Alex! I'm a virtual oncologist here to talk to you about participating in clinical trials. My knowledge is based on information from the National Cancer Institute. ",
+        "dialogue": "Hello, I'm Dr Alex, a virtual oncologist. Today, I'll be sharing information about clinical trials from the National Cancer Institute to help you decide if being in a clinical trial is right for you.",
         "agent": "doctor",
-        "passOn": true,
         "input": {
-            "allowed": false,
+            "allowed": true,
             "nextNode": 2
-        }
+        },
+        "options": [
+            {
+                "optionText": "Nice to meet you Dr Alex.",
+                "nextNode": 2
+            }
+        ]
     },
     {
         "nodeId": 2,
-        "dialogue": "And I'm Skylar, a virtual caregiver. I'm here to support you in talking to Dr. Alex about clinical trials based on your knowledge and feelings you shared in the pre-survey. You'll lead the conversation with Dr. Alex, and will let you know if I have something to add.",
+        "dialogue": "And I'm Skylar, a virtual caregiver. I'm here to make sure that all the information you receive today is clear and easy to understand, so you feel confident and informed throughout our conversation.",    
+        "agent": "support",
+        "input": {
+            "allowed": true,
+            "nextNode": 3
+        },
+        "options": [
+            {
+                "optionText": "Nice to meet you too, Skylar.",
+                "nextNode": 3
+            }
+        ]
+    },
+    {
+        "nodeId": 3,
+        "dialogue": "Good to meet you! Now, to make sure we're presenting information in a way that's understandabale to you, I'll ask Dr Alex 3 questions. Before Dr Alex answers, you'll choose how you prefer the information to be explained.",
+        "agent": "support",
+        "input": {
+            "allowed": false,
+            "nextNode": 4
+        },
+        "options": [
+            {
+                "optionText": "Okay, let's begin.",
+                "nextNode": 4
+            }
+        ]
+    },
+    {
+        "nodeId": 4,
+        "dialogue": "Alright. Dr Alex, the first question is: What is a clinical trial?",
         "agent": "support",
         "passOn": true,
         "input": {
             "allowed": false,
-            "nextNode": 3
+            "nextNode": 5
         }
     },
     {
-        "nodeId": 3,
-        "dialogue": "Alright, what would you like to talk about first?",
+        "nodeId": 5,
+        "dialogue": "Of course, I can answer that -- which explanation would you prefer?",
         "agent": "doctor",
-        "input": {
-            "allowed": true,
-            "nextNode": 4
-        }
-    },
-    {
-        "nodeId": 4,
-        "dialogue": "ChatGPT Response",
-        "agent": "doctor",
-        "input": {
-            "allowed": true,
-            "nextNode": 4
+        "showQuestions": {
+            "questionList": {
+                "questionJSON": "introQuestionsJSON",
+                "item": 0
+            }
         },
-        "response": {
-            "alterDialogue": false
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 6
+        },
+        "options": 
+        {
+            "questionList": "introQuestionsJSON",
+            "item": "0",
+            "nextNode": 7
         }
+    },
+    {
+        "nodeId": 6,
+        "dialogue": "You can see below there are 3 different ways Dr Alex can answer this question. They all have the same information, but are explained in different ways. Click on the explanation you prefer!",
+        "agent": "support",
+        "showQuestions": {
+            "explanations": {
+                "item": 0
+            }
+        },
+        "input": {
+            "allowed": false,
+            "nextNode": 7
+        },
+        "enableInput": true
+    },
+    {
+        "nodeId": 7,
+        "dialogue": "Great! That helps Dr Alex and me tailor the information to you. Let's move on to the second question. Dr Alex, what is informed consent?",
+        "agent": "support",
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 8
+        }
+    },
+    {
+        "nodeId": 8,
+        "dialogue": "Happy to answer. ",
+        "agent": "doctor",
+        "showQuestions": {
+            "questionList": {
+                "questionJSON": "introQuestionsJSON",
+                "item": 1
+            }
+        },
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 9
+        }
+    },
+    {
+        "nodeId": 9,
+        "dialogue": "Thank you Dr Alex! Now, use the slider again to let us know which explanation you prefer.",
+        "agent": "support",
+        "showQuestions": {
+            "explanations": {
+                "item": 1
+            }
+        },
+        "input": {
+            "allowed": false,
+            "nextNode": 10
+        },
+        "options": [
+            {
+                "optionText": "Continue.",
+                "nextNode": 10,
+                "getPreference": true
+            }
+        ]
+    },
+    {
+        "nodeId": 10,
+        "dialogue": "Awesome. Finally Dr Alex, what is an IRB?",
+        "agent": "support",
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 11
+        }
+    },
+    {
+        "nodeId": 11,
+        "dialogue": "Glad you asked! ",
+        "agent": "doctor",
+        "showQuestions": {
+            "questionList": {
+                "questionJSON": "introQuestionsJSON",
+                "item": 2
+            }
+        },
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 12
+        }
+    },
+    {
+        "nodeId": 12,
+        "dialogue": "Thank you Dr Alex! Now, use the slider again to let us know which explanation you prefer.",
+        "agent": "support",
+        "showQuestions": {
+            "explanations": {
+                "item": 2
+            }
+        },
+        "input": {
+            "allowed": false,
+            "nextNode": 13
+        },
+        "options": [
+            {
+                "optionText": "Continue.",
+                "nextNode": 13,
+                "getPreference": true
+            }
+        ]
+    },
+    {
+        "nodeId": 13,
+        "dialogue": "Alright, now it's time to let you ask questions. I looked over your knowledge and attitudes about clinical trials from the pre-survey, and have suggestions on what to ask Dr Alex. At any point, you can still choose to adjust the information presented!",
+        "agent": "support",
+        "input": {
+            "allowed": false,
+            "nextNode": 14
+        },
+        "options": 
+            {
+                "generate": true,
+                "nextNode": 14
+            }
+    },
+    {
+        "nodeId": 14,
+        "dialogue": "",
+        "agent": "doctor",
+        "showQuestions": {
+            "questionList": {
+                "questionJSON": "questionsJSON"
+            },
+            "questionAdjustment": true
+        },
+        "passOn": false,
+        "input": {
+            "allowed": false,
+            "nextNode": 15
+        },
+        "options": 
+            {
+                "generate": true,
+                "nextNode": 15
+            }
+    },
+    {
+        "nodeId": 15,
+        "dialogue": "",
+        "agent": "doctor",
+        "showQuestions": {
+            "questionList": {
+                "questionJSON": "questionsJSON"
+            },
+            "questionAdjustment": true
+        },
+        "passOn": false,
+        "input": {
+            "allowed": false,
+            "nextNode": 15
+        },
+        "options": 
+            {
+                "generate": true,
+                "nextNode": 15
+            }
     }
-]
+  ]

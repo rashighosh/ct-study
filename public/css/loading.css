@@ -43,8 +43,8 @@
   
   .loader {
     --p: 0;
-    animation: p 4s steps(100) forwards, 
-                pcolor 4s forwards;
+    animation: p 3s steps(100) forwards, 
+                pcolor 3s forwards;
     counter-reset: p var(--p);
     font-size: 2.1em;
     color: #f3c623;
