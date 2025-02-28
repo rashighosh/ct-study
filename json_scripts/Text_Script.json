@@ -156,7 +156,7 @@
     },
     {
         "nodeId": 12,
-        "dialogue": "I've generated some suggested questions based on your knowledge and attitudes about clinical trials from the pre-survey. You can ask these questions by clicking the buttons below. After asking Dr Alex 9 questions, you can continue to the post-survey. Let's get started! Click your first question below.",
+        "dialogue": "I've generated some suggested questions based on your knowledge and attitudes about clinical trials from the pre-survey. You can ask these questions by clicking the buttons below. After asking Dr Alex 7 questions, you can continue to the post-survey. Let's get started! Click your first question below.",
         "agent": "support",
         "questionList": {
             "questionJSON": "questionsJSON"
@@ -185,15 +185,86 @@
             },
             "questionAdjustment": true
         },
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 14
+        }
+    },
+    {
+        "nodeId": 14,
+        "dialogue": "Real quick -- As I mentioned, Dr Alex is answering based on your previous preferences. However, if you want to adjust your preferences, you can click on me to let us know!",
+        "agent": "support",
+        "showQuestions": {
+            "keepLastDialogue": true,
+            "questionAdjustment": true
+        },
         "passOn": false,
         "input": {
             "allowed": false,
-            "nextNode": 13
+            "nextNode": 15
         },
         "options": 
         {
             "generate": true,
-            "nextNode": 13
+            "nextNode": 15
         }
+    },
+    {
+        "nodeId": 15,
+        "dialogue": "",
+        "agent": "doctor",
+        "showQuestions": {
+            "questionList": {
+                "questionJSON": "questionsJSON"
+            },
+            "questionAdjustment": true
+        },
+        "passOn": false,
+        "input": {
+            "allowed": false,
+            "nextNode": 15
+        },
+        "options": 
+        {
+            "generate": true,
+            "nextNode": 15
+        }
+    },
+    {
+        "nodeId": 16,
+        "dialogue": "That's all Dr Alex and I have for you today! Thanks for chatting with us.",
+        "agent": "support",
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 17
+        }
+    },
+    {
+        "nodeId": 17,
+        "dialogue": "Yes, it was a pleasure sharing information from the National Cancer Institute about clinical trials for your cancer journey.",
+        "agent": "doctor",
+        "passOn": true,
+        "input": {
+            "allowed": false,
+            "nextNode": 18
+        }
+    },
+    {
+        "nodeId": 18,
+        "dialogue": "We hope you enjoyed this intervention and have a good rest of your day!",
+        "agent": "support",
+        "passOn": false,
+        "input": {
+            "allowed": false,
+            "nextNode": 17
+        },
+        "options": [
+            {
+                "optionText": "Thanks, bye!",
+                "link": "qualtrics"
+            }
+        ]
     }
   ]

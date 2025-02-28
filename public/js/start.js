@@ -122,7 +122,10 @@ async function someFunction(id) {
             console.log("Topics exists!")
             var topics = result.topics
             console.log(topics)
-            sessionStorage.setItem("topics", JSON.stringify(topics))
+            var firstSevenTopics = {};
+            firstSevenTopics["Topics"] = Object.fromEntries(Object.entries(topics.Topics).slice(0, 7));
+            console.log(firstSevenTopics)
+            sessionStorage.setItem("topics", JSON.stringify(firstSevenTopics))
         }
         // Continue with the rest of your code
     } catch (error) {

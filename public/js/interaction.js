@@ -12,7 +12,7 @@ var incrementTotal
 var finishCounter = 0
 const slider = document.getElementById("myRange");
 var explanations = {}
-var explanationPreference = []
+var explanationPreference = [1]
 var introQuestionsJSON = []
 var questionsJSON = []
 var prevPreference = -1
@@ -207,7 +207,7 @@ function showLoading() {
     const animatedElement = document.getElementById("loader-animation");
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
-        handleUserInput(1, { userInput: "Start Introduction", script: textScript, gender: "male" });
+        handleUserInput(13, { userInput: "Start Introduction", script: textScript, gender: "male" });
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
     };
@@ -378,12 +378,6 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     supportCharacter.style.pointerEvents = "none"
     supportCharacter.removeEventListener("click", toggleFunction);
 
-
-    if (prevAgent === "doctor") {
-        document.getElementById("chatbox-doctor").innerHTML = ''
-    } else {
-        document.getElementById("chatbox-support").innerHTML = ''
-    }
     body.script = textScript
     console.log("AB TO CALL SERVER, BODY IS", body)
     // body.characterGender = gender
@@ -400,13 +394,15 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
 
     const data = await response.json(); // gives ENTIRE audio at once
     console.log("RESPONSE FROM SERVER", data)
-    if (data.nodeId >= 15) {
-        finishCounter++
-        console.log("FINISH COUNTER IS", finishCounter)
-        if (finishCounter === 5) {
-            console.log("WE R DONE")
-            document.getElementById("finish-btn").style.display = "block"
+
+    if (prevAgent === "doctor") {
+        if (data.showQuestions && data.showQuestions.keepLastDialogue) {
+            console.log("Keep Dr Alex's response")
+        } else {
+            document.getElementById("chatbox-doctor").innerHTML = ''
         }
+    } else {
+        document.getElementById("chatbox-support").innerHTML = ''
     }
 
     focusCharacter(data.agent)
@@ -507,17 +503,26 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     if (specificDialogue) { characterDialogue = specificDialogue }
 
     characterAudio(characterDialogue, null, data.agent, () => {
+        console.log("TOPICS LENGTH", Object.keys(topics).length)
+        if (Object.keys(topics).length === 0 && data.nodeId === 15) {
+            console.log("WE R DONE")
+            displayOptions([{"optionText": "Continue", "nextNode": 16}], data.agent)
+            
+        }
         if (data.passOn) {
             handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, data.agent);
         } else {
             focusCharacter("neither")
         }
-        if (data.nodeId >= 13) {
+        if (data.nodeId >= 14) {
             if (data.showQuestions && data.showQuestions.questionAdjustment) {
                 document.getElementById("user-rating-area-mini").style.display = "block";
                 var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
                 supportCharacter.style.pointerEvents = "all"
                 supportCharacter.addEventListener("click", toggleFunction);
+            }
+            if (data.showQuestions && data.showQuestions.keepLastDialogue) {
+                document.getElementById("chatbox-support").innerHTML = ''
             }
         }
 
@@ -545,7 +550,7 @@ function checkAndRemoveTopic(item) {
 function getOptionText(key, value) {
     switch(key) {
         case 'original':
-            return '<strong>Default:</strong><br/>';
+            return '<strong>Original NCI:</strong><br/>';
         case 'plain':
             return '<strong>Less Technical:</strong><br/>';
         case 'highhealth':
@@ -581,6 +586,10 @@ function checkPreference(key, value) {
     }
 }
 
+function cleanBoldTags(text) {
+    return text.replace(/<\/?b>/g, '');
+}
+
 function displayOptions(options, agent) {
     var prevAgent = agent
     var optionsArray = options
@@ -596,10 +605,10 @@ function displayOptions(options, agent) {
         // prevAgent = "doctor"
     }
     if (options.questionList) {
-        var tutorialOptionsTopics = Object.entries(introQuestionsJSON[options.item].explanations)
+        var tutorialOptionsTopics = Object.entries(introQuestionsJSON[options.item].explanationsBolded)
         .map(([key, value]) => ({
             optionText: getOptionText(key) + value,
-            optionDialogue: value,
+            optionDialogue: cleanBoldTags(value),
             nextNode: options.nextNode,
             getPreference: true,
             preference: getOptionValue(key),
@@ -635,7 +644,12 @@ function displayOptions(options, agent) {
             button.onclick = function() {
                 document.getElementById("studies-modal").style.display = "flex";
             }
-        } else {
+        } else if (option.link) {
+            button.addEventListener('click', () => {
+                console.log("CONTINUE TO POST SURVEY", option.link)
+            })
+        }
+        else {
             button.addEventListener('click', () => {
                 document.getElementById("chatbox-doctor").innerHTML = ''
                 document.getElementById("chatbox-support").innerHTML = ''

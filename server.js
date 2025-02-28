@@ -1,5 +1,7 @@
 const path = require('path');
 const express = require('express');
+const session = require('express-session');
+const MSSQLStore = require('connect-mssql-v2');
 const app = express();
 const {Configuration, OpenAI, OpenAIApi} = require('openai')
 const fs = require('fs');
@@ -39,14 +41,73 @@ const config = {
     }
 }
 
+const sessionStoreConfig = {
+  user: "VergAdmin",
+  password: process.env.PASSWORD,
+  server: process.env.SERVER,
+  port: parseInt(process.env.DBPORT, 10),
+  database: process.env.DATABASE,
+  options: {
+      encrypt: true, // For Azure
+      trustServerCertificate: true, // For local dev / self-signed certs
+  },
+  pool: {
+      max: 10,
+      min: 0,
+      idleTimeoutMillis: 30000,
+  },
+};
+
+const sessionStoreOptions = {
+  table: 'CTStudySessions',
+  autoRemove: true,
+  autoRemoveInterval: 1000 * 60 * 60 * 24 // check to delete every 24 hours
+
+}
+console.log("🔍 Attempting to initialize MSSQL session store...");
+
+const sessionStore = new MSSQLStore(sessionStoreConfig, sessionStoreOptions);
+
+console.log("🔍 MSSQLStore instance created.");
+
+app.use(
+  session({
+      secret: process.env.SESSION_KEY,
+      store: sessionStore, // Use MSSQL session store
+      resave: false,
+      saveUninitialized: false,
+      rolling: true,
+      cookie: {
+          maxAge: 1000 * 60 * 120, // 30 min
+      },
+  })
+);
+
+sessionStore.on('connect', () => {
+  console.log('✅ Successfully connected to the MSSQL session store.');
+});
+
+sessionStore.on('error', (err) => {
+  console.error('❌ Error connecting to the MSSQL session store:', err.message);
+});
+
+sessionStore.on('sessionError', (error, classMethod) => {
+  console.error('❌ Error connecting to the MSSQL session store:', error);
+  console.error('❌ Class Method error connecting to the MSSQL session store:', classMethod);
+})
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // index page
 app.get('/', function(req, res) {
+  req.session.params = {};
+  req.session.params.id = req.params.id;
+  req.session.params.condition = req.params.c;
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/interaction', function(req, res) {
+  console.log(req.session.params)
   res.sendFile(path.join(__dirname, 'public', 'interaction.html'));
 });
 
@@ -56,6 +117,16 @@ app.get('/intro', function(req, res) {
 
 app.get('/select', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'select.html'));
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // Decide whether to keep the process alive or shut it down
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optionally handle cleanup or decide to shut down gracefully
 });
 
 
@@ -107,7 +178,7 @@ async function generateGoogleTTS(ssml, voice = null, pitch = null) {
               "name": voice
           },
           "audioConfig": {
-              "audioEncoding": "OGG-OPUS",
+              "audioEncoding": "OGG_OPUS",
               "speakingRate": 1.15,
               "pitch": pitch
           },
