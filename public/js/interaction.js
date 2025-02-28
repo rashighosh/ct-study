@@ -12,7 +12,7 @@ var incrementTotal
 var finishCounter = 0
 const slider = document.getElementById("myRange");
 var explanations = {}
-var explanationPreference = [1]
+var explanationPreference = []
 var introQuestionsJSON = []
 var questionsJSON = []
 var prevPreference = -1
@@ -286,9 +286,9 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
             agentSpeaker = 'Alex'
         } else {
             messageText.className = "support-chatbot-message"
-            labelText.innerText = `Skylar`
+            labelText.innerText = `Jordan`
             messageTextHistory.className = "history-support-chatbot-message"
-            agentSpeaker = 'Skylar'
+            agentSpeaker = 'Jordan'
         }
     }
 
@@ -423,25 +423,19 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
             jsonList = introQuestionsJSON
             if (prevPreference === '0') { 
                 // characterDialogue += jsonList[data.showQuestions.questionList.item].explanations.plain; 
-                console.log(jsonList[data.showQuestions.questionList.item].explanations)
                 showInfoQuestion(jsonList[data.showQuestions.questionList.item].explanations) 
             }
             if (prevPreference === '50') { 
                 // characterDialogue += jsonList[data.showQuestions.questionList.item].explanations.original,
-                console.log(jsonList[data.showQuestions.questionList.item].explanations)
                 showInfoQuestion(jsonList[data.showQuestions.questionList.item].explanations) 
             }
             if (prevPreference === '100') { 
                 // characterDialogue += jsonList[data.showQuestions.questionList.item].explanations.highhealth 
-                console.log(jsonList[data.showQuestions.questionList.item].explanations)
                 showInfoQuestion(jsonList[data.showQuestions.questionList.item].explanations) 
             }
         } else if (data.showQuestions.questionList.questionJSON === "questionsJSON") {
             jsonList = questionsJSON
-            console.log("EXPLANATION PREFERENCES", explanationPreference)
-            console.log(prevQuestion)
             var userQuestionItem = jsonList.find(obj => obj.question === prevQuestion);
-            console.log(userQuestionItem)
 
             var explanationType = findMostFrequentSmallestNumber(explanationPreference)
             var responseType
@@ -458,7 +452,6 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     if (data.nodeId >= 13) {
         if (data.showQuestions && data.showQuestions.questionAdjustment) {
             var explanationType = findMostFrequentSmallestNumber(explanationPreference)
-            console.log(explanationType)
             if (explanationType === 1) { 
                 document.getElementById("1").classList.add("highlight") 
                 document.getElementById("2").classList.remove("highlight")
@@ -479,30 +472,33 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
             var userQuestionItem = jsonList.find(obj => obj.question === prevQuestion);
             userQuestionItem.explanations.plain
             document.getElementById("1").onclick = function() {
-                console.log("LOW HL")
                 document.getElementById("user-rating-area").style.opacity = 0;
                 document.getElementById("user-rating-area").style.pointerEvents = "none";
                 document.getElementById("options-area").innerHTML = ''
                 explanationPreference.push(1)
                 resetChatBoxPosition();
+                appendMessage("Adjusted Explanation: Less Technical", 'user', null, null, null)
+                logItem("preferences", explanationPreference.toString(), "varchar")
                 handleUserInput(13, { userMessage: userQuestionItem.explanations.plain, script: textScript }, data.agent, userQuestionItem.explanations.plain)
             };
             document.getElementById("2").onclick = function() {
-                console.log("DEFAULT HL")
                 document.getElementById("user-rating-area").style.opacity = 0;
                 document.getElementById("user-rating-area").style.pointerEvents = "none";
                 document.getElementById("options-area").innerHTML = ''
                 explanationPreference.push(50)
                 resetChatBoxPosition();
+                appendMessage("Adjusted Explanation: Default", 'user', null, null, null)
+                logItem("preferences", explanationPreference.toString(), "varchar")
                 handleUserInput(13, { userMessage: userQuestionItem.explanations.original, script: textScript }, data.agent, userQuestionItem.explanations.original)
             };
             document.getElementById("3").onclick = function() {
-                console.log("HIGH HL")
                 document.getElementById("user-rating-area").style.opacity = 0;
                 document.getElementById("user-rating-area").style.pointerEvents = "none";
                 document.getElementById("options-area").innerHTML = ''
                 explanationPreference.push(100)
                 resetChatBoxPosition();
+                appendMessage("Adjusted Explanation: More Technical", 'user', null, null, null)
+                logItem("preferences", explanationPreference.toString(), "varchar")
                 handleUserInput(13, { userMessage: userQuestionItem.explanations.highhealth, script: textScript }, data.agent, userQuestionItem.explanations.highhealth)
             };
         }
@@ -526,32 +522,11 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
         }
 
         if (data.options && data.options.generate && data.options.generate !== false || data.options.generate === undefined || data.options.questionList) {
-            setTimeout(() => {
-                document.getElementById("user-rating-area").style.opacity = 1;
-                document.getElementById("user-rating-area").style.pointerEvents = "all";
-                enableButtons("option-btn")
-                moveChatBox();
-            }, 10);
+            enableButtons("option-btn")
         }
         if (data.options.questionList) {
             enableButtons("preference-option-btn")
         }
-        
-        // if (data.showQuestions) { 
-        //     document.getElementById('questions').classList.add('show');
-        //     if (data.agent === "doctor") {
-        //         document.getElementById("chatbox-doctor").innerHTML = ''
-        //     } else {
-        //         document.getElementById("chatbox-support").innerHTML = ''
-        //     }
-        // } else {
-        //     document.getElementById('questions').classList.remove('show');
-        // }
-        // if (data.showQuestions && data.showQuestions.explanations) { 
-        //     document.getElementById('ask-preference-area').classList.add('show');
-        // } else {
-        //     document.getElementById("ask-preference-area").classList.remove('show')
-        // }
     });
 
     if (data.passOn) { 
@@ -594,7 +569,6 @@ function getOptionValue(key, value) {
 }
 
 function checkPreference(key, value) {
-    console.log("IN CHECK PREF, PREV PREF WAS", prevPreference)
     switch(key) {
         case 'original':
             if (prevPreference === 50) {return true}
@@ -622,7 +596,6 @@ function displayOptions(options, agent) {
         // prevAgent = "doctor"
     }
     if (options.questionList) {
-        console.log("CREATING OPTIONS FROM QUESTION LIST")
         var tutorialOptionsTopics = Object.entries(introQuestionsJSON[options.item].explanations)
         .map(([key, value]) => ({
             optionText: getOptionText(key) + value,
@@ -633,18 +606,15 @@ function displayOptions(options, agent) {
         }));
         optionsArray = tutorialOptionsTopics
     }
-    console.log(optionsArray)
     optionsArray.forEach(option => {
         const optionsArea = document.getElementById("options-area")
-        
         const button = document.createElement('button');
         const userText = option.optionText
         button.innerHTML = userText;
         if (option.preference && option.preference === prevPreference) {
-            console.log("THIS WAS THE PREV PREF")
             // button.classList.add("highlight-option-btn")
             const highlightDiv = document.createElement("p");
-            highlightDiv.innerHTML = "Skylar Recommends"
+            highlightDiv.innerHTML = "Jordan Recommends"
             highlightDiv.classList.add("highlight-div")
             button.appendChild(highlightDiv)
         }
@@ -669,18 +639,14 @@ function displayOptions(options, agent) {
             button.addEventListener('click', () => {
                 document.getElementById("chatbox-doctor").innerHTML = ''
                 document.getElementById("chatbox-support").innerHTML = ''
-                if (option.getPreference && option.preference) {
-                    prevPreference = option.preference
-                    prevQuestion = option.optionText
-                    // document.getElementById("user-rating-area-mini").style.display = "none";
-                    explanationPreference.push(option.preference)
-                    console.log("EXPLANATION PREF:", explanationPreference)
-                }
                 if (option.getPreference) {
                     prevPreference = option.preference
                     prevQuestion = option.optionText
+                    if (option.preference) {
+                        explanationPreference.push(option.preference)
+                        logItem("preferences", explanationPreference.toString(), "varchar")
+                    }
                 }
-                console.log("CLICKED BUTTON")
                 document.getElementById('questions').classList.remove('show');
                 document.getElementById("ask-preference-area").classList.remove('show')
                 document.getElementById("user-rating-area").style.opacity = 0;
@@ -697,7 +663,7 @@ function displayOptions(options, agent) {
                             document.getElementById("thinking").style.display = "flex"
                         }
                         if (option.value === 0 || option.value ===1) {
-                            logItem("browseChoice", option.value)
+                            logItem("browseChoice", option.value, "int")
                         }
                         incrementProgress();
                         if (option.doubleIncrement) {
@@ -717,7 +683,7 @@ function displayOptions(options, agent) {
                 // You can add more actions here based on nextNode
             });
         }
-        
+        button.disabled = true;
         optionsArea.appendChild(button);
     });
     
@@ -725,7 +691,6 @@ function displayOptions(options, agent) {
 
 function displaySubtitles(dialogue, divItem, passOn = null) {
     const dialogueSection = divItem;
-    const chatBox = document.getElementById("chat-container")
 
     // Start with the current content to avoid overwriting
     let existingText = dialogueSection.innerText.trim();
@@ -750,8 +715,11 @@ function displaySubtitles(dialogue, divItem, passOn = null) {
             setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
-            // const optionsArea = document.getElementById("options-area")
-            // optionsArea.style.display = "flex"
+            setTimeout(() => {
+                document.getElementById("user-rating-area").style.opacity = 1;
+                document.getElementById("user-rating-area").style.pointerEvents = "all";
+                moveChatBox();
+            }, 10);
         }
         // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
     }
@@ -810,14 +778,15 @@ function updateTranscript() {
     .catch(error => console.error('Error logging transcript:', error));
 }
 
-function logItem(columnName, value) {
+function logItem(columnName, value, valueType) {
     fetch('/logItem', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             id: id, 
             columnName: columnName, 
-            value: value
+            value: value,
+            valueType: valueType
         })
     })
     .then(response => response.json())

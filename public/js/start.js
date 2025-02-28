@@ -14,10 +14,102 @@ document.addEventListener('DOMContentLoaded', (event) => {
         sessionStorage.setItem("body", "F")
     }
 
-    document.getElementById("begin-btn").addEventListener('click', () => {
+    document.getElementById('back1').addEventListener('click', part1);
+    document.getElementById('part1-btn').addEventListener('click', part2);
+    document.getElementById('part2-btn').addEventListener('click', part3);
+    document.getElementById('back2').addEventListener('click', part2);
+    document.getElementById('part3-btn').addEventListener('click', part4);
+    document.getElementById('back3').addEventListener('click', part3);
+    document.getElementById('part4-btn').addEventListener('click', part5);
+    document.getElementById('back4').addEventListener('click', part4);
+    document.getElementById('part5-btn').addEventListener('click', part6);
+    document.getElementById('back5').addEventListener('click', part5);
+    document.getElementById('part6-btn').addEventListener('click', function() {
         window.location.href = "/interaction?id=" + id + "&c=" + condition;
     });
 });
+
+function part1() {
+    document.getElementById("part1").style.display = "block"
+    document.getElementById("part2").style.display = "none"
+    document.getElementById("info2").style.display = "none"
+    document.getElementById("header-area").classList.remove("scaled-header")
+    document.getElementById("part2-btn").style.display = "none"
+    document.getElementById("part1-btn").style.display = "block"
+    document.getElementById("back1").style.display = "none"
+}
+
+function part2() {
+    document.getElementById("part1").style.display = "none"
+    document.getElementById("part3").style.display = "none"
+    document.getElementById("part2").style.display = "block"
+    document.getElementById("info2").style.display = "flex"
+    document.getElementById("info3").style.display = "none"
+    document.getElementById("header-area").classList.add("scaled-header")
+    document.getElementById("part2-btn").style.display = "block"
+    document.getElementById("part3-btn").style.display = "none"
+    document.getElementById("part1-btn").style.display = "none"
+    document.getElementById("back1").style.display = "block"
+    document.getElementById("back2").style.display = "none"
+}
+
+function part3() {
+    document.getElementById("part2").style.display = "none"
+    document.getElementById("part4").style.display = "none"
+    document.getElementById("part3").style.display = "block"
+    document.getElementById("part2-btn").style.display = "none"
+    document.getElementById("part4-btn").style.display = "none"
+    document.getElementById("part3-btn").style.display = "block"
+    document.getElementById("info2").style.display = "none"
+    document.getElementById("info4").style.display = "none"
+    document.getElementById("info3").style.display = "flex"
+    document.getElementById("back1").style.display = "none"
+    document.getElementById("back3").style.display = "none"
+    document.getElementById("back2").style.display = "block"
+}
+
+function part4() {
+    document.getElementById("part3").style.display = "none"
+    document.getElementById("part5").style.display = "none"
+    document.getElementById("part4").style.display = "block"
+    document.getElementById("part3-btn").style.display = "none"
+    document.getElementById("part5-btn").style.display = "none"
+    document.getElementById("part4-btn").style.display = "block"
+    document.getElementById("info3").style.display = "none"
+    document.getElementById("info5").style.display = "none"
+    document.getElementById("info4").style.display = "flex"
+    document.getElementById("back2").style.display = "none"
+    document.getElementById("back4").style.display = "none"
+    document.getElementById("back3").style.display = "block"
+}
+
+function part5() {
+    console.log("IN PART 5")
+    document.getElementById("part4").style.display = "none"
+    document.getElementById("part6").style.display = "none"
+    document.getElementById("part5").style.display = "block"
+    document.getElementById("part4-btn").style.display = "none"
+    document.getElementById("part5-btn").style.display = "block"
+    document.getElementById("part6-btn").style.display = "none"
+    document.getElementById("info4").style.display = "none"
+    document.getElementById("info5").style.display = "flex"
+    document.getElementById("back3").style.display = "none"
+    document.getElementById("back5").style.display = "none"
+    document.getElementById("back4").style.display = "block"
+    document.getElementById("header-area").classList.add("scaled-header")
+}
+
+function part6() {
+    document.getElementById("part5").style.display = "none"
+    document.getElementById("part6").style.display = "block"
+    document.getElementById("part5-btn").style.display = "none"
+    document.getElementById("part6-btn").style.display = "block"
+    document.getElementById("info5").style.display = "none"
+    document.getElementById("header-area").classList.remove("scaled-header")
+    document.getElementById("back4").style.display = "none"
+    document.getElementById("back5").style.display = "block"
+}
+
 
 async function someFunction(id) {
     try {

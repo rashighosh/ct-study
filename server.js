@@ -244,7 +244,7 @@ app.post('/updateTranscript', (req, res) => {
   });
 
   app.post('/logItem', (req, res) => {
-    const { id, columnName, value } = req.body;
+    const { id, columnName, value, valueType } = req.body;
   
     sql.connect(config, function (err) {
       if (err) {
@@ -256,7 +256,12 @@ app.post('/updateTranscript', (req, res) => {
       const queryString = `UPDATE CTStudy SET ${columnName} = @value WHERE id = @id`;
   
       request.input('id', sql.NVarChar, id);
-      request.input('value', sql.Int, value);
+      if (valueType === "int") {
+        request.input('value', sql.Int, value);
+      }
+      if (valueType === "varchar") {
+        request.input('value', sql.NVarChar, value);
+      }
   
       request.query(queryString, function (err, recordset) {
         if (err) {

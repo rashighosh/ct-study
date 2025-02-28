@@ -16,7 +16,7 @@
     },
     {
         "nodeId": 2,
-        "dialogue": "And I'm Skylar, a virtual caregiver. I'm here to make sure that all the information you receive today is clear and easy to understand, so you feel confident and informed throughout our conversation.",    
+        "dialogue": "And I'm Jordan, a virtual caregiver. I'm here to make sure that all the information you receive today is clear and easy to understand, so you feel confident and informed throughout our conversation.",    
         "agent": "support",
         "input": {
             "allowed": true,
@@ -24,7 +24,7 @@
         },
         "options": [
             {
-                "optionText": "Nice to meet you too, Skylar.",
+                "optionText": "Nice to meet you too, Jordan.",
                 "nextNode": 3
             }
         ]

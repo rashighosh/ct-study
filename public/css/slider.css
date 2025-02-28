@@ -22,6 +22,7 @@
   display: block;
   opacity: 0;
   pointer-events: none;
+  min-width: 175px;
 }
 
 #user-rating-area-mini {
