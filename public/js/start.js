@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', (event) => {  
+var fetchedTopics = false
+
+document.addEventListener('DOMContentLoaded', (event) => {     
     var condition
     var id
     const queryString = window.location.search;
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     var currentDate = new Date();
     logToDatabase(id, condition, currentDate);
     // Call the function
-    someFunction(id);
+    
     
     if (condition === 0) {
         sessionStorage.setItem("character", "female.glb")
@@ -111,17 +113,37 @@ function part5() {
 
 function part6() {
     document.getElementById("part5").style.display = "none"
-    document.getElementById("part6").style.display = "block"
     document.getElementById("part5-btn").style.display = "none"
-    document.getElementById("part6-btn").style.display = "block"
     document.getElementById("info5").style.display = "none"
     document.getElementById("header-area").classList.remove("scaled-header")
     document.getElementById("back4").style.display = "none"
     document.getElementById("back5").style.display = "block"
+
+    console.log("Checking fetchedTopics...");
+    document.getElementById("part6").style.display = "block"
+    document.getElementById("part6").innerHTML = "Please wait a moment while we prepare the virtual character intervention. This shouldn't take longer than 1 minute."
+
+  
+    function checkFetchedTopics() {
+        console.log("Checking fetchedTopics...");
+        if (fetchedTopics) {
+            clearInterval(intervalId);
+            console.log("fetchedTopics is true. Stopping checks.");
+            
+            document.getElementById("part6").style.display = "block"
+            document.getElementById("part6").innerHTML = "The virtual character intervention is ready! Please click the button below when you're ready to start."
+            document.getElementById("part6-btn").style.display = "block"
+        }
+    }
+    
+    const intervalId = setInterval(checkFetchedTopics, 3000);
+
+    
 }
 
 
 async function someFunction(id) {
+    console.log("In some function, checking topics ...")
     try {
         const result = await checkTopics(id);
         if (result.topics === false) {
@@ -136,6 +158,7 @@ async function someFunction(id) {
             firstSevenTopics["Topics"] = Object.fromEntries(Object.entries(topics.Topics).slice(0, 7));
             console.log(firstSevenTopics)
             sessionStorage.setItem("topics", JSON.stringify(firstSevenTopics))
+            fetchedTopics = true
         }
         // Continue with the rest of your code
     } catch (error) {
@@ -187,7 +210,14 @@ function getConversationTopics(id) {
         return response.json();
     })
     .then(data => {
-        console.log(data);
+        console.log(data.sortedTopics);
+        var sortedTopics = data.sortedTopics
+        console.log(sortedTopics)
+        var firstSevenTopics = {};
+        firstSevenTopics["Topics"] = Object.fromEntries(Object.entries(sortedTopics.Topics).slice(0, 7));
+        console.log(firstSevenTopics)
+        sessionStorage.setItem("topics", JSON.stringify(firstSevenTopics))
+        fetchedTopics = true
     })
     .catch(error => {
         console.error('Error:', error.message);
@@ -212,6 +242,7 @@ function logToDatabase(id, condition, currentDate) {
     })
     .then(data => {
         console.log(data.message);
+        someFunction(id);
     })
     .catch(error => {
         console.error('Error:', error.message);

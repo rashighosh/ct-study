@@ -300,18 +300,26 @@ const generateTopics = async (message) => {
     }
     const messages = await rashi_openai.beta.threads.messages.list(thread.id);
     var generatedDialogue = messages.data[0].content[0].text.value;
+    console.log(generatedDialogue)
 
-    const jsonMatch = generatedDialogue.match(/```json([\s\S]*?)```/);
-    if (jsonMatch && jsonMatch[1]) {
-        try {
-            return JSON.parse(jsonMatch[1].trim());
-        } catch (error) {
-            console.error("Error parsing JSON:", error);
+    try {
+        console.log("Successfully parsed JSON")
+        return JSON.parse(generatedDialogue.trim());
+    } catch (error) {
+        console.error("Error parsing JSON, trying to parse string:", error);
+        const jsonMatch = generatedDialogue.match(/```json([\s\S]*?)```/);
+        if (jsonMatch && jsonMatch[1]) {
+            try {
+                console.log("Successfully parsed JSON string")
+                return JSON.parse(jsonMatch[1].trim());
+            } catch (error) {
+                console.error("Error parsing both attempts for JSON:", error);
+                return null;
+            }
+        } else {
+            console.error("No JSON found in response.");
             return null;
         }
-    } else {
-        console.error("No JSON found in response.");
-        return null;
     }
 }
 
