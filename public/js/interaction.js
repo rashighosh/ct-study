@@ -90,9 +90,6 @@ function getCurrentDateTime() {
 
 var topics = JSON.parse(sessionStorage.getItem("topics"))
 topics = topics["Topics"]
-// Object.entries(topics).forEach(([key, value]) => {
-//     console.log(key + ": " + value["justification"]);
-//   });
 
 
 document.addEventListener('DOMContentLoaded', (event) => {  
@@ -130,10 +127,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     condition = urlParams.get('c')
     id = urlParams.get('id')
     condition = parseInt(condition)
-
-    document.getElementById("finish-btn").addEventListener('click', () => {
-        // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
-    });
 
     document.getElementById("history").addEventListener('click', () => {
         document.getElementById("chat-container").style.display = 'flex'
@@ -188,13 +181,6 @@ function findMostFrequentSmallestNumber(arr) {
     return smallestMostFrequent; // Convert back to string if needed
 }
 
-
-function showInfoQuestion(question) {
-    // var questionItem = document.getElementById("question-item-text")
-    // questionItem.innerHTML = ''
-    // questionItem.innerText = question;
-}
-
 function showLoading() {
     document.getElementById('loading-animation').style.display = "block";
     CSS.registerProperty({
@@ -207,7 +193,7 @@ function showLoading() {
     const animatedElement = document.getElementById("loader-animation");
     animatedElement.onanimationend = () => {
         document.getElementById('loading-screen').classList.add("out")
-        handleUserInput(13, { userInput: "Start Introduction", script: textScript, gender: "male" });
+        handleUserInput(1, { userInput: "Start Introduction", script: textScript, gender: "male" });
         informationTranscript.set("SYSTEM " + getCurrentDateTime(), "Start Introduction");
         updateTranscript()
     };
@@ -257,11 +243,12 @@ function moveChatBox() {
 }
 
 function resetChatBoxPosition() {
+    console.log("RESETTING CHATBOX POSITION")
     document.getElementById('chatbox-support').style.bottom = `5%`;
     document.getElementById('chatbox-doctor').style.bottom = `5%`;
 }
 
-function appendMessage(message, speaker, agent, nextNode = null, passOn = null) {
+function appendMessage(message, speaker, agent, nextNode = null, passOn = null, waitToShowOptions = null) {
     var chatBox
     agent === 'doctor' ? chatBox = document.getElementById("chatbox-doctor") : chatBox = document.getElementById("chatbox-support")
     const labelText = document.createElement('div');
@@ -316,7 +303,7 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null) 
         messageItemHistory.appendChild(messageTextHistory);
         document.getElementById("chat-container").appendChild(messageItemHistory)
 
-        displaySubtitles(message, messageText, passOn)
+        displaySubtitles(message, messageText, passOn, waitToShowOptions)
         informationTranscript.set(agentSpeaker + " " + getCurrentDateTime(), message);
         updateTranscript()
     }
@@ -380,8 +367,7 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
 
     body.script = textScript
     console.log("AB TO CALL SERVER, BODY IS", body)
-    // body.characterGender = gender
-    // body.script = textScript
+
     const response = await fetch(`/interact/${nodeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -396,6 +382,7 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     console.log("RESPONSE FROM SERVER", data)
 
     if (prevAgent === "doctor") {
+        console.log("IN KEEP QUESTIONS OR NOT", data.showQuestions)
         if (data.showQuestions && data.showQuestions.keepLastDialogue) {
             console.log("Keep Dr Alex's response")
         } else {
@@ -415,21 +402,7 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     if (data.showQuestions && data.showQuestions.questionList) { 
         var jsonList
         data.showQuestions.questionList.questionJSON === "introQuestionsJSON" ? jsonList = introQuestionsJSON : jsonList = questionsJSON
-        if (data.showQuestions.questionList.questionJSON === "introQuestionsJSON") {
-            jsonList = introQuestionsJSON
-            if (prevPreference === '0') { 
-                // characterDialogue += jsonList[data.showQuestions.questionList.item].explanations.plain; 
-                showInfoQuestion(jsonList[data.showQuestions.questionList.item].explanations) 
-            }
-            if (prevPreference === '50') { 
-                // characterDialogue += jsonList[data.showQuestions.questionList.item].explanations.original,
-                showInfoQuestion(jsonList[data.showQuestions.questionList.item].explanations) 
-            }
-            if (prevPreference === '100') { 
-                // characterDialogue += jsonList[data.showQuestions.questionList.item].explanations.highhealth 
-                showInfoQuestion(jsonList[data.showQuestions.questionList.item].explanations) 
-            }
-        } else if (data.showQuestions.questionList.questionJSON === "questionsJSON") {
+        if (data.showQuestions.questionList.questionJSON === "questionsJSON") {
             jsonList = questionsJSON
             var userQuestionItem = jsonList.find(obj => obj.question === prevQuestion);
 
@@ -442,7 +415,6 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
             characterDialogue += getPrependPhrase() + responseType
             explanations = userQuestionItem.explanations
         }
-        
     }
     
     if (data.nodeId >= 13) {
@@ -475,7 +447,7 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
                 resetChatBoxPosition();
                 appendMessage("Adjusted Explanation: Less Technical", 'user', null, null, null)
                 logItem("preferences", explanationPreference.toString(), "varchar")
-                handleUserInput(13, { userMessage: userQuestionItem.explanations.plain, script: textScript }, data.agent, userQuestionItem.explanations.plain)
+                handleUserInput(15, { userMessage: userQuestionItem.explanations.plain, script: textScript }, "doctor", userQuestionItem.explanations.plain)
             };
             document.getElementById("2").onclick = function() {
                 document.getElementById("user-rating-area").style.opacity = 0;
@@ -485,7 +457,8 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
                 resetChatBoxPosition();
                 appendMessage("Adjusted Explanation: Default", 'user', null, null, null)
                 logItem("preferences", explanationPreference.toString(), "varchar")
-                handleUserInput(13, { userMessage: userQuestionItem.explanations.original, script: textScript }, data.agent, userQuestionItem.explanations.original)
+                console.log("CLICKED NCI ORIGINAL")
+                handleUserInput(15, { userMessage: userQuestionItem.explanations.original, script: textScript }, "doctor", userQuestionItem.explanations.original)
             };
             document.getElementById("3").onclick = function() {
                 document.getElementById("user-rating-area").style.opacity = 0;
@@ -495,7 +468,7 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
                 resetChatBoxPosition();
                 appendMessage("Adjusted Explanation: More Technical", 'user', null, null, null)
                 logItem("preferences", explanationPreference.toString(), "varchar")
-                handleUserInput(13, { userMessage: userQuestionItem.explanations.highhealth, script: textScript }, data.agent, userQuestionItem.explanations.highhealth)
+                handleUserInput(15, { userMessage: userQuestionItem.explanations.highhealth, script: textScript }, "doctor", userQuestionItem.explanations.highhealth)
             };
         }
     }
@@ -503,11 +476,8 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     if (specificDialogue) { characterDialogue = specificDialogue }
 
     characterAudio(characterDialogue, null, data.agent, () => {
-        console.log("TOPICS LENGTH", Object.keys(topics).length)
         if (Object.keys(topics).length === 0 && data.nodeId === 15) {
-            console.log("WE R DONE")
             displayOptions([{"optionText": "Continue", "nextNode": 16}], data.agent)
-            
         }
         if (data.passOn) {
             handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, data.agent);
@@ -535,14 +505,22 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     });
 
     if (data.passOn) { 
-        appendMessage(characterDialogue, 'Alex',  data.agent, null, data.passOn);
+        if (data.showQuestions && data.showQuestions.waitToShowOptions) {
+            appendMessage(characterDialogue, 'Alex',  data.agent, null, data.passOn, data.showQuestions.waitToShowOptions);
+        } else {
+            appendMessage(characterDialogue, 'Alex',  data.agent, null, data.passOn);
+        }
     } else {
         appendMessage(characterDialogue, 'Alex',  data.agent);
     } 
 }
 
 function checkAndRemoveTopic(item) {
+    console.log("Have a topic to check & remove")
+    console.log("ITEM:",item)
+    console.log(topics)
     if (item in topics) {
+        console.log("ITEM IS IN TOPICS")
         delete topics[item]
     }
 }
@@ -647,6 +625,7 @@ function displayOptions(options, agent) {
         } else if (option.link) {
             button.addEventListener('click', () => {
                 console.log("CONTINUE TO POST SURVEY", option.link)
+                // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
             })
         }
         else {
@@ -703,7 +682,7 @@ function displayOptions(options, agent) {
     
 }
 
-function displaySubtitles(dialogue, divItem, passOn = null) {
+function displaySubtitles(dialogue, divItem, passOn = null, waitToShowOptions = null) {
     const dialogueSection = divItem;
 
     // Start with the current content to avoid overwriting
@@ -729,11 +708,13 @@ function displaySubtitles(dialogue, divItem, passOn = null) {
             setTimeout(typeWriter, 30); // Adjust speed (20ms per character)
         } else {
             typewriterRunning = false; // Reset the flag when done
-            setTimeout(() => {
-                document.getElementById("user-rating-area").style.opacity = 1;
-                document.getElementById("user-rating-area").style.pointerEvents = "all";
-                moveChatBox();
-            }, 10);
+            if (waitToShowOptions === null) {
+                setTimeout(() => {
+                    document.getElementById("user-rating-area").style.opacity = 1;
+                    document.getElementById("user-rating-area").style.pointerEvents = "all";
+                    moveChatBox();
+                }, 10);
+            } 
         }
         // chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
     }

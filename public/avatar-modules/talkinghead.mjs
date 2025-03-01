@@ -3048,8 +3048,9 @@ class TalkingHead {
 
           });
           ssml += "</speak>";
-
-          const apiUrl = "http://localhost:3000/generateSSML";
+          const apiUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/generateSSML`;
+          console.log(apiUrl)
+          // const apiUrl = "http://localhost:3000/generateSSML";
 
           const res = await fetch(apiUrl, {
             method: "POST",

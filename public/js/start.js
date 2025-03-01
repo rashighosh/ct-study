@@ -1,8 +1,15 @@
 document.addEventListener('DOMContentLoaded', (event) => {  
+    var condition
+    var id
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    var condition = urlParams.get('c')
-    var id = urlParams.get('id')
+    if (urlParams.size === 0) {
+        condition = '1'
+        id = 'R_6OJi7FcmMOb3GZe'
+    } else {
+        condition = urlParams.get('c')
+        id = urlParams.get('id')
+    }
     condition = parseInt(condition)
     var currentDate = new Date();
     logToDatabase(id, condition, currentDate);
@@ -13,6 +20,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         sessionStorage.setItem("character", "female.glb")
         sessionStorage.setItem("body", "F")
     }
+
+    console.log("id is:", id)
+    console.log("condition is:", condition)
 
     document.getElementById('back1').addEventListener('click', part1);
     document.getElementById('part1-btn').addEventListener('click', part2);

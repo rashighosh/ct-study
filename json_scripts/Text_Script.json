@@ -183,7 +183,7 @@
             "questionList": {
                 "questionJSON": "questionsJSON"
             },
-            "questionAdjustment": true
+            "waitToShowOptions": true
         },
         "passOn": true,
         "input": {
@@ -193,7 +193,7 @@
     },
     {
         "nodeId": 14,
-        "dialogue": "Real quick -- As I mentioned, Dr Alex is answering based on your previous preferences. However, if you want to adjust your preferences, you can click on me to let us know!",
+        "dialogue": "Real quick -- as I mentioned, Dr Alex is answering based on your previous preferences. However, if you want to adjust your preferences, you can click on me to let us know!",
         "agent": "support",
         "showQuestions": {
             "keepLastDialogue": true,
@@ -263,7 +263,7 @@
         "options": [
             {
                 "optionText": "Thanks, bye!",
-                "link": "qualtrics"
+                "link": "https://ufl.qualtrics.com/jfe/form/SV_bf8HQ5xYXr6cMXc"
             }
         ]
     }
