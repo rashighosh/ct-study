@@ -239,6 +239,9 @@
         "input": {
             "allowed": false,
             "nextNode": 17
+        },
+        "showQuestions": {
+            "waitToShowOptions": true
         }
     },
     {
@@ -249,11 +252,14 @@
         "input": {
             "allowed": false,
             "nextNode": 18
+        },
+        "showQuestions": {
+            "waitToShowOptions": true
         }
     },
     {
         "nodeId": 18,
-        "dialogue": "We hope you enjoyed this intervention and have a good rest of your day!",
+        "dialogue": "You can now click the button below to continue to the post-survey. We hope you enjoyed this intervention and have a good rest of your day!",
         "agent": "support",
         "passOn": false,
         "input": {
@@ -262,7 +268,7 @@
         },
         "options": [
             {
-                "optionText": "Thanks, bye!",
+                "optionText": "Complete post-survey.",
                 "link": "https://ufl.qualtrics.com/jfe/form/SV_bf8HQ5xYXr6cMXc"
             }
         ]

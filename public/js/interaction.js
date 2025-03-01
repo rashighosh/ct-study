@@ -395,7 +395,11 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     focusCharacter(data.agent)
 
     if (data.options) {
-        displayOptions(data.options, data.agent)
+        if (Object.keys(topics).length === 0 && data.nodeId === 15) {
+            displayOptions([{"optionText": "Continue", "nextNode": 16}], data.agent)
+        } else {
+            displayOptions(data.options, data.agent)
+        }
     }
 
     var characterDialogue = data.dialogue
@@ -476,9 +480,9 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
     if (specificDialogue) { characterDialogue = specificDialogue }
 
     characterAudio(characterDialogue, null, data.agent, () => {
-        if (Object.keys(topics).length === 0 && data.nodeId === 15) {
-            displayOptions([{"optionText": "Continue", "nextNode": 16}], data.agent)
-        }
+        // if (Object.keys(topics).length === 0 && data.nodeId === 15) {
+        //     displayOptions([{"optionText": "Continue", "nextNode": 16}], data.agent)
+        // }
         if (data.passOn) {
             handleUserInput(data.input.nextNode, { userInput: "Start Introduction", script: textScript, gender: "male" }, data.agent);
         } else {
@@ -625,7 +629,7 @@ function displayOptions(options, agent) {
         } else if (option.link) {
             button.addEventListener('click', () => {
                 console.log("CONTINUE TO POST SURVEY", option.link)
-                // window.location.href = "https://ufl.qualtrics.com/jfe/form/SV_b4xk3F1LVNROTWK?id=" + id + "&c=" + condition;
+                window.location.href = link + "?id=" + id + "&c=" + condition;
             })
         }
         else {
