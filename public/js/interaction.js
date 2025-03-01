@@ -12,11 +12,11 @@ var incrementTotal
 var finishCounter = 0
 const slider = document.getElementById("myRange");
 var explanations = {}
-var explanationPreference = [1]
+var explanationPreference = []
 var introQuestionsJSON = []
 var questionsJSON = []
 var prevPreference = -1
-var prevQuestion = 'What is a placebo?'
+var prevQuestion
 
 var prependItems = [
     "Good question. ",
@@ -36,6 +36,10 @@ function getPrependPhrase() {
     let phrase = prependItems[prependIndex]; // Get current phrase
     prependIndex = (prependIndex + 1) % prependItems.length; // Move to the next, loop back if needed
     return phrase;
+}
+
+function cleanBoldTags(text) {
+    return text.replace(/<\/?b>/g, '');
 }
 
 async function getIntroQuestions() {
@@ -177,6 +181,7 @@ function findMostFrequentSmallestNumber(arr) {
             smallestMostFrequent = Math.min(smallestMostFrequent, Number(num)); // Convert to number for comparison
         }
     }
+    smallestMostFrequent = arr[arr.length - 1];
 
     return smallestMostFrequent; // Convert back to string if needed
 }
@@ -555,27 +560,12 @@ function getOptionValue(key, value) {
     }
 }
 
-function checkPreference(key, value) {
-    switch(key) {
-        case 'original':
-            if (prevPreference === 50) {return true}
-        case 'plain':
-            if (prevPreference === 1) {return true}
-        case 'highhealth':
-            if (prevPreference === 100) {return true}
-        default:
-            return false; // fallback to the value if key is not recognized
-    }
-}
-
-function cleanBoldTags(text) {
-    return text.replace(/<\/?b>/g, '');
-}
-
 function displayOptions(options, agent) {
     var prevAgent = agent
     var optionsArray = options
+    document.getElementById("question-title").innerHTML = "Your Response:"
     if (options.generate) {
+        document.getElementById("question-title").innerHTML = "Jordan's suggested questions - Please select:"
         const optionsTopics = Object.keys(topics)
         .slice(0, 3)
         .map(key => ({
@@ -587,6 +577,9 @@ function displayOptions(options, agent) {
         // prevAgent = "doctor"
     }
     if (options.questionList) {
+        if (options.question) {
+            document.getElementById("question-title").innerHTML = "Please select an Explanation for: " + options.question 
+        }
         var tutorialOptionsTopics = Object.entries(introQuestionsJSON[options.item].explanationsBolded)
         .map(([key, value]) => ({
             optionText: getOptionText(key) + value,

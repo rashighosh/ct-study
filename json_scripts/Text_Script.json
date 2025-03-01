@@ -46,7 +46,7 @@
     },
     {
         "nodeId": 4,
-        "dialogue": "Alright. The first question we'll ask Dr Alex is: What is a clinical trial? Click the explanation that makes most sense to you below.",
+        "dialogue": "Alright. The first question is: What is a clinical trial? Dr Alex can explain in different ways. Original NCI, which is the original explanation from the National Cancer Institute. Less technical, which is everyday language. Or, More technical, which uses more scientific terms. Keep in mind all the explanations have the same information. Which do you prefer?",
         "agent": "support",
         "passOn": false,
         "input": {
@@ -57,6 +57,7 @@
         {
             "questionList": "introQuestionsJSON",
             "item": "0",
+            "question": "What is a clinical trial?",
             "nextNode": 5
         }
     },
@@ -78,7 +79,7 @@
     },
     {
         "nodeId": 7,
-        "dialogue": "Great! That helps Dr Alex and me tailor the information to you. Let's move on to the second question: What is informed consent? Select the explanation you prefer below. You'll notice I have a suggestion based on your previous preference.",
+        "dialogue": "Great! That helps Dr Alex and me tailor the information to you. Let's move on to the second question. What is informed consent? Select the explanation you prefer below. You'll notice I have a suggestion based on your previous preference.",
         "agent": "support",
         "input": {
             "allowed": false,
@@ -88,6 +89,7 @@
         {
             "questionList": "introQuestionsJSON",
             "item": "1",
+            "question": "What is informed consent?",
             "nextNode": 8
         }
     },
@@ -109,13 +111,14 @@
     },
     {
         "nodeId": 9,
-        "dialogue": "Awesome. Finally, what is an IRB?",
+        "dialogue": "Thanks! Finally, what is an IRB?",
         "agent": "support",
         "passOn": false,
         "options": 
         {
             "questionList": "introQuestionsJSON",
             "item": "2",
+            "question": "What is an IRB?",
             "nextNode": 10
         },
         "input": {
