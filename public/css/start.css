@@ -101,8 +101,43 @@ body {
     background-color: rgb(66, 90, 182);
   }
 
+  #loader {
+    display: none;
+  }
+
+  /* HTML: <div class="loader"></div> */
+.loader {
+  height: 50px;
+  width: 50px;
+  aspect-ratio: 1;
+  color:#dc1818;
+  background:
+   radial-gradient(circle at 60% 65%, currentColor 62%, #0000 65%) top left,
+   radial-gradient(circle at 40% 65%, currentColor 62%, #0000 65%) top right,
+   linear-gradient(to bottom left, currentColor 42%,#0000 43%) bottom left ,
+   linear-gradient(to bottom right,currentColor 42%,#0000 43%) bottom right;
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  position: relative;
+}
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  opacity: 0.4;
+  animation: l3 1s infinite;
+}
+@keyframes l3 {
+  to {transform:scale(1.8);opacity:0}
+}
+
 #part2, #part3, #part4, #part5, #part6 {
     display: none;
+}
+
+#part2, #part3, #part4, #part5 {
+  margin-top: 0px;
 }
 
 #back1, #back2, #back3, #back4, #back5 {
@@ -257,34 +292,6 @@ p {
     transform: scale(1.1);
 }
 
-#loader-animation {
-    width: 55%;
-}
-
-.loader {
-    display: flex;
-    text-transform: uppercase;
-    font-size: 15px;
-    margin-top: 10px;
-    font-weight: 700;
-    color:rgb(95, 95, 95);
-}
-
-.progress2 {
-    border-radius: 30px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    padding: 4px;
-}
-
-.progress-bar2 {
-    height: 11px;
-    border-radius: 30px;
-    transition: 0.4s linear;
-    transition-property: width;
-    background: linear-gradient(to right, #231557, #44107a, #fa4616, #f3c623);
-    background-position: 0 0;
-    width: 0%;
-}
 
 @keyframes pulse-animation {
     0% {

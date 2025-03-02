@@ -104,6 +104,7 @@ function part5() {
     document.getElementById("part4-btn").style.display = "none"
     document.getElementById("part5-btn").style.display = "block"
     document.getElementById("part6-btn").style.display = "none"
+    document.getElementById("loader").style.display = "none"
     document.getElementById("info4").style.display = "none"
     document.getElementById("info5").style.display = "flex"
     document.getElementById("back3").style.display = "none"
@@ -122,7 +123,8 @@ function part6() {
 
     console.log("Checking fetchedTopics...");
     document.getElementById("part6").style.display = "block"
-    document.getElementById("part6").innerHTML = "Please wait a moment while we prepare the virtual character intervention. This shouldn't take longer than 1 minute."
+    document.getElementById("part6").innerHTML = "You're about to start the virtual character intervention. Please give us a moment to prepare the intervention. This shouldn't take longer than 1 minute."
+    document.getElementById("loader").style.display = "block"
 
   
     function checkFetchedTopics() {
@@ -130,7 +132,7 @@ function part6() {
         if (fetchedTopics) {
             clearInterval(intervalId);
             console.log("fetchedTopics is true. Stopping checks.");
-            
+            document.getElementById("loader").style.display = "none"
             document.getElementById("part6").style.display = "block"
             document.getElementById("part6").innerHTML = "The virtual character intervention is ready! Please click the button below when you're ready to start."
             document.getElementById("part6-btn").style.display = "block"
