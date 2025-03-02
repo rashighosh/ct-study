@@ -1,3 +1,4 @@
+var qualtricsLoaded = false
 var fetchedTopics = false
 
 document.addEventListener('DOMContentLoaded', (event) => {     
@@ -15,8 +16,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     condition = parseInt(condition)
     var currentDate = new Date();
     logToDatabase(id, condition, currentDate);
-    // Call the function
-    
+
+    getQualtricsInfromation(id)
     
     if (condition === 0) {
         sessionStorage.setItem("character", "female.glb")
@@ -141,8 +142,55 @@ function part6() {
     
 }
 
+async function getQualtricsInfromation(id) {
+    try {
+        const response = await fetch('/qualtrics/getSurveyResponses', {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+        });
 
-async function someFunction(id) {
+        if (response.status === 409) {
+            const surveyData = await response.json();
+            throw new Error(surveyData.message);
+        }
+        if (!response.ok) {
+            throw new Error('Server responded with error ' + response.status);
+        }
+
+        const surveyData = await response.json();
+        console.log(surveyData);
+        
+        try {
+            const response = await fetch('/qualtrics/processSurveyResponses', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id})
+            });
+    
+            if (response.status === 409) {
+                const surveyResponseData = await response.json();
+                throw new Error(surveyResponseData.message);
+            }
+            if (!response.ok) {
+                throw new Error('Server responded with error ' + response.status);
+            }
+    
+            const surveyResponseData = await response.json();
+            console.log(surveyResponseData);
+            qualtricsLoaded = true
+        } catch (error) {
+            console.error('Error:', error.message);
+            throw error; // Re-throw the error
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+        throw error; // Re-throw the error
+    }
+}
+
+
+
+async function fetchOrGenerateTopics(id) {
     console.log("In some function, checking topics ...")
     try {
         const result = await checkTopics(id);
@@ -242,7 +290,15 @@ function logToDatabase(id, condition, currentDate) {
     })
     .then(data => {
         console.log(data.message);
-        someFunction(id);
+        function checkQualtricsLoaded() {
+            console.log("Checking if qualtrics has loaded...");
+            if (qualtricsLoaded) {
+                clearInterval(intervalId);
+                console.log("Qualtrics has loaded is true. Stopping checks. Now fetching or generating topics");
+                fetchOrGenerateTopics(id);
+            }
+        } 
+        const intervalId = setInterval(checkQualtricsLoaded, 3000);
     })
     .catch(error => {
         console.error('Error:', error.message);

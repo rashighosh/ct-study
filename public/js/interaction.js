@@ -20,9 +20,9 @@ var prevQuestion
 
 var prependItems = [
     "Good question. ",
-    "Certainly, let's talk about that. ",
+    "Let's talk about that. ",
     "Glad you asked. ",
-    "Of course, I can answer that. "
+    "I can answer that. "
 ];
 
 let prependIndex = 0; // Track current index

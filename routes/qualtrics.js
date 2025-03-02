@@ -358,7 +358,7 @@ router.get('/getSurveyResponses', async (req, res) => {
         }
 
         await exportSurvey(apiToken, surveyId, dataCenter, fileFormat);
-        res.send('Survey export completed successfully');
+        res.json({message: 'Survey export completed successfully'});
     } catch (error) {
         console.error("Error:", error.message);
         res.status(500).send(`Error: ${error.message}`);
@@ -367,18 +367,18 @@ router.get('/getSurveyResponses', async (req, res) => {
 
 // Route to process the survey responses and clean the CSV
 router.post('/processSurveyResponses', async (req, res) => {
+    console.log("Qualtrics ID is", req.body.id)
     try {
         const responseIdToKeep = req.body.id; // Get id from query params
         if (!responseIdToKeep) {
             return res.status(400).send('Missing required query parameter: id');
         }
 
-        const inputFile = path.join(__dirname, "MultiAgent/MultiAgent.csv");
+        const inputFile = path.join(__dirname, "MultiAgent/MultiAgent - Pre.csv");
         const outputFile = path.join(__dirname, "MultiAgent/MultiAgent_Cleaned.csv");
 
         await cleanCSV(inputFile, outputFile, responseIdToKeep);
-
-        res.send('CSV file cleaned successfully. Only the row with the specified ResponseID was kept.');
+        res.json({message: 'CSV file cleaned successfully. Only the row with the specified ResponseID was kept.'});
     } catch (error) {
         console.error('Error cleaning CSV:', error);
         res.status(500).send(error.message || 'Error cleaning CSV file');
