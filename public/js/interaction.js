@@ -622,7 +622,7 @@ function displayOptions(options, agent) {
         } else if (option.link) {
             button.addEventListener('click', () => {
                 console.log("CONTINUE TO POST SURVEY", option.link)
-                window.location.href = link + "?id=" + id + "&c=" + condition;
+                window.location.href = option.link + "?id=" + id + "&c=" + condition;
             })
         }
         else {
