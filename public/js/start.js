@@ -1,19 +1,21 @@
 var qualtricsLoaded = false
 var fetchedTopics = false
 
-document.addEventListener('DOMContentLoaded', (event) => {     
+document.addEventListener('DOMContentLoaded', (event) => {    
+    console.log("Start") 
     var condition
     var id
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     if (urlParams.size === 0) {
-        condition = '1'
+        condition = '0'
         id = 'R_6OJi7FcmMOb3GZe'
     } else {
         condition = urlParams.get('c')
         id = urlParams.get('id')
     }
     condition = parseInt(condition)
+    console.log("CONDITION IS,", condition)
     var currentDate = new Date();
     logToDatabase(id, condition, currentDate);
 
@@ -22,6 +24,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (condition === 0) {
         sessionStorage.setItem("character", "female.glb")
         sessionStorage.setItem("body", "F")
+        document.getElementById("part1").innerHTML = 'Welcome! The purpose of this intervention is to <b>provide information</b> about joining a cancer clinical trial. You will interact with a <b>virtual character</b>, which is a digital representations of a person. <br/> For the best experience, please make your <b>browser window full screen or the maximum size</b>.'
+        document.getElementById("part2").innerHTML = '●○○○<br/>Specifically, you will be interacting with <b>a virtual character named Dr. Alex.</b> <br/> <b style="color: #fa4616">Dr. Alex</b> is a <b style="color: #fa4616">virtual oncologist</b>.'
+        document.getElementById("part3").innerHTML = '○●○○<br/>The <b>virtual character will respond to you</b> with both <b>text and audio</b>, so make sure your <b>volume is turned up!</b>'
+        document.getElementById("part4").innerHTML = '○○●○<br/>You will <b>click buttons</b> click buttons to interact with the virtual character.</b>'
+        document.getElementById("info2").src = '/images/info2_control.png'
+        document.getElementById("info3").src = '/images/info3_control.gif'
+        document.getElementById("info4").src = '/images/info4_control.gif'
+        document.getElementById("info5").src = '/images/info5_control.gif'
     }
 
     console.log("id is:", id)

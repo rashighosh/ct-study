@@ -10,7 +10,7 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 var condition = urlParams.get('c')
 condition = parseInt(condition)
-if (condition === 0 || condition === 2 || condition === 4 || condition === 6 || condition === 7) {
+if (condition === 0) {
     character = "/character-models/female.glb";
     characterBody = 'F'
 } else {
@@ -38,21 +38,25 @@ document.addEventListener('DOMContentLoaded', async function (e) {
     cameraPanEnable: false,
     cameraZoomEnable: false,
   });
-  const nodeAvatar1 = document.getElementById('virtualcharacter1');
-  head1 = new TalkingHead(nodeAvatar1, {
-    ttsEndpoint: "blah",
-    ttsVoice: "en-US-Neural2-J",
-    ttsPitch: -5,
-    lipsyncModules: ["en"], // language
-    cameraY: 0,
-    cameraRotateY: 0,
-    cameraView: "mid", // full, mid, upper, head
-    cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
-    // interactions w 3d scene, usually disable
-    cameraRotateEnable: false,
-    cameraPanEnable: false,
-    cameraZoomEnable: false,
-  });
+
+  if (condition === 1) {
+    const nodeAvatar1 = document.getElementById('virtualcharacter1');
+    head1 = new TalkingHead(nodeAvatar1, {
+      ttsEndpoint: "blah",
+      ttsVoice: "en-US-Neural2-J",
+      ttsPitch: -5,
+      lipsyncModules: ["en"], // language
+      cameraY: 0,
+      cameraRotateY: 0,
+      cameraView: "mid", // full, mid, upper, head
+      cameraDistance: 0, // negative is zoom in from base, postitive zoom out (in meters)
+      // interactions w 3d scene, usually disable
+      cameraRotateEnable: false,
+      cameraPanEnable: false,
+      cameraZoomEnable: false,
+    });
+  }
+
 
   // Load and show the avatar
   try {
@@ -63,12 +67,15 @@ document.addEventListener('DOMContentLoaded', async function (e) {
       avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
       lipsyncLang: 'en',
     }, (ev) => { });
-    await head1.showAvatar({
-      url: "/character-models/male.glb",
-      body: 'M', // either M or F, specified in charaterType
-      avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
-      lipsyncLang: 'en',
-    }, (ev) => { });
+    
+    if (condition === 1) {
+      await head1.showAvatar({
+        url: "/character-models/male.glb",
+        body: 'M', // either M or F, specified in charaterType
+        avatarMood: 'happy', // neutral, happy, (most used, rest are there): angry, sad, fear, disgust, love, sleep
+        lipsyncLang: 'en',
+      }, (ev) => { });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -91,11 +98,14 @@ export async function focusCharacter(character) {
         lightDirectIntensity: 45,   // Dim directional light,
         lightSpotIntensity: 45,
       })
-      head1.setLighting({
-        lightDirectIntensity: 0,   // Dim directional light
-      })
+      if (condition === 1) {
+        head1.setLighting({
+          lightDirectIntensity: 0,   // Dim directional light
+        })
+        document.querySelector("#virtualcharacter1 > canvas").classList.add("dim")
+      }
+      
       document.querySelector("#virtualcharacter > canvas").classList.remove("dim")
-      document.querySelector("#virtualcharacter1 > canvas").classList.add("dim")
   } else if (character==="support") {
     head.setLighting({
       lightDirectIntensity: 0,   // Dim directional light
@@ -110,11 +120,13 @@ export async function focusCharacter(character) {
     head.setLighting({
       lightDirectIntensity: 0,   // Dim directional light
     })
-    head1.setLighting({
-      lightDirectIntensity: 0,   // Dim directional light
-    })
+    if (condition === 1) {
+      head1.setLighting({
+        lightDirectIntensity: 0,   // Dim directional light
+      })
+      document.querySelector("#virtualcharacter1 > canvas").classList.add("dim")
+    }
     document.querySelector("#virtualcharacter > canvas").classList.add("dim")
-    document.querySelector("#virtualcharacter1 > canvas").classList.add("dim")
   }
 }
 

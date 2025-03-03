@@ -25,6 +25,11 @@
   min-width: 175px;
 }
 
+.doctor-rating {
+  right: 25% !important;
+  top: 40% !important;
+}
+
 #user-rating-area-mini {
   padding: 0px 9px;
   border-radius: 15px;

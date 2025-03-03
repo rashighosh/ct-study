@@ -16,23 +16,23 @@
     },
     {
         "nodeId": 2,
-        "dialogue": "And I'm Jordan, a virtual caregiver. I'm here to make sure that all the information you receive today is clear and easy to understand, so you feel confident and informed throughout our conversation.",    
-        "agent": "support",
+        "dialogue": "Good to meet you too! I also want to make sure that all the information you receive today is clear and easy to understand, so you feel confident and informed throughout our conversation.",    
+        "agent": "doctor",
         "input": {
             "allowed": true,
             "nextNode": 3
         },
         "options": [
             {
-                "optionText": "Nice to meet you too, Jordan.",
+                "optionText": "Okay.",
                 "nextNode": 3
             }
         ]
     },
     {
         "nodeId": 3,
-        "dialogue": "Good to meet you! Now, to make sure we're presenting information in a way that's understandable to you, I'll ask Dr Alex 3 questions. Before Dr Alex answers, you'll choose how you prefer the information to be explained.",
-        "agent": "support",
+        "dialogue": "Now, to make sure I'm presenting information in a way that's understandable to you, I'll walk us through 3 questions. Before I answer, you'll choose how you prefer the information to be explained.",
+        "agent": "doctor",
         "input": {
             "allowed": false,
             "nextNode": 4
@@ -46,8 +46,8 @@
     },
     {
         "nodeId": 4,
-        "dialogue": "Alright. The first question is: What is a clinical trial? Dr Alex can explain in different ways. Original NCI, which is the original explanation from the National Cancer Institute. Less technical, which is everyday language. Or, More technical, which uses more scientific terms. Keep in mind all the explanations have the same information. Which do you prefer?",
-        "agent": "support",
+        "dialogue": "Alright. The first question is: What is a clinical trial? I can explain in different ways. Original NCI, which is the original explanation from the National Cancer Institute. Less technical, which is everyday language. Or, More technical, which uses more scientific terms. Keep in mind all the explanations have the same information. Which do you prefer?",
+        "agent": "doctor",
         "passOn": false,
         "input": {
             "allowed": false,
@@ -79,8 +79,8 @@
     },
     {
         "nodeId": 7,
-        "dialogue": "Great! That helps Dr Alex and me tailor the information to you. Let's move on to the second question. What is informed consent? Select the explanation you prefer below. You'll notice I have a suggestion based on your previous preference.",
-        "agent": "support",
+        "dialogue": "Great! That helps me tailor the information to you. Let's move on to the second question. What is informed consent? Select the explanation you prefer below. You'll notice I have a suggestion based on your previous preference.",
+        "agent": "doctor",
         "input": {
             "allowed": false,
             "nextNode": 8
@@ -112,7 +112,7 @@
     {
         "nodeId": 9,
         "dialogue": "Thanks! Finally, what is an IRB?",
-        "agent": "support",
+        "agent": "doctor",
         "passOn": false,
         "options": 
         {
@@ -143,8 +143,8 @@
     },
     {
         "nodeId": 11,
-        "dialogue": "Okay, now it's time for you to ask questions to Dr Alex! Dr Alex will answer based on the preferences you've shared so far. However, at any point, you can ask me to change the explanation. Whenever you're ready, click Begin below.",
-        "agent": "support",
+        "dialogue": "Okay, now it's time for you to ask me questions! I will answer based on the preferences you've shared so far. However, at any point, you can ask me to change the explanation. Whenever you're ready, click Begin below.",
+        "agent": "doctor",
         "passOn": false,
         "input": {
             "allowed": false,
@@ -159,8 +159,8 @@
     },
     {
         "nodeId": 12,
-        "dialogue": "I've generated some suggested questions based on your knowledge and attitudes about clinical trials from the pre-survey. You can ask these questions by clicking the buttons below. After asking Dr Alex 7 questions, you can continue to the post-survey. Let's get started! Click your first question below.",
-        "agent": "support",
+        "dialogue": "I've generated some suggested questions based on your knowledge and attitudes about clinical trials from the pre-survey. You can ask these questions by clicking the buttons below. After asking me 7 questions, you can continue to the post-survey. Let's get started! Click your first question below.",
+        "agent": "doctor",
         "questionList": {
             "questionJSON": "questionsJSON"
         },
@@ -196,8 +196,8 @@
     },
     {
         "nodeId": 14,
-        "dialogue": "Real quick -- as I mentioned, Dr Alex is answering based on your previous preferences. However, if you want to adjust your preferences, you can click on me to let us know!",
-        "agent": "support",
+        "dialogue": "Real quick -- as I mentioned, I'm answering based on your previous preferences. However, if you want to adjust your preferences, you can click on me to let me know!",
+        "agent": "doctor",
         "showQuestions": {
             "keepLastDialogue": true,
             "questionAdjustment": true
@@ -236,8 +236,8 @@
     },
     {
         "nodeId": 16,
-        "dialogue": "That's all Dr Alex and I have for you today! Thanks for chatting with us.",
-        "agent": "support",
+        "dialogue": "That's all I have for you today! Thanks for chatting with me.",
+        "agent": "doctor",
         "passOn": true,
         "input": {
             "allowed": false,
@@ -249,7 +249,7 @@
     },
     {
         "nodeId": 17,
-        "dialogue": "Yes, it was a pleasure sharing information from the National Cancer Institute about clinical trials for your cancer journey.",
+        "dialogue": "It was a pleasure sharing information from the National Cancer Institute about clinical trials for your cancer journey.",
         "agent": "doctor",
         "passOn": true,
         "input": {
@@ -262,8 +262,8 @@
     },
     {
         "nodeId": 18,
-        "dialogue": "You can now click the button below to continue to the post-survey. We hope you enjoyed this intervention and have a good rest of your day!",
-        "agent": "support",
+        "dialogue": "You can now click the button below to continue to the post-survey. I hope you enjoyed this intervention and have a good rest of your day!",
+        "agent": "doctor",
         "passOn": false,
         "input": {
             "allowed": false,

@@ -7,7 +7,7 @@ var informationTranscript = new Map()
 var id = ''
 var condition = ''
 // const textScript = "Text_Script_Audio.json"
-const textScript = "Text_Script.json"
+var textScript = "Text_Script.json"
 var incrementTotal
 var finishCounter = 0
 const slider = document.getElementById("myRange");
@@ -17,6 +17,20 @@ var introQuestionsJSON = []
 var questionsJSON = []
 var prevPreference = -1
 var prevQuestion
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+condition = urlParams.get('c')
+condition = parseInt(condition)
+
+if (condition === 1) {
+    textScript = "Text_Script.json"
+    document.getElementById("user-rating-area-mini-dr").remove()
+} else if (condition === 0) {
+    document.getElementById("virtualcharacter1").remove()
+    document.getElementById("user-rating-area-mini-dr").id = 'user-rating-area-mini'
+    textScript = "Text_Script_Control.json"
+}
 
 var prependItems = [
     "Good question. ",
@@ -238,18 +252,23 @@ function incrementProgress(double = false) {
 }
 
 function moveChatBox() {
+    console.log("MOVING CHATBOX")
     const historyHeight = document.getElementById('history').offsetHeight;
 
     const interactionHeight = document.getElementById('interaction').offsetHeight;
     
     // Get the chatbox-support element
-    document.getElementById('chatbox-support').style.bottom = `${interactionHeight + historyHeight + 45}px`;
+    if (condition === 1) {
+        document.getElementById('chatbox-support').style.bottom = `${interactionHeight + historyHeight + 45}px`;
+    } 
     document.getElementById('chatbox-doctor').style.bottom = `${interactionHeight + historyHeight + 45}px`;
 }
 
 function resetChatBoxPosition() {
     console.log("RESETTING CHATBOX POSITION")
-    document.getElementById('chatbox-support').style.bottom = `5%`;
+    if (condition === 1) {
+        document.getElementById('chatbox-support').style.bottom = `5%`;
+    }
     document.getElementById('chatbox-doctor').style.bottom = `5%`;
 }
 
@@ -299,6 +318,12 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null, 
         updateTranscript()
     } else {
         messageItem.className = "message-item"
+        console.log("NEXT NODE IS:", nextNode)
+        console.log(nextNode)
+        if (nextNode === 14 && condition === 0) {
+            console.log("ADJUSTHING THIS ONE TO RELATIVE")
+            messageText.classList.add("relative")
+        }
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)
 
@@ -366,9 +391,17 @@ const toggleFunction = function() {
 
 async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue = null) {
     document.getElementById("user-rating-area-mini").style.display = "none";
-    var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
-    supportCharacter.style.pointerEvents = "none"
-    supportCharacter.removeEventListener("click", toggleFunction);
+
+    if (condition === 0) {
+        var doctorCharacter = document.querySelector('#virtualcharacter > canvas')
+        doctorCharacter.style.pointerEvents = "none"
+        doctorCharacter.removeEventListener("click", toggleFunction);
+    } else if (condition === 1) {
+        var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
+        supportCharacter.style.pointerEvents = "none"
+        supportCharacter.removeEventListener("click", toggleFunction);
+    }
+    
 
     body.script = textScript
     console.log("AB TO CALL SERVER, BODY IS", body)
@@ -390,11 +423,20 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
         console.log("IN KEEP QUESTIONS OR NOT", data.showQuestions)
         if (data.showQuestions && data.showQuestions.keepLastDialogue) {
             console.log("Keep Dr Alex's response")
+            if (condition === 0) {
+                console.log("Moving things around")
+                const chatbox = document.getElementById('chatbox-doctor');
+                var firstMessageItem = chatbox.firstChild.firstChild
+                console.log(firstMessageItem)
+                firstMessageItem.classList.add("relative")
+            }
         } else {
             document.getElementById("chatbox-doctor").innerHTML = ''
         }
     } else {
-        document.getElementById("chatbox-support").innerHTML = ''
+        if (condition === 1) {
+            document.getElementById("chatbox-support").innerHTML = ''
+        }
     }
 
     focusCharacter(data.agent)
@@ -496,12 +538,29 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
         if (data.nodeId >= 14) {
             if (data.showQuestions && data.showQuestions.questionAdjustment) {
                 document.getElementById("user-rating-area-mini").style.display = "block";
-                var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
-                supportCharacter.style.pointerEvents = "all"
-                supportCharacter.addEventListener("click", toggleFunction);
+                if (condition === 1) {
+                    var supportCharacter = document.querySelector('#virtualcharacter1 > canvas')
+                    supportCharacter.style.pointerEvents = "all"
+                    supportCharacter.addEventListener("click", toggleFunction);
+                } else if (condition === 0) {
+                    var doctorCharacter = document.querySelector('#virtualcharacter > canvas')
+                    doctorCharacter.style.pointerEvents = "all"
+                    doctorCharacter.addEventListener("click", toggleFunction);
+                }
             }
             if (data.showQuestions && data.showQuestions.keepLastDialogue) {
-                document.getElementById("chatbox-support").innerHTML = ''
+                if (condition === 0) {
+                    console.log("Removing last question")
+                    const chatbox = document.getElementById('chatbox-doctor');
+                    const messageItems = chatbox.getElementsByClassName('message-item');
+
+                    if (messageItems.length >= 2) {
+                        messageItems[1].remove();
+                        messageItems[0].firstChild.classList.remove("relative");
+                    }
+                } else if (condition === 1 ) {
+                    document.getElementById("chatbox-support").innerHTML = ''
+                }
             }
         }
 
@@ -520,7 +579,7 @@ async function handleUserInput(nodeId, body, prevAgent = null, specificDialogue 
             appendMessage(characterDialogue, 'Alex',  data.agent, null, data.passOn);
         }
     } else {
-        appendMessage(characterDialogue, 'Alex',  data.agent);
+        appendMessage(characterDialogue, 'Alex',  data.agent, data.nodeId);
     } 
 }
 
@@ -565,7 +624,11 @@ function displayOptions(options, agent) {
     var optionsArray = options
     document.getElementById("question-title").innerHTML = "Your Response:"
     if (options.generate) {
-        document.getElementById("question-title").innerHTML = "Jordan's suggested questions - Please select:"
+        if (condition === 0) {
+            document.getElementById("question-title").innerHTML = "Dr Alex's suggested questions - Please select:"
+        } else if (condition === 1) {
+            document.getElementById("question-title").innerHTML = "Jordan's suggested questions - Please select:"
+        }
         const optionsTopics = Object.keys(topics)
         .slice(0, 3)
         .map(key => ({
@@ -628,7 +691,9 @@ function displayOptions(options, agent) {
         else {
             button.addEventListener('click', () => {
                 document.getElementById("chatbox-doctor").innerHTML = ''
-                document.getElementById("chatbox-support").innerHTML = ''
+                if (condition === 1) {
+                    document.getElementById("chatbox-support").innerHTML = ''
+                }
                 if (option.getPreference) {
                     prevPreference = option.preference
                     prevQuestion = option.optionText
@@ -637,8 +702,6 @@ function displayOptions(options, agent) {
                         logItem("preferences", explanationPreference.toString(), "varchar")
                     }
                 }
-                document.getElementById('questions').classList.remove('show');
-                document.getElementById("ask-preference-area").classList.remove('show')
                 document.getElementById("user-rating-area").style.opacity = 0;
                 document.getElementById("user-rating-area").style.pointerEvents = "none";
                 optionsArea.innerHTML = ''
