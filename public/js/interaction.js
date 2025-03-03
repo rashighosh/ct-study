@@ -323,6 +323,7 @@ function appendMessage(message, speaker, agent, nextNode = null, passOn = null, 
         if (nextNode === 14 && condition === 0) {
             console.log("ADJUSTHING THIS ONE TO RELATIVE")
             messageText.classList.add("relative")
+            messageText.style.marginTop = "7px"
         }
         messageItem.appendChild(messageText);
         chatBox.appendChild(messageItem)

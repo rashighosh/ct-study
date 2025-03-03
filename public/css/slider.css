@@ -26,8 +26,20 @@
 }
 
 .doctor-rating {
-  right: 25% !important;
-  top: 40% !important;
+  right: 0 !important;
+  top: 30% !important;
+  width: 350px !important;
+}
+
+.doctor-rating::after {
+  content: "" !important;
+  position: absolute !important;
+  left: -10px !important;       /* positions the arrow to the left of the chatbox */
+  top: 50% !important;          /* centers the arrow vertically */
+  transform: translateY(-50%) !important; /* ensures perfect vertical centering */
+  border-width: 10px 10px 10px 0 !important; /* creates the triangle (top, right, bottom, left) */
+  border-style: solid !important;
+  border-color: transparent rgba(255, 255, 255, 0.65) transparent transparent !important;
 }
 
 #user-rating-area-mini {
