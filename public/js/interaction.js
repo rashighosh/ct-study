@@ -667,7 +667,6 @@ function displayOptions(options, agent) {
             } else if (condition === 0) {
                 highlightDiv.innerHTML = "Dr Alex Recommends"
             }
-            highlightDiv.innerHTML = "Jordan Recommends"
             highlightDiv.classList.add("highlight-div")
             button.appendChild(highlightDiv)
         }
