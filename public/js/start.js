@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.getElementById("part1").innerHTML = 'Welcome! The purpose of this intervention is to <b>provide information</b> about joining a cancer clinical trial. You will interact with a <b>virtual character</b>, which is a digital representations of a person. <br/> For the best experience, please make your <b>browser window full screen or the maximum size</b>.'
         document.getElementById("part2").innerHTML = '●○○○<br/>Specifically, you will be interacting with <b>a virtual character named Dr. Alex.</b> <br/> <b style="color: #fa4616">Dr. Alex</b> is a <b style="color: #fa4616">virtual oncologist</b>.'
         document.getElementById("part3").innerHTML = '○●○○<br/>The <b>virtual character will respond to you</b> with both <b>text and audio</b>, so make sure your <b>volume is turned up!</b>'
-        document.getElementById("part4").innerHTML = '○○●○<br/>You will <b>click buttons</b> click buttons to interact with the virtual character.</b>'
+        document.getElementById("part4").innerHTML = '○○●○<br/>You will <b>click buttons</b> to interact with the virtual character.</b>'
         document.getElementById("info2").src = '/images/info2_control.png'
         document.getElementById("info3").src = '/images/info3_control.gif'
         document.getElementById("info4").src = '/images/info4_control.gif'

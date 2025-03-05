@@ -662,6 +662,11 @@ function displayOptions(options, agent) {
         if (option.preference && option.preference === prevPreference) {
             // button.classList.add("highlight-option-btn")
             const highlightDiv = document.createElement("p");
+            if (condition === 1) {
+                highlightDiv.innerHTML = "Jordan Recommends"
+            } else if (condition === 0) {
+                highlightDiv.innerHTML = "Dr Alex Recommends"
+            }
             highlightDiv.innerHTML = "Jordan Recommends"
             highlightDiv.classList.add("highlight-div")
             button.appendChild(highlightDiv)
